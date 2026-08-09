@@ -6,7 +6,7 @@ struct ParentalGateView: View {
     @State private var userAnswer = ""
     @State private var isUnlocked = false
     @EnvironmentObject var progressManager: ProgressViewModel
-    
+
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
@@ -19,8 +19,7 @@ struct ParentalGateView: View {
                 } else {
                     ParentalGateChallenge(
                         question: mathQuestion,
-                        answer: userAnswer,
-                        onAnswerChanged: { userAnswer = $0 },
+                        answer: $userAnswer,
                         onSubmit: checkAnswer
                     )
                 }
@@ -29,14 +28,14 @@ struct ParentalGateView: View {
             .onAppear { generateQuestion() }
         }
     }
-    
+
     private func generateQuestion() {
         let n1 = Int.random(in: 5...20)
         let n2 = Int.random(in: 5...20)
         correctAnswer = n1 + n2
         mathQuestion = "What is \(n1) + \(n2)?"
     }
-    
+
     private func checkAnswer() {
         if let ans = Int(userAnswer), ans == correctAnswer {
             isUnlocked = true
@@ -49,56 +48,93 @@ struct ParentalGateView: View {
 
 struct ParentalGateChallenge: View {
     let question: String
-    let answer: String
-    let onAnswerChanged: (String) -> Void
+    @Binding var answer: String
     let onSubmit: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
-            Image(systemName: "lock.fill").font(.system(size: 80)).foregroundColor(.orange)
+            Image("ui_lock")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 80, height: 80)
+
             Text("Parental Gate").font(.title).fontWeight(.bold)
-            Text("Answer to continue").font(.subheadline).foregroundColor(.gray)
-            
-            Text(question).font(.title2).fontWeight(.bold).foregroundColor(.blue)
-            
-            TextField("Answer", text: onAnswerChanged)
+            Text("Solve this to continue").font(.subheadline).foregroundColor(.secondary)
+
+            Text(question).font(.title2).fontWeight(.bold).foregroundColor(PlayLandTheme.skyBlue)
+
+            TextField("Answer", text: $answer)
                 .keyboardType(.numberPad)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
+                .multilineTextAlignment(.center)
                 .frame(width: 200)
-            
-            Button(action: onSubmit) {
-                Text("Unlock").font(.headline).foregroundColor(.white)
-                    .padding(.horizontal, 40).padding(.vertical, 12)
-                    .background(Color.orange).cornerRadius(25)
-            }
-        }.padding()
+
+            Button("Unlock", action: onSubmit)
+                .buttonStyle(PlayfulButtonStyle(color: PlayLandTheme.sunOrange))
+        }
+        .padding()
     }
 }
 
 struct ParentSettingsView: View {
     @ObservedObject var progressManager: ProgressViewModel
     let onLock: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             HStack {
-                Image(systemName: "checkmark.circle.fill").foregroundColor(.green)
-                Text("Unlocked!").font(.headline).foregroundColor(.green)
-            }.padding().background(Color.green.opacity(0.1)).cornerRadius(10)
-            
+                Image("ui_check")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24)
+                Text("Unlocked!").font(.headline).foregroundColor(PlayLandTheme.leafGreen)
+            }
+            .padding()
+            .background(PlayLandTheme.leafGreen.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+
             Form {
-                Section(header: Text("📊 Progress")) {
-                    HStack { Text("Games"); Spacer(); Text("\(progressManager.completedGames.count)") }
-                    HStack { Text("Stories"); Spacer(); Text("\(progressManager.completedStories.count)") }
-                    HStack { Text("Stars"); Spacer(); Text("\(progressManager.totalStars) ⭐") }
+                Section(header: Text("Progress")) {
+                    HStack { Text("Games Completed"); Spacer(); Text("\(progressManager.completedGames.count)") }
+                    HStack { Text("Stories Completed"); Spacer(); Text("\(progressManager.completedStories.count)") }
+                    HStack {
+                        Text("Total Stars")
+                        Spacer()
+                        Text("\(progressManager.totalStars)")
+                        Image("ui_star")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 18, height: 18)
+                    }
                 }
-                
+
+                Section(header: Text("Badges")) {
+                    Image("badges")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(maxHeight: 90)
+                        .frame(maxWidth: .infinity)
+                }
+
                 Section {
+                    Button(action: { progressManager.resetProgress() }) {
+                        Text("Reset Progress")
+                    }
+                    .foregroundColor(.red)
+
                     Button(action: onLock) {
-                        HStack { Image(systemName: "lock.fill"); Text("Lock") }
-                    }.foregroundColor(.orange)
+                        HStack {
+                            Image("ui_lock")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 18, height: 18)
+                            Text("Lock")
+                        }
+                    }
+                    .foregroundColor(PlayLandTheme.sunOrange)
                 }
             }
-        }.padding()
+        }
+        .padding()
     }
 }

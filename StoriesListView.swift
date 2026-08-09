@@ -2,61 +2,20 @@ import SwiftUI
 
 struct StoriesListView: View {
     @EnvironmentObject var progressManager: ProgressViewModel
-    
-    let stories = [
-        StoryItem(id: "babis_kotsifi", title: "Babis & Kotsifi", description: "Dinosaur hero!", coverImageName: "babis_dinosaur"),
-        StoryItem(id: "babis_rabbit", title: "Lost Rabbit", description: "Save the bunny!", coverImageName: "kotsifi_bird"),
-        StoryItem(id: "babis_storm", title: "Big Storm", description: "Protect animals!", coverImageName: "alepou_fox")
-    ]
 
-    
+    private var stories: [StoryItem] {
+        StoryLibrary.stories.map {
+            StoryItem(id: $0.id, title: $0.title, description: $0.description, coverImageName: $0.coverImageName)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             List {
-                Section(header: Text("📚 Interactive Stories")) {
+                Section(header: Text("Interactive Stories")) {
                     ForEach(stories) { story in
                         NavigationLink(destination: StoryDetailView(storyId: story.id)) {
-                            HStack {
-                                Image(story.coverImageName)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 80, height: 80)
-                                    .cornerRadius(15)
-                                    .shadow(radius: 5)
-
-                                
-                                VStack(alignment: .leading) {
-                                    Text(story.title)
-                                        .font(.headline)
-                                    Text(story.description)
-                                        .font(.subheadline)
-                                        .foregroundColor(.gray)
-                                        .lineLimit(2)
-                                    
-                                    if progressManager.isStoryCompleted(story.id) {
-                                        HStack {
-                                            Image(systemName: "checkmark.circle.fill")
-                                                .foregroundColor(.green)
-                                            Text("Completed!")
-                                                .font(.caption)
-                                                .foregroundColor(.green)
-                                        }
-                                    }
-                                }
-                                
-                                Spacer()
-                                
-                                if progressManager.isStoryCompleted(story.id) {
-                                    VStack {
-                                        Image(systemName: "star.fill")
-                                            .foregroundColor(.yellow)
-                                        Text("5 ⭐")
-                                            .font(.caption)
-                                            .foregroundColor(.yellow)
-                                    }
-                                }
-                            }
-                            .padding(.vertical, 5)
+                            StoryRow(item: story, isCompleted: progressManager.isStoryCompleted(story.id))
                         }
                     }
                 }
@@ -67,10 +26,54 @@ struct StoriesListView: View {
     }
 }
 
-struct StoryItem: Identifiable {
-    let id: String
-    let title: String
-    let description: String
-    let coverIcon: String
-    let color: Color
+struct StoryRow: View {
+    let item: StoryItem
+    let isCompleted: Bool
+
+    var body: some View {
+        HStack(spacing: 14) {
+            Image(item.coverImageName)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 80, height: 80)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
+                .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(item.title)
+                    .font(.headline)
+                Text(item.description)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+
+                if isCompleted {
+                    HStack(spacing: 4) {
+                        Image("ui_check")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 16, height: 16)
+                        Text("Completed!")
+                            .font(.caption.weight(.semibold))
+                            .foregroundColor(PlayLandTheme.leafGreen)
+                    }
+                }
+            }
+
+            Spacer()
+
+            if isCompleted {
+                VStack(spacing: 2) {
+                    Image("ui_star")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
+                    Text("+5")
+                        .font(.caption.weight(.semibold))
+                        .foregroundColor(PlayLandTheme.sunOrange)
+                }
+            }
+        }
+        .padding(.vertical, 6)
+    }
 }
