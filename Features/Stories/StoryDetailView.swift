@@ -29,6 +29,11 @@ struct StoryDetailView: View {
             }
         }
         .navigationBarBackButtonHidden(isFinished)
+        // Immersive story mode: hide the app's tab bar for the duration of
+        // this screen only. SwiftUI restores it automatically once this
+        // view is popped off the navigation stack — nothing elsewhere
+        // needs to (or should) touch tab bar visibility.
+        .toolbar(.hidden, for: .tabBar)
     }
 
     private func finishedView(for story: StoryContent) -> some View {

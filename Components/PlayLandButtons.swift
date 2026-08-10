@@ -42,12 +42,18 @@ struct PlayLandSecondaryButtonStyle: ButtonStyle {
 
 /// A full-width, multiline-friendly style used for story/chapter choice
 /// buttons, where the label text length varies scene to scene.
+///
+/// `.fixedSize(horizontal: false, vertical: true)` before the width/height
+/// frames is what lets a long translation wrap onto multiple lines and grow
+/// the button taller, instead of being squeezed onto — and truncated on —
+/// one line at whatever height `minHeight` happens to specify.
 struct PlayLandChoiceButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.headline)
             .foregroundColor(.white)
             .multilineTextAlignment(.center)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
             .frame(maxWidth: .infinity)
