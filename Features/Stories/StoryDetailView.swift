@@ -3,6 +3,7 @@ import SwiftUI
 struct StoryDetailView: View {
     let storyId: String
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
     @State private var isFinished = false
 
@@ -16,13 +17,13 @@ struct StoryDetailView: View {
                 if isFinished {
                     finishedView(for: story)
                 } else {
-                    InteractiveSceneView(title: story.title, scenes: story.scenes) {
+                    InteractiveSceneView(title: Loc.t(story.titleKey), scenes: story.scenes) {
                         progressManager.completeStory(story.id)
                         isFinished = true
                     }
                 }
             } else {
-                Text("Story coming soon!")
+                Text(Loc.t("stories.comingSoon"))
                     .font(PlayLandTypography.heading)
                     .foregroundColor(PlayLandColors.secondaryText)
             }
@@ -35,10 +36,10 @@ struct StoryDetailView: View {
             PlayLandBackground(imageName: story.scenes.last?.background ?? story.coverImageName, scrimOpacity: 0.35)
 
             CompletionCelebrationView(
-                title: "Story Complete!",
-                message: "You finished \"\(story.title)\" and earned 5 stars.",
+                title: Loc.t("stories.completeTitle"),
+                message: Loc.t("stories.completeMessage", Loc.t(story.titleKey), 5),
                 stars: 3,
-                buttonTitle: "Back to Stories",
+                buttonTitle: Loc.t("stories.backToStories"),
                 action: { dismiss() }
             )
         }

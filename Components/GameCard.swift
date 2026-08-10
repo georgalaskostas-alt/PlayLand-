@@ -32,6 +32,7 @@ struct GameCard: View {
             }
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
     }
 }
 
@@ -40,6 +41,7 @@ struct GameCard: View {
 struct StoryCard: View {
     let item: StoryItem
     let isCompleted: Bool
+    @EnvironmentObject var appSettings: AppSettings
 
     var body: some View {
         HStack(spacing: 14) {
@@ -49,6 +51,7 @@ struct StoryCard: View {
                 .frame(width: 80, height: 80)
                 .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
                 .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(item.title)
@@ -71,12 +74,14 @@ struct StoryCard: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 22, height: 22)
-                    Text("+5")
+                        .accessibilityHidden(true)
+                    Text(Loc.t("stories.starReward", 5))
                         .font(PlayLandTypography.caption)
                         .foregroundColor(PlayLandColors.warning)
                 }
             }
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
     }
 }

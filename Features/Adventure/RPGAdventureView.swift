@@ -1,10 +1,34 @@
 import SwiftUI
 
 struct RPGAdventureView: View {
+    @EnvironmentObject var appSettings: AppSettings
+
     enum RPGMode: String, CaseIterable {
-        case story = "Story Mode"
-        case explore = "Explore"
-        case minigames = "Mini-Games"
+        case story, explore, minigames
+
+        var titleKey: String {
+            switch self {
+            case .story: return "adventure.mode.story.title"
+            case .explore: return "adventure.mode.explore.title"
+            case .minigames: return "adventure.mode.minigames.title"
+            }
+        }
+
+        var descriptionKey: String {
+            switch self {
+            case .story: return "adventure.mode.story.desc"
+            case .explore: return "adventure.mode.explore.desc"
+            case .minigames: return "adventure.mode.minigames.desc"
+            }
+        }
+
+        var icon: String {
+            switch self {
+            case .story: return AppAssets.PlannedUI.book
+            case .explore: return AppAssets.PlannedUI.map
+            case .minigames: return AppAssets.PlannedUI.gamepad
+            }
+        }
     }
 
     var body: some View {
@@ -14,8 +38,9 @@ struct RPGAdventureView: View {
                     .overlay(Color.white.opacity(0.55).ignoresSafeArea())
 
                 VStack(spacing: 20) {
-                    Text("Babis' Adventure")
+                    Text(Loc.t("adventure.title"))
                         .font(PlayLandTypography.display)
+                        .multilineTextAlignment(.center)
 
                     HStack(spacing: 30) {
                         VStack {
@@ -25,7 +50,7 @@ struct RPGAdventureView: View {
                                 .frame(width: 120, height: 120)
                                 .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
                                 .shadow(radius: 5)
-                            Text("Babis").font(PlayLandTypography.heading)
+                            Text(Loc.t("adventure.babisName")).font(PlayLandTypography.heading)
                         }
 
                         VStack {
@@ -35,24 +60,25 @@ struct RPGAdventureView: View {
                                 .frame(width: 80, height: 80)
                                 .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
                                 .shadow(radius: 5)
-                            Text("Kotsifi").font(PlayLandTypography.heading)
+                            Text(Loc.t("adventure.kotsifiName")).font(PlayLandTypography.heading)
                         }
                     }
                     .padding()
 
-                    Text("Choose your adventure!")
+                    Text(Loc.t("adventure.chooseAdventure"))
                         .font(PlayLandTypography.title)
+                        .multilineTextAlignment(.center)
 
                     VStack(spacing: 15) {
                         ForEach(RPGMode.allCases, id: \.self) { mode in
                             NavigationLink(destination: rpgModeView(for: mode)) {
                                 PlayLandCard {
                                     HStack {
-                                        IconTile(imageName: modeIcon(for: mode), size: 50, background: PlayLandColors.sunOrange.opacity(0.15))
+                                        IconTile(imageName: mode.icon, size: 50, background: PlayLandColors.sunOrange.opacity(0.15))
 
                                         VStack(alignment: .leading) {
-                                            Text(mode.rawValue).font(PlayLandTypography.heading)
-                                            Text(modeDescription(for: mode))
+                                            Text(Loc.t(mode.titleKey)).font(PlayLandTypography.heading)
+                                            Text(Loc.t(mode.descriptionKey))
                                                 .font(PlayLandTypography.body)
                                                 .foregroundColor(PlayLandColors.secondaryText)
                                         }
@@ -68,26 +94,7 @@ struct RPGAdventureView: View {
                     Spacer()
                 }
             }
-            .navigationTitle("Adventure")
-        }
-    }
-
-    private func modeIcon(for mode: RPGMode) -> String {
-        switch mode {
-        case .story: return AppAssets.PlannedUI.book
-        case .explore: return AppAssets.PlannedUI.map
-        case .minigames: return AppAssets.PlannedUI.gamepad
-        }
-    }
-
-    private func modeDescription(for mode: RPGMode) -> String {
-        switch mode {
-        case .story:
-            return "Play the story of Babis & friends"
-        case .explore:
-            return "Explore the forest and meet friends"
-        case .minigames:
-            return "Fun educational mini-games"
+            .navigationTitle(Loc.t("adventure.title"))
         }
     }
 
@@ -107,4 +114,5 @@ struct RPGAdventureView: View {
 #Preview {
     RPGAdventureView()
         .environmentObject(ProgressViewModel())
+        .environmentObject(AppSettings.shared)
 }

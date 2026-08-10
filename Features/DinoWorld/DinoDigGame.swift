@@ -8,6 +8,7 @@ private struct DigTile: Identifiable {
 
 struct DinoDigGame: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
     private let totalBones = 5
@@ -20,8 +21,9 @@ struct DinoDigGame: View {
 
     var body: some View {
         ZStack {
+            ScrollView {
             VStack(spacing: 20) {
-                GameHeader(title: "Dino Dig", subtitle: "Tap the dirt to find \(totalBones) hidden bones!")
+                GameHeader(title: Loc.t("dino.dig.title"), subtitle: Loc.t("dino.dig.instruction", totalBones))
 
                 HStack {
                     Text("🦴 \(bonesFound)/\(totalBones)")
@@ -44,6 +46,7 @@ struct DinoDigGame: View {
                             .frame(height: 90)
                         }
                         .disabled(tile.isRevealed)
+                        .accessibilityLabel(Text(tile.isRevealed ? (tile.hasBone ? "🦴" : "🪨") : Loc.t("dino.dig.title")))
                     }
                 }
                 .padding(.horizontal)
@@ -52,13 +55,14 @@ struct DinoDigGame: View {
             }
             .padding()
             .onAppear(perform: setupTiles)
+            }
 
             if isFinished {
                 CompletionCelebrationView(
-                    title: "Fossils Found!",
-                    message: "You dug up all the bones in \(taps) taps.",
+                    title: Loc.t("dino.dig.completeTitle"),
+                    message: Loc.t("dino.dig.completeMessage", taps),
                     stars: stars,
-                    buttonTitle: "Awesome!",
+                    buttonTitle: Loc.t("dino.dig.completeButton"),
                     action: {
                         progressManager.completeGame("dino_dig", stars: stars)
                         dismiss()
@@ -91,6 +95,7 @@ struct DinoDigGame: View {
         taps += 1
         if tiles[index].hasBone {
             bonesFound += 1
+            AudioManager.shared.play(.correct)
         }
         if bonesFound == totalBones {
             withAnimation { isFinished = true }

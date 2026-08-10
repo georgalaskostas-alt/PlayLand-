@@ -6,6 +6,7 @@ struct ParentalGateView: View {
     @State private var userAnswer = ""
     @State private var isUnlocked = false
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
 
     var body: some View {
         NavigationStack {
@@ -24,7 +25,7 @@ struct ParentalGateView: View {
                     )
                 }
             }
-            .navigationTitle("Parents")
+            .navigationTitle(Loc.t("parent.navTitle"))
             .onAppear { generateQuestion() }
         }
     }
@@ -33,7 +34,7 @@ struct ParentalGateView: View {
         let n1 = Int.random(in: 5...20)
         let n2 = Int.random(in: 5...20)
         correctAnswer = n1 + n2
-        mathQuestion = "What is \(n1) + \(n2)?"
+        mathQuestion = Loc.t("parent.gate.question", n1, n2)
     }
 
     private func checkAnswer() {
@@ -58,19 +59,19 @@ struct ParentalGateChallenge: View {
                 .scaledToFit()
                 .frame(width: 80, height: 80)
 
-            Text("Parental Gate").font(PlayLandTypography.title)
-            Text("Solve this to continue").font(PlayLandTypography.body).foregroundColor(PlayLandColors.secondaryText)
+            Text(Loc.t("parent.gate.title")).font(PlayLandTypography.title)
+            Text(Loc.t("parent.gate.subtitle")).font(PlayLandTypography.body).foregroundColor(PlayLandColors.secondaryText)
 
             Text(question).font(.title2).fontWeight(.bold).foregroundColor(PlayLandColors.skyBlue)
 
-            TextField("Answer", text: $answer)
+            TextField(Loc.t("parent.gate.answerField"), text: $answer)
                 .keyboardType(.numberPad)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .multilineTextAlignment(.center)
                 .frame(width: 200)
                 .frame(minHeight: PlayLandMetrics.minTouchTarget)
 
-            PlayLandPrimaryButton(title: "Unlock", color: PlayLandColors.sunOrange, action: onSubmit)
+            PlayLandPrimaryButton(title: Loc.t("action.unlock"), color: PlayLandColors.sunOrange, action: onSubmit)
         }
         .padding()
     }
@@ -78,6 +79,7 @@ struct ParentalGateChallenge: View {
 
 struct ParentSettingsView: View {
     @ObservedObject var progressManager: ProgressViewModel
+    @ObservedObject private var appSettings = AppSettings.shared
     let onLock: () -> Void
 
     var body: some View {
@@ -87,19 +89,19 @@ struct ParentSettingsView: View {
                     .resizable()
                     .scaledToFit()
                     .frame(width: 24, height: 24)
-                Text("Unlocked!").font(PlayLandTypography.heading).foregroundColor(PlayLandColors.leafGreen)
+                Text(Loc.t("parent.unlocked")).font(PlayLandTypography.heading).foregroundColor(PlayLandColors.leafGreen)
             }
             .padding()
             .background(PlayLandColors.leafGreen.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusSmall))
 
             Form {
-                Section(header: Text("Progress")) {
-                    HStack { Text("Games Completed"); Spacer(); Text("\(progressManager.completedGames.count)") }
-                    HStack { Text("Stories Completed"); Spacer(); Text("\(progressManager.completedStories.count)") }
-                    HStack { Text("Chapters Completed"); Spacer(); Text("\(progressManager.completedChapters.count)") }
+                Section(header: Text(Loc.t("parent.progress.header"))) {
+                    HStack { Text(Loc.t("parent.progress.games")); Spacer(); Text("\(progressManager.completedGames.count)") }
+                    HStack { Text(Loc.t("parent.progress.stories")); Spacer(); Text("\(progressManager.completedStories.count)") }
+                    HStack { Text(Loc.t("parent.progress.chapters")); Spacer(); Text("\(progressManager.completedChapters.count)") }
                     HStack {
-                        Text("Total Stars")
+                        Text(Loc.t("parent.progress.stars"))
                         Spacer()
                         Text("\(progressManager.totalStars)")
                         AppAssets.image(AppAssets.PlannedUI.star)
@@ -109,7 +111,7 @@ struct ParentSettingsView: View {
                     }
                 }
 
-                Section(header: Text("Badges")) {
+                Section(header: Text(Loc.t("parent.badges.header"))) {
                     AppAssets.image(AppAssets.Badges.sheet)
                         .resizable()
                         .scaledToFit()
@@ -117,9 +119,20 @@ struct ParentSettingsView: View {
                         .frame(maxWidth: .infinity)
                 }
 
+                Section(header: Text(Loc.t("parent.settings.header"))) {
+                    Toggle(Loc.t("parent.settings.narration"), isOn: $appSettings.isNarrationEnabled)
+                    Toggle(Loc.t("parent.settings.soundEffects"), isOn: $appSettings.isSoundEffectsEnabled)
+
+                    Picker(Loc.t("parent.settings.language"), selection: $appSettings.language) {
+                        ForEach(AppLanguage.allCases) { language in
+                            Text(language.displayName).tag(language)
+                        }
+                    }
+                }
+
                 Section {
                     Button(action: { progressManager.resetProgress() }) {
-                        Text("Reset Progress")
+                        Text(Loc.t("action.resetProgress"))
                     }
                     .foregroundColor(.red)
 
@@ -129,7 +142,7 @@ struct ParentSettingsView: View {
                                 .resizable()
                                 .scaledToFit()
                                 .frame(width: 18, height: 18)
-                            Text("Lock")
+                            Text(Loc.t("action.lock"))
                         }
                     }
                     .foregroundColor(PlayLandColors.sunOrange)

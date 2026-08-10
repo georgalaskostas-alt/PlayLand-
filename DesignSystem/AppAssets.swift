@@ -64,6 +64,8 @@ enum AppAssets {
         /// Introduced during the Phase 0 pass for the Adventure tab icon;
         /// not part of the originally specified asset list.
         static let map = "ui_map"
+        /// Introduced for the "replay spoken instruction" control.
+        static let speaker = "ui_speaker"
     }
 
     /// A placeholder glyph shown in development when a named asset is
@@ -88,7 +90,7 @@ enum AppAssets {
             PlannedGameIcons.memoryGame, PlannedGameIcons.dinoDig, PlannedGameIcons.dinoMatch,
             PlannedGameIcons.dinoFarm, PlannedGameIcons.dinoSort,
             PlannedUI.star, PlannedUI.check, PlannedUI.lock, PlannedUI.play,
-            PlannedUI.book, PlannedUI.paw, PlannedUI.gamepad, PlannedUI.card, PlannedUI.map
+            PlannedUI.book, PlannedUI.paw, PlannedUI.gamepad, PlannedUI.card, PlannedUI.map, PlannedUI.speaker
         ]
         #if canImport(UIKit)
         return planned.filter { UIImage(named: $0) == nil }

@@ -9,6 +9,7 @@ private struct MemoryCard: Identifiable {
 
 struct MemoryGame: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
     private let symbols = ["🦖", "🦕", "🥚", "🌿", "🍃", "🦴"]
@@ -20,8 +21,9 @@ struct MemoryGame: View {
 
     var body: some View {
         ZStack {
+            ScrollView {
             VStack(spacing: 20) {
-                GameHeader(title: "Memory Game", subtitle: "Flip two cards to find a matching pair!")
+                GameHeader(title: Loc.t("game.memoryGame.title"), subtitle: Loc.t("game.memoryGame.instruction"))
 
                 LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: 4), spacing: 10) {
                     ForEach(cards) { card in
@@ -44,13 +46,14 @@ struct MemoryGame: View {
             }
             .padding()
             .onAppear(perform: setupCards)
+            }
 
             if isFinished {
                 CompletionCelebrationView(
-                    title: "Memory Master!",
-                    message: "You matched every pair in \(moves) moves.",
+                    title: Loc.t("game.memoryGame.completeTitle"),
+                    message: Loc.t("game.memoryGame.completeMessage", moves),
                     stars: stars,
-                    buttonTitle: "Continue",
+                    buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("memory_game", stars: stars)
                         dismiss()
@@ -90,10 +93,12 @@ struct MemoryGame: View {
                 cards[first].isMatched = true
                 cards[second].isMatched = true
                 faceUpIndices = []
+                AudioManager.shared.play(.correct)
                 if cards.allSatisfy({ $0.isMatched }) {
                     withAnimation { isFinished = true }
                 }
             } else {
+                AudioManager.shared.play(.wrong)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                     cards[first].isFaceUp = false
                     cards[second].isFaceUp = false

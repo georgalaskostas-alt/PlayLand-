@@ -2,47 +2,52 @@ import SwiftUI
 
 struct LetterRecognitionGame: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    @State private var questions: [LetterQuestion] = []
     @State private var currentQuestion = 0
     @State private var score = 0
-
-    let questions = [
-        LetterQuestion(letter: "A", options: ["Apple", "Ball", "Cat"], correct: 0),
-        LetterQuestion(letter: "B", options: ["Dog", "Ball", "Elephant"], correct: 1),
-        LetterQuestion(letter: "C", options: ["Apple", "Cat", "Fish"], correct: 1),
-        LetterQuestion(letter: "D", options: ["Dog", "Goat", "Hen"], correct: 0),
-        LetterQuestion(letter: "F", options: ["Ant", "Fish", "Owl"], correct: 1)
-    ]
 
     var body: some View {
         ZStack {
             VStack(spacing: 24) {
                 GameHeader(
-                    title: "Letter Recognition",
-                    subtitle: "Question \(min(currentQuestion + 1, questions.count)) of \(questions.count)"
+                    title: Loc.t("game.letterRecognition.title"),
+                    subtitle: Loc.t("game.letterRecognition.instruction")
                 )
 
-                if currentQuestion < questions.count {
+                if !questions.isEmpty {
+                    if currentQuestion < questions.count {
+                        Text(Loc.t("game.letterRecognition.questionOf", currentQuestion + 1, questions.count))
+                            .font(PlayLandTypography.caption)
+                            .foregroundColor(PlayLandColors.secondaryText)
 
-                    LetterQuestionView(question: questions[currentQuestion]) { isCorrect in
-                        if isCorrect { score += 1 }
-                        withAnimation {
-                            currentQuestion += 1
+                        LetterQuestionView(question: questions[currentQuestion]) { isCorrect in
+                            if isCorrect {
+                                score += 1
+                                AudioManager.shared.play(.correct)
+                            } else {
+                                AudioManager.shared.play(.wrong)
+                            }
+                            withAnimation {
+                                currentQuestion += 1
+                            }
                         }
+                        .id(questions[currentQuestion].id)
                     }
-                    .id(questions[currentQuestion].id)
                 }
                 Spacer()
             }
             .padding()
+            .onAppear(perform: setupIfNeeded)
 
-            if currentQuestion >= questions.count {
+            if !questions.isEmpty && currentQuestion >= questions.count {
                 CompletionCelebrationView(
-                    title: "Great Job!",
-                    message: "You got \(score) out of \(questions.count) correct.",
+                    title: Loc.t("game.letterRecognition.completeTitle"),
+                    message: Loc.t("game.letterRecognition.completeMessage", score, questions.count),
                     stars: stars,
-                    buttonTitle: "Continue",
+                    buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("letter_recognition", stars: stars)
                         dismiss()
@@ -57,13 +62,11 @@ struct LetterRecognitionGame: View {
         if score >= (questions.count + 1) / 2 { return 2 }
         return 1
     }
-}
 
-struct LetterQuestion: Identifiable {
-    let id = UUID()
-    let letter: String
-    let options: [String]
-    let correct: Int
+    private func setupIfNeeded() {
+        guard questions.isEmpty else { return }
+        questions = LearningContentProvider.letterQuestions(for: appSettings.resolvedLanguage)
+    }
 }
 
 struct LetterQuestionView: View {
@@ -77,8 +80,11 @@ struct LetterQuestionView: View {
                 .font(.system(size: 90, weight: .heavy, design: .rounded))
                 .foregroundColor(PlayLandColors.sunOrange)
 
-            Text("Which word starts with this letter?")
-                .font(PlayLandTypography.heading)
+            HStack(spacing: 10) {
+                Text(Loc.t("game.letterRecognition.instruction"))
+                    .font(PlayLandTypography.heading)
+                SpeakerButton(text: Loc.t("game.letterRecognition.spokenPrompt", question.letter))
+            }
 
             VStack(spacing: 12) {
                 ForEach(Array(question.options.enumerated()), id: \.offset) { index, option in
@@ -97,9 +103,13 @@ struct LetterQuestionView: View {
                             .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
                     }
                     .disabled(selected != nil)
+                    .accessibilityHint(Text(Loc.t("game.letterRecognition.instruction")))
                 }
             }
         }
         .padding()
+        .onAppear {
+            SpeechManager.shared.speak(text: Loc.t("game.letterRecognition.spokenPrompt", question.letter))
+        }
     }
 }

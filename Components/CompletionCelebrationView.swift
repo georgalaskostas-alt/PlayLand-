@@ -44,6 +44,7 @@ struct CompletionCelebrationView: View {
         .opacity(hasAppeared ? 1.0 : 0)
         .onAppear {
             AudioManager.shared.play(.gameCompletion)
+            SpeechManager.shared.speak(text: "\(title). \(message)")
             withAnimation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.celebration)) {
                 hasAppeared = true
             }

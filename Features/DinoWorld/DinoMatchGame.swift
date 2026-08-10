@@ -9,6 +9,7 @@ private struct MatchCard: Identifiable {
 
 struct DinoMatchGame: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
     private let images = [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox]
@@ -20,8 +21,9 @@ struct DinoMatchGame: View {
 
     var body: some View {
         ZStack {
+            ScrollView {
             VStack(spacing: 20) {
-                GameHeader(title: "Dino Match", subtitle: "Flip the cards and find every pair!")
+                GameHeader(title: Loc.t("dino.match.title"), subtitle: Loc.t("dino.match.instruction"))
 
                 LazyVGrid(columns: Array(repeating: GridItem(spacing: 12), count: 3), spacing: 12) {
                     ForEach(cards) { card in
@@ -51,13 +53,14 @@ struct DinoMatchGame: View {
             }
             .padding()
             .onAppear(perform: setupCards)
+            }
 
             if isFinished {
                 CompletionCelebrationView(
-                    title: "All Matched!",
-                    message: "You found every pair in \(moves) moves.",
+                    title: Loc.t("dino.match.completeTitle"),
+                    message: Loc.t("dino.match.completeMessage", moves),
                     stars: stars,
-                    buttonTitle: "Nice work!",
+                    buttonTitle: Loc.t("dino.match.completeButton"),
                     action: {
                         progressManager.completeGame("dino_match", stars: stars)
                         dismiss()
@@ -97,10 +100,12 @@ struct DinoMatchGame: View {
                 cards[first].isMatched = true
                 cards[second].isMatched = true
                 faceUpIndices = []
+                AudioManager.shared.play(.correct)
                 if cards.allSatisfy({ $0.isMatched }) {
                     withAnimation { isFinished = true }
                 }
             } else {
+                AudioManager.shared.play(.wrong)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
                     cards[first].isFaceUp = false
                     cards[second].isFaceUp = false

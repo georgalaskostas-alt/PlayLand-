@@ -7,6 +7,7 @@ struct StarCounter: View {
     var maxStars: Int = 3
     var size: CGFloat = 28
 
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hasAppeared = false
 
@@ -22,7 +23,7 @@ struct StarCounter: View {
             }
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("\(stars) out of \(maxStars) stars")
+        .accessibilityLabel(Loc.t("accessibility.starsEarned", stars, maxStars))
         .onAppear {
             withAnimation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce).delay(0.1)) {
                 hasAppeared = true

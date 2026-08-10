@@ -10,6 +10,7 @@ private struct SortCreature: Identifiable {
 
 struct DinoSortGame: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
     @State private var creatures: [SortCreature] = [
@@ -26,7 +27,7 @@ struct DinoSortGame: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                GameHeader(title: "Dino Sort", subtitle: "Tap a friend, then tap Big or Small!")
+                GameHeader(title: Loc.t("dino.sort.title"), subtitle: Loc.t("dino.sort.instruction"))
 
                 LazyVGrid(columns: Array(repeating: GridItem(spacing: 12), count: 5), spacing: 12) {
                     ForEach(creatures) { creature in
@@ -46,12 +47,12 @@ struct DinoSortGame: View {
                 .padding(.horizontal)
 
                 HStack(spacing: 20) {
-                    sortBin(title: "Small", emoji: "🐦", isBig: false)
-                    sortBin(title: "Big", emoji: "🦕", isBig: true)
+                    sortBin(title: Loc.t("dino.sort.small"), emoji: "🐦", isBig: false)
+                    sortBin(title: Loc.t("dino.sort.big"), emoji: "🦕", isBig: true)
                 }
                 .padding(.horizontal)
 
-                Text("Mistakes: \(mistakes)")
+                Text(Loc.t("dino.sort.mistakes", mistakes))
                     .font(PlayLandTypography.body)
                     .foregroundColor(PlayLandColors.secondaryText)
 
@@ -61,10 +62,10 @@ struct DinoSortGame: View {
 
             if isFinished {
                 CompletionCelebrationView(
-                    title: "All Sorted!",
-                    message: "You sorted everyone with \(mistakes) mistakes.",
+                    title: Loc.t("dino.sort.completeTitle"),
+                    message: Loc.t("dino.sort.completeMessage", mistakes),
                     stars: stars,
-                    buttonTitle: "Well done!",
+                    buttonTitle: Loc.t("dino.sort.completeButton"),
                     action: {
                         progressManager.completeGame("dino_sort", stars: stars)
                         dismiss()
@@ -101,8 +102,10 @@ struct DinoSortGame: View {
 
         if creatures[index].isBig == big {
             creatures[index].sorted = true
+            AudioManager.shared.play(.correct)
         } else {
             mistakes += 1
+            AudioManager.shared.play(.wrong)
         }
         self.selectedId = nil
 

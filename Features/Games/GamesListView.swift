@@ -2,19 +2,22 @@ import SwiftUI
 
 struct GamesListView: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
 
-    let games = [
-        MenuItem(id: "letter_recognition", title: "Letter Recognition", description: "Learn your ABCs!", iconImageName: AppAssets.GameIcons.letterGame),
-        MenuItem(id: "word_matching", title: "Word Matching", description: "Match the picture to the word!", iconImageName: AppAssets.PlannedGameIcons.wordMatch),
-        MenuItem(id: "word_search", title: "Word Search", description: "Find hidden words!", iconImageName: AppAssets.PlannedGameIcons.wordSearch),
-        MenuItem(id: "word_scramble", title: "Word Scramble", description: "Unscramble the letters!", iconImageName: AppAssets.PlannedGameIcons.wordScramble),
-        MenuItem(id: "memory_game", title: "Memory Game", description: "Train your memory!", iconImageName: AppAssets.PlannedGameIcons.memoryGame)
-    ]
+    private var games: [MenuItem] {
+        [
+            MenuItem(id: "letter_recognition", title: Loc.t("game.letterRecognition.title"), description: Loc.t("game.letterRecognition.desc"), iconImageName: AppAssets.GameIcons.letterGame),
+            MenuItem(id: "word_matching", title: Loc.t("game.wordMatching.title"), description: Loc.t("game.wordMatching.desc"), iconImageName: AppAssets.PlannedGameIcons.wordMatch),
+            MenuItem(id: "word_search", title: Loc.t("game.wordSearch.title"), description: Loc.t("game.wordSearch.desc"), iconImageName: AppAssets.PlannedGameIcons.wordSearch),
+            MenuItem(id: "word_scramble", title: Loc.t("game.wordScramble.title"), description: Loc.t("game.wordScramble.desc"), iconImageName: AppAssets.PlannedGameIcons.wordScramble),
+            MenuItem(id: "memory_game", title: Loc.t("game.memoryGame.title"), description: Loc.t("game.memoryGame.desc"), iconImageName: AppAssets.PlannedGameIcons.memoryGame)
+        ]
+    }
 
     var body: some View {
         NavigationStack {
             List {
-                Section(header: Text("Learning Games")) {
+                Section(header: Text(Loc.t("games.sectionHeader"))) {
                     ForEach(games) { game in
                         NavigationLink(destination: gameView(for: game)) {
                             GameCard(
@@ -26,7 +29,7 @@ struct GamesListView: View {
                     }
                 }
             }
-            .navigationTitle("PlayLand")
+            .navigationTitle(Loc.t("games.navTitle"))
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -45,7 +48,7 @@ struct GamesListView: View {
         case "memory_game":
             MemoryGame()
         default:
-            Text("Game coming soon!")
+            EmptyView()
         }
     }
 }

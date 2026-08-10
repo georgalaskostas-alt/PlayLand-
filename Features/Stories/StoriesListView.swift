@@ -2,17 +2,18 @@ import SwiftUI
 
 struct StoriesListView: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
 
     private var stories: [StoryItem] {
         StoryLibrary.stories.map {
-            StoryItem(id: $0.id, title: $0.title, description: $0.description, coverImageName: $0.coverImageName)
+            StoryItem(id: $0.id, title: Loc.t($0.titleKey), description: Loc.t($0.descriptionKey), coverImageName: $0.coverImageName)
         }
     }
 
     var body: some View {
         NavigationStack {
             List {
-                Section(header: Text("Interactive Stories")) {
+                Section(header: Text(Loc.t("stories.sectionHeader"))) {
                     ForEach(stories) { story in
                         NavigationLink(destination: StoryDetailView(storyId: story.id)) {
                             StoryCard(item: story, isCompleted: progressManager.isStoryCompleted(story.id))
@@ -20,7 +21,7 @@ struct StoriesListView: View {
                     }
                 }
             }
-            .navigationTitle("Stories")
+            .navigationTitle(Loc.t("stories.navTitle"))
             .navigationBarTitleDisplayMode(.large)
         }
     }

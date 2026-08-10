@@ -1,21 +1,11 @@
 import SwiftUI
 
-private struct WordPair {
-    let emoji: String
-    let word: String
-}
-
 struct WordMatchingGame: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
-    private let pairs = [
-        WordPair(emoji: "🦖", word: "DINO"),
-        WordPair(emoji: "🐦", word: "BIRD"),
-        WordPair(emoji: "🦊", word: "FOX"),
-        WordPair(emoji: "🌳", word: "TREE")
-    ]
-
+    @State private var pairs: [MatchWordPair] = []
     @State private var words: [String] = []
     @State private var selectedEmoji: String?
     @State private var selectedWord: String?
@@ -26,13 +16,14 @@ struct WordMatchingGame: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                GameHeader(title: "Word Matching", subtitle: "Match each picture with its word!")
+                GameHeader(title: Loc.t("game.wordMatching.title"), subtitle: Loc.t("game.wordMatching.instruction"))
 
                 HStack(alignment: .top, spacing: 30) {
                     VStack(spacing: 14) {
                         ForEach(pairs, id: \.emoji) { pair in
                             tile(text: pair.emoji, isSelected: selectedEmoji == pair.emoji, isMatched: matched.contains(pair.emoji)) {
                                 selectedEmoji = pair.emoji
+                                SpeechManager.shared.speak(text: pair.word)
                                 tryMatch()
                             }
                         }
@@ -42,6 +33,7 @@ struct WordMatchingGame: View {
                         ForEach(words, id: \.self) { word in
                             tile(text: word, isSelected: selectedWord == word, isMatched: matched.contains(word)) {
                                 selectedWord = word
+                                SpeechManager.shared.speak(text: word)
                                 tryMatch()
                             }
                         }
@@ -56,10 +48,10 @@ struct WordMatchingGame: View {
 
             if isFinished {
                 CompletionCelebrationView(
-                    title: "Perfect Matching!",
-                    message: "You matched everything with \(mistakes) mistakes.",
+                    title: Loc.t("game.wordMatching.completeTitle"),
+                    message: Loc.t("game.wordMatching.completeMessage", mistakes),
                     stars: stars,
-                    buttonTitle: "Continue",
+                    buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("word_matching", stars: stars)
                         dismiss()
@@ -76,6 +68,7 @@ struct WordMatchingGame: View {
     }
 
     private func setup() {
+        pairs = LearningContentProvider.matchWordPairs(for: appSettings.resolvedLanguage)
         words = pairs.map { $0.word }.shuffled()
         matched = []
         selectedEmoji = nil
@@ -102,8 +95,10 @@ struct WordMatchingGame: View {
         if let pair = pairs.first(where: { $0.emoji == emoji }), pair.word == word {
             matched.insert(emoji)
             matched.insert(word)
+            AudioManager.shared.play(.correct)
         } else {
             mistakes += 1
+            AudioManager.shared.play(.wrong)
         }
         selectedEmoji = nil
         selectedWord = nil

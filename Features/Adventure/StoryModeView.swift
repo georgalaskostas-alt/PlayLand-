@@ -10,16 +10,17 @@ struct Chapter: Identifiable {
 
 struct StoryModeView: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
 
     private var chapters: [Chapter] {
         ChapterLibrary.chapters.map {
-            Chapter(id: $0.id, order: $0.order, title: $0.title, description: $0.description, image: $0.imageName)
+            Chapter(id: $0.id, order: $0.order, title: Loc.t($0.titleKey), description: Loc.t($0.descriptionKey), image: $0.imageName)
         }
     }
 
     var body: some View {
         List {
-            Section(header: Text("Choose a Chapter")) {
+            Section(header: Text(Loc.t("adventure.storyMode.chooseChapter"))) {
                 ForEach(chapters) { chapter in
                     NavigationLink(destination: ChapterDetailView(chapter: chapter)) {
                         HStack(spacing: 15) {
@@ -30,7 +31,7 @@ struct StoryModeView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusSmall))
 
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("Chapter \(chapter.order)")
+                                Text(Loc.t("adventure.storyMode.chapterNumber", chapter.order))
                                     .font(PlayLandTypography.caption)
                                     .foregroundColor(PlayLandColors.secondaryText)
                                 Text(chapter.title)
@@ -51,13 +52,14 @@ struct StoryModeView: View {
                 }
             }
         }
-        .navigationTitle("Story Mode")
+        .navigationTitle(Loc.t("adventure.storyMode.navTitle"))
     }
 }
 
 struct ChapterDetailView: View {
     let chapter: Chapter
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
     @State private var isPlaying = false
     @State private var isFinished = false
 
@@ -68,7 +70,7 @@ struct ChapterDetailView: View {
     var body: some View {
         Group {
             if isPlaying, let chapterContent {
-                InteractiveSceneView(title: chapterContent.title, scenes: chapterContent.scenes) {
+                InteractiveSceneView(title: chapter.title, scenes: chapterContent.scenes) {
                     progressManager.completeChapter(chapter.id)
                     withAnimation {
                         isPlaying = false
@@ -93,7 +95,7 @@ struct ChapterDetailView: View {
                 .frame(maxHeight: 260)
                 .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
 
-            Text("Chapter \(chapter.order): \(chapter.title)")
+            Text(Loc.t("adventure.storyMode.chapterTitled", chapter.order, chapter.title))
                 .font(PlayLandTypography.title)
                 .multilineTextAlignment(.center)
 
@@ -105,11 +107,11 @@ struct ChapterDetailView: View {
 
             if isFinished {
                 StarCounter(stars: 3)
-                ProgressBadge(text: "Chapter Complete!")
+                ProgressBadge(text: Loc.t("adventure.storyMode.chapterComplete"))
             }
 
             PlayLandPrimaryButton(
-                title: isFinished ? "Play Again" : "Start Chapter",
+                title: isFinished ? Loc.t("action.playAgain") : Loc.t("action.startChapter"),
                 color: PlayLandColors.sunOrange,
                 action: { isPlaying = true }
             )

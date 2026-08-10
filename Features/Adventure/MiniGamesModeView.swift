@@ -2,17 +2,20 @@ import SwiftUI
 
 struct MiniGamesModeView: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
 
-    let miniGames = [
-        MenuItem(id: "letter_recognition", title: "Letter Recognition", description: "Learn your ABCs!", iconImageName: AppAssets.GameIcons.letterGame),
-        MenuItem(id: "word_matching", title: "Word Matching", description: "Match the picture to the word!", iconImageName: AppAssets.PlannedGameIcons.wordMatch),
-        MenuItem(id: "word_scramble", title: "Word Scramble", description: "Unscramble the letters!", iconImageName: AppAssets.PlannedGameIcons.wordScramble),
-        MenuItem(id: "memory_game", title: "Memory Game", description: "Train your memory!", iconImageName: AppAssets.PlannedGameIcons.memoryGame)
-    ]
+    private var miniGames: [MenuItem] {
+        [
+            MenuItem(id: "letter_recognition", title: Loc.t("game.letterRecognition.title"), description: Loc.t("game.letterRecognition.desc"), iconImageName: AppAssets.GameIcons.letterGame),
+            MenuItem(id: "word_matching", title: Loc.t("game.wordMatching.title"), description: Loc.t("game.wordMatching.desc"), iconImageName: AppAssets.PlannedGameIcons.wordMatch),
+            MenuItem(id: "word_scramble", title: Loc.t("game.wordScramble.title"), description: Loc.t("game.wordScramble.desc"), iconImageName: AppAssets.PlannedGameIcons.wordScramble),
+            MenuItem(id: "memory_game", title: Loc.t("game.memoryGame.title"), description: Loc.t("game.memoryGame.desc"), iconImageName: AppAssets.PlannedGameIcons.memoryGame)
+        ]
+    }
 
     var body: some View {
         List {
-            Section(header: Text("Mini-Games")) {
+            Section(header: Text(Loc.t("adventure.mode.minigames.title"))) {
                 ForEach(miniGames) { game in
                     NavigationLink(destination: gameView(for: game)) {
                         GameCard(
@@ -24,7 +27,7 @@ struct MiniGamesModeView: View {
                 }
             }
         }
-        .navigationTitle("Mini-Games")
+        .navigationTitle(Loc.t("adventure.mode.minigames.title"))
     }
 
     @ViewBuilder
@@ -39,7 +42,7 @@ struct MiniGamesModeView: View {
         case "memory_game":
             MemoryGame()
         default:
-            Text("Coming soon!")
+            EmptyView()
         }
     }
 }

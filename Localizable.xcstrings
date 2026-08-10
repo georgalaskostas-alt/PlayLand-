@@ -1,0 +1,2094 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "tab.games" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spiele" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Παιχνίδια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Games" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Juegos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Jeux" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Giochi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Jogos" } }
+      }
+    },
+    "tab.stories" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschichten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ιστορίες" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stories" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cuentos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Histoires" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Storie" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Histórias" } }
+      }
+    },
+    "tab.dinoWorld" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dino-Welt" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κόσμος Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino World" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mundo Dino" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Monde des Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Mondo dei Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mundo Dino" } }
+      }
+    },
+    "tab.adventure" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abenteuer" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Περιπέτεια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Adventure" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Aventura" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aventure" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Avventura" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Aventura" } }
+      }
+    },
+    "tab.parents" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eltern" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γονείς" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Parents" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Padres" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Parents" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Genitori" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Pais" } }
+      }
+    },
+
+    "action.continue" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Weiter" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Συνέχεια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Continue" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Continuar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Continuer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Continua" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Continuar" } }
+      }
+    },
+    "action.playAgain" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nochmal spielen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξαναπαίξτε" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Play Again" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Jugar de nuevo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rejouer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Gioca ancora" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Jogar de novo" } }
+      }
+    },
+    "action.clear" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Löschen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Καθαρισμός" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Clear" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Borrar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Effacer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cancella" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Limpar" } }
+      }
+    },
+    "action.close" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Schließen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κλείσιμο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Close" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cerrar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fermer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Chiudi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Fechar" } }
+      }
+    },
+    "action.unlock" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Freischalten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξεκλείδωμα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlock" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Desbloquear" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Déverrouiller" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Sblocca" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Desbloquear" } }
+      }
+    },
+    "action.lock" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sperren" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κλείδωμα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lock" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bloquear" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Verrouiller" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Blocca" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bloquear" } }
+      }
+    },
+    "action.resetProgress" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fortschritt zurücksetzen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Επαναφορά προόδου" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reset Progress" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar progreso" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réinitialiser la progression" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Reimposta progressi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Repor progresso" } }
+      }
+    },
+    "action.checkWord" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wort prüfen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Έλεγχος λέξης" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check Word" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Comprobar palabra" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vérifier le mot" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Controlla parola" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Verificar palavra" } }
+      }
+    },
+    "action.startChapter" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kapitel starten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Έναρξη κεφαλαίου" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start Chapter" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Comenzar capítulo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Commencer le chapitre" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Inizia capitolo" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Iniciar capítulo" } }
+      }
+    },
+    "action.leaveCave" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Höhle verlassen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φύγε από τη σπηλιά" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Leave the cave" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Salir de la cueva" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Quitter la grotte" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Lascia la grotta" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Sair da caverna" } }
+      }
+    },
+    "action.theEnd" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ende 🎉" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τέλος 🎉" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The End 🎉" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Fin 🎉" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fin 🎉" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Fine 🎉" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Fim 🎉" } }
+      }
+    },
+
+    "feedback.tryAgain" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fast! Versuch's nochmal." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Σχεδόν! Δοκίμασε ξανά." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Almost! Try again." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Casi! Inténtalo de nuevo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Presque ! Réessaie." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Quasi! Riprova." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Quase! Tenta outra vez." } }
+      }
+    },
+    "feedback.goodTry" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Guter Versuch!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Καλή προσπάθεια!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Good try!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Buen intento!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bon essai !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Bel tentativo!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Boa tentativa!" } }
+      }
+    },
+
+    "games.navTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "PlayLand" } }
+      }
+    },
+    "games.sectionHeader" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Lernspiele" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εκπαιδευτικά Παιχνίδια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Learning Games" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Juegos de aprendizaje" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Jeux éducatifs" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Giochi educativi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Jogos educativos" } }
+      }
+    },
+    "games.completed" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschafft!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ολοκληρώθηκε!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Completed!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Completado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Terminé !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Completato!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Concluído!" } }
+      }
+    },
+
+    "game.letterRecognition.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Buchstaben erkennen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αναγνώριση Γραμμάτων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Letter Recognition" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Reconocer letras" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Reconnaître les lettres" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Riconoscere le lettere" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Reconhecer letras" } }
+      }
+    },
+    "game.letterRecognition.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Lerne dein Alphabet!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μάθε τα γράμματα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Learn your ABCs!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Aprende el abecedario!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Apprends l'alphabet !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Impara l'alfabeto!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Aprende o alfabeto!" } }
+      }
+    },
+    "game.letterRecognition.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Welches Wort beginnt mit diesem Buchstaben?" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ποια λέξη ξεκινάει με αυτό το γράμμα;" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Which word starts with this letter?" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¿Qué palabra empieza con esta letra?" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Quel mot commence par cette lettre ?" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Quale parola inizia con questa lettera?" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Que palavra começa com esta letra?" } }
+      }
+    },
+    "game.letterRecognition.questionOf" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Frage %lld von %lld" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ερώτηση %lld από %lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Question %lld of %lld" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pregunta %lld de %lld" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Question %lld sur %lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Domanda %lld di %lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Pergunta %lld de %lld" } }
+      }
+    },
+    "game.letterRecognition.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gut gemacht!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μπράβο σου!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Great Job!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Muy bien!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bravo !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ottimo lavoro!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Muito bem!" } }
+      }
+    },
+    "game.letterRecognition.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hattest %lld von %lld richtig." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρήκες %lld από %lld σωστά." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You got %lld out of %lld correct." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Acertaste %lld de %lld." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as trouvé %lld bonnes réponses sur %lld." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai risposto correttamente a %lld su %lld." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Acertaste %lld de %lld." } }
+      }
+    },
+    "game.letterRecognition.spokenPrompt" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Finde den Buchstaben %@" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρες το γράμμα %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Find the letter %@" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Encuentra la letra %@" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trouve la lettre %@" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Trova la lettera %@" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontra a letra %@" } }
+      }
+    },
+
+    "game.wordMatching.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wörter zuordnen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ταίριασμα Λέξεων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Word Matching" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Emparejar palabras" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Associer les mots" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Abbina le parole" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Associar palavras" } }
+      }
+    },
+    "game.wordMatching.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ordne das Bild dem Wort zu!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ταίριαξε την εικόνα με τη λέξη!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Match the picture to the word!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Empareja la imagen con la palabra!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Associe l'image au mot !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Abbina l'immagine alla parola!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Associa a imagem à palavra!" } }
+      }
+    },
+    "game.wordMatching.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tippe zuerst ein Bild und dann sein Wort an!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πάτησε μια εικόνα και μετά τη λέξη της!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tap a picture, then tap its word!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Toca una imagen y luego su palabra!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Touche une image, puis touche son mot !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tocca un'immagine, poi tocca la sua parola!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Toca numa imagem e depois na sua palavra!" } }
+      }
+    },
+    "game.wordMatching.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Perfekt zugeordnet!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τέλειο ταίριασμα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Perfect Matching!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Emparejamiento perfecto!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Association parfaite !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Abbinamento perfetto!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Associação perfeita!" } }
+      }
+    },
+    "game.wordMatching.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast alles mit %lld Fehlern zugeordnet." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τα ταίριαξες όλα με %lld λάθη." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You matched everything with %lld mistakes." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Emparejaste todo con %lld errores." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as tout associé avec %lld erreurs." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai abbinato tutto con %lld errori." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Associaste tudo com %lld erros." } }
+      }
+    },
+
+    "game.wordSearch.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wortsuche" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αναζήτηση Λέξεων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Word Search" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Sopa de letras" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Recherche de mots" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerca la parola" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Sopa de letras" } }
+      }
+    },
+    "game.wordSearch.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Finde versteckte Wörter!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρες κρυμμένες λέξεις!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Find hidden words!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Encuentra palabras escondidas!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trouve les mots cachés !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Trova le parole nascoste!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontra palavras escondidas!" } }
+      }
+    },
+    "game.wordSearch.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tippe die Buchstaben der Reihe nach an!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πάτησε τα γράμματα με τη σειρά!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tap the letters in order to spell a word!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Toca las letras en orden para formar una palabra!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Touche les lettres dans l'ordre pour former un mot !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tocca le lettere in ordine per formare una parola!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Toca nas letras em ordem para formar uma palavra!" } }
+      }
+    },
+    "game.wordSearch.findWord" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Finde das Wort %@" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρες τη λέξη %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Find the word %@" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Encuentra la palabra %@" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trouve le mot %@" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Trova la parola %@" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontra a palavra %@" } }
+      }
+    },
+    "game.wordSearch.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wörter gefunden!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρήκες τις λέξεις!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Words Found!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Palabras encontradas!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mots trouvés !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Parole trovate!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Palavras encontradas!" } }
+      }
+    },
+    "game.wordSearch.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast jedes Wort mit %lld Fehlern gefunden." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρήκες κάθε λέξη με %lld λάθη." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You found every word with %lld mistakes." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Encontraste todas las palabras con %lld errores." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as trouvé tous les mots avec %lld erreurs." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai trovato tutte le parole con %lld errori." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontraste todas as palavras com %lld erros." } }
+      }
+    },
+
+    "game.wordScramble.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Buchstabensalat" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ανακάτεμα Λέξεων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Word Scramble" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Palabras revueltas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mots mélangés" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Parole mescolate" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Palavras baralhadas" } }
+      }
+    },
+    "game.wordScramble.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entwirre die Buchstaben!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξεμπέρδεψε τα γράμματα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unscramble the letters!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Ordena las letras!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Remets les lettres dans l'ordre !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Riordina le lettere!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Ordena as letras!" } }
+      }
+    },
+    "game.wordScramble.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tippe die Buchstaben in der richtigen Reihenfolge an!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πάτησε τα γράμματα με τη σωστή σειρά!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tap the letters in the right order!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Toca las letras en el orden correcto!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Touche les lettres dans le bon ordre !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tocca le lettere nell'ordine giusto!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Toca nas letras na ordem certa!" } }
+      }
+    },
+    "game.wordScramble.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entwirrt!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Το ξεμπέρδεψες!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unscrambled!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Palabras resueltas!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mots reconstitués !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Parole ricostruite!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Palavras resolvidas!" } }
+      }
+    },
+    "game.wordScramble.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast %lld von %lld Wörtern gelöst." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Έλυσες %lld από %lld λέξεις." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You solved %lld out of %lld words." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Resolviste %lld de %lld palabras." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as résolu %lld mots sur %lld." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai risolto %lld parole su %lld." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Resolveste %lld de %lld palavras." } }
+      }
+    },
+
+    "game.memoryGame.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gedächtnisspiel" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Παιχνίδι Μνήμης" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Memory Game" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Juego de memoria" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Jeu de mémoire" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Gioco di memoria" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Jogo da memória" } }
+      }
+    },
+    "game.memoryGame.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Trainiere dein Gedächtnis!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γύμνασε τη μνήμη σου!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Train your memory!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Entrena tu memoria!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entraîne ta mémoire !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Allena la tua memoria!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Treina a tua memória!" } }
+      }
+    },
+    "game.memoryGame.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Decke zwei Karten auf und finde ein Paar!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γύρισε δύο κάρτες και βρες το ζευγάρι!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Flip two cards to find a matching pair!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Voltea dos cartas para encontrar una pareja!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Retourne deux cartes pour trouver une paire !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Gira due carte per trovare una coppia!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Vira duas cartas para encontrar um par!" } }
+      }
+    },
+    "game.memoryGame.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gedächtnismeister!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πρωταθλητής Μνήμης!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Memory Master!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Maestro de la memoria!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Maître de la mémoire !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Maestro della memoria!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mestre da memória!" } }
+      }
+    },
+    "game.memoryGame.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast alle Paare in %lld Zügen gefunden." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρήκες όλα τα ζευγάρια σε %lld κινήσεις." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You matched every pair in %lld moves." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Encontraste todas las parejas en %lld movimientos." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as trouvé toutes les paires en %lld coups." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai trovato tutte le coppie in %lld mosse." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontraste todos os pares em %lld jogadas." } }
+      }
+    },
+
+    "dino.navTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dino-Welt" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κόσμος Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino World" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mundo Dino" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Monde des Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Mondo dei Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mundo Dino" } }
+      }
+    },
+    "dino.sectionHeader" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dino-Spiele" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Παιχνίδια Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino Games" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Juegos Dino" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Jeux de Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Giochi Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Jogos Dino" } }
+      }
+    },
+    "dino.dig.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dino-Ausgrabung" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ανασκαφή Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino Dig" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Excavación Dino" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fouille de Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scavo Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Escavação Dino" } }
+      }
+    },
+    "dino.dig.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Grabe versteckte Fossilien aus!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξέθαψε κρυμμένα απολιθώματα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Excavate hidden fossils!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Excava fósiles escondidos!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Déterre des fossiles cachés !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scava fossili nascosti!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Escava fósseis escondidos!" } }
+      }
+    },
+    "dino.dig.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tippe auf die Erde, um %lld versteckte Knochen zu finden!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πάτησε το χώμα για να βρεις %lld κρυμμένα κόκαλα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tap the dirt to find %lld hidden bones!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Toca la tierra para encontrar %lld huesos escondidos!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Touche la terre pour trouver %lld os cachés !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tocca la terra per trovare %lld ossa nascoste!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Toca na terra para encontrar %lld ossos escondidos!" } }
+      }
+    },
+    "dino.dig.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fossilien gefunden!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρήκες τα απολιθώματα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fossils Found!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Fósiles encontrados!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fossiles trouvés !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Fossili trovati!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Fósseis encontrados!" } }
+      }
+    },
+    "dino.dig.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast alle Knochen in %lld Versuchen ausgegraben." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξέθαψες όλα τα κόκαλα σε %lld προσπάθειες." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You dug up all the bones in %lld taps." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Desenterraste todos los huesos en %lld toques." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as déterré tous les os en %lld touches." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai scavato tutte le ossa in %lld tocchi." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Desenterraste todos os ossos em %lld toques." } }
+      }
+    },
+    "dino.dig.completeButton" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Super!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Υπέροχα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Awesome!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Genial!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Génial !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Fantastico!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Fantástico!" } }
+      }
+    },
+
+    "dino.match.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dino-Paare" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ταίριασμα Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino Match" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Parejas Dino" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Paires de Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Coppie di Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Pares Dino" } }
+      }
+    },
+    "dino.match.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Finde die Dino-Freunde-Paare!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ταίριαξε φίλους δεινόσαυρους!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Match pairs of dino friends!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Empareja a los amigos dino!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Associe les paires d'amis dinos !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Abbina le coppie di amici dino!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Associa os pares de amigos dino!" } }
+      }
+    },
+    "dino.match.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Decke die Karten auf und finde jedes Paar!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γύρισε τις κάρτες και βρες κάθε ζευγάρι!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Flip the cards and find every pair!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Voltea las cartas y encuentra cada pareja!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Retourne les cartes et trouve chaque paire !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Gira le carte e trova ogni coppia!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Vira as cartas e encontra cada par!" } }
+      }
+    },
+    "dino.match.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alles gefunden!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τα ταίριαξες όλα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "All Matched!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Todo emparejado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tout associé !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tutto abbinato!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Tudo associado!" } }
+      }
+    },
+    "dino.match.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast jedes Paar in %lld Zügen gefunden." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρήκες κάθε ζευγάρι σε %lld κινήσεις." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You found every pair in %lld moves." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Encontraste cada pareja en %lld movimientos." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as trouvé chaque paire en %lld coups." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai trovato ogni coppia in %lld mosse." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontraste cada par em %lld jogadas." } }
+      }
+    },
+    "dino.match.completeButton" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gut gemacht!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ωραία δουλειά!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Nice work!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Buen trabajo!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Beau travail !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ottimo lavoro!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bom trabalho!" } }
+      }
+    },
+
+    "dino.farm.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dino-Farm" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φάρμα Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino Farm" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Granja Dino" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ferme des Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Fattoria dei Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Quinta Dino" } }
+      }
+    },
+    "dino.farm.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Füttere und pflege Babis!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φρόντισε τον Μπάμπη!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Feed and care for Babis!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Alimenta y cuida a Babis!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nourris et prends soin de Babis !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Nutri e prenditi cura di Babis!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Alimenta e cuida do Babis!" } }
+      }
+    },
+    "dino.farm.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Babis ist hungrig und einsam. Füttere, wasche und spiele mit ihm, bis er glücklich ist!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης πεινάει και είναι μόνος. Τάισέ τον, καθάρισέ τον και παίξε μαζί του μέχρι να χαρεί!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis is hungry and lonely. Feed, clean and play with him until he's happy!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Babis tiene hambre y está solo. ¡Aliméntalo, límpialo y juega con él hasta que esté feliz!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Babis a faim et se sent seul. Nourris-le, lave-le et joue avec lui jusqu'à ce qu'il soit heureux !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Babis ha fame ed è solo. Nutrilo, lavalo e gioca con lui finché non è felice!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "O Babis está com fome e sozinho. Alimenta-o, limpa-o e brinca com ele até ele ficar feliz!" } }
+      }
+    },
+    "dino.farm.happinessLabel" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Glück: %lld/%lld" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Χαρά: %lld/%lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Happiness: %lld/%lld" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Felicidad: %lld/%lld" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bonheur : %lld/%lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Felicità: %lld/%lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Felicidade: %lld/%lld" } }
+      }
+    },
+    "dino.farm.feed" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Füttern" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τάισμα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Feed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Alimentar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nourrir" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Nutri" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Alimentar" } }
+      }
+    },
+    "dino.farm.clean" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Waschen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Καθάρισμα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Clean" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Limpiar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Laver" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Lava" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Limpar" } }
+      }
+    },
+    "dino.farm.play" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Spielen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Παιχνίδι" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Play" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Jugar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Jouer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Gioca" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Brincar" } }
+      }
+    },
+    "dino.farm.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Babis ist glücklich!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης χάρηκε!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis is Happy!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Babis está feliz!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Babis est heureux !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Babis è felice!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "O Babis está feliz!" } }
+      }
+    },
+    "dino.farm.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast dich mit %lld Aktionen um Babis gekümmert." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φρόντισες τον Μπάμπη με %lld ενέργειες." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You cared for Babis with %lld actions." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cuidaste a Babis con %lld acciones." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as pris soin de Babis avec %lld actions." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ti sei preso cura di Babis con %lld azioni." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Cuidaste do Babis com %lld ações." } }
+      }
+    },
+    "dino.farm.completeButton" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Klasse!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μπράβο!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Great job!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Buen trabajo!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bon travail !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ottimo lavoro!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bom trabalho!" } }
+      }
+    },
+
+    "dino.sort.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dinos sortieren" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ταξινόμηση Δεινοσαύρων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dino Sort" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Clasificar Dinos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trier les Dinos" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ordina i Dino" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Ordenar Dinos" } }
+      }
+    },
+    "dino.sort.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sortiere Dinos nach Größe!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ταξινόμησε τους δεινόσαυρους σε μεγάλους και μικρούς!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sort dinos big or small!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Clasifica dinos grandes y pequeños!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trie les dinos grands ou petits !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ordina i dino grandi o piccoli!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Ordena dinos grandes e pequenos!" } }
+      }
+    },
+    "dino.sort.instruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tippe einen Freund an, dann tippe auf Groß oder Klein!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πάτησε έναν φίλο, μετά πάτησε Μεγάλο ή Μικρό!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tap a friend, then tap Big or Small!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Toca a un amigo y luego toca Grande o Pequeño!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Touche un ami, puis touche Grand ou Petit !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tocca un amico, poi tocca Grande o Piccolo!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Toca num amigo e depois toca Grande ou Pequeno!" } }
+      }
+    },
+    "dino.sort.small" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Klein" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μικρό" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Small" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Pequeño" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Petit" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Piccolo" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Pequeno" } }
+      }
+    },
+    "dino.sort.big" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Groß" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μεγάλο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Big" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Grande" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Grand" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Grande" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Grande" } }
+      }
+    },
+    "dino.sort.mistakes" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fehler: %lld" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Λάθη: %lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mistakes: %lld" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Errores: %lld" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Erreurs : %lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Errori: %lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Erros: %lld" } }
+      }
+    },
+    "dino.sort.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alles sortiert!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τα ταξινόμησες όλα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "All Sorted!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Todo clasificado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tout est trié !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Tutto ordinato!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Tudo ordenado!" } }
+      }
+    },
+    "dino.sort.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast alle mit %lld Fehlern sortiert." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Τους ταξινόμησες όλους με %lld λάθη." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You sorted everyone with %lld mistakes." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Clasificaste a todos con %lld errores." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as trié tout le monde avec %lld erreurs." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai ordinato tutti con %lld errori." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Ordenaste todos com %lld erros." } }
+      }
+    },
+    "dino.sort.completeButton" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wohlgetan!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μπράβο σου!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Well done!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Bien hecho!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bien joué !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ben fatto!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Muito bem!" } }
+      }
+    },
+
+    "adventure.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Babis' Abenteuer" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Η Περιπέτεια του Μπάμπη" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis' Adventure" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La aventura de Babis" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "L'aventure de Babis" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "L'avventura di Babis" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "A aventura do Babis" } }
+      }
+    },
+    "adventure.chooseAdventure" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wähle dein Abenteuer!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Διάλεξε την περιπέτειά σου!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose your adventure!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Elige tu aventura!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisis ton aventure !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scegli la tua avventura!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Escolhe a tua aventura!" } }
+      }
+    },
+    "adventure.babisName" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Babis" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μπάμπης" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Babis" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Babis" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Babis" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Babis" } }
+      }
+    },
+    "adventure.kotsifiName" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κότσιφας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi" } }
+      }
+    },
+    "adventure.mode.story.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschichtenmodus" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Λειτουργία Ιστορίας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Story Mode" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Modo Historia" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mode Histoire" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Modalità Storia" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Modo História" } }
+      }
+    },
+    "adventure.mode.story.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erlebe die Geschichte von Babis & Freunden" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ζήσε την ιστορία του Μπάμπη & των φίλων του" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Play the story of Babis & friends" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Vive la historia de Babis y sus amigos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Découvre l'histoire de Babis et ses amis" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scopri la storia di Babis e i suoi amici" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Vive a história do Babis e dos amigos" } }
+      }
+    },
+    "adventure.mode.explore.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunden" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνηση" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explorar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explorer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explorar" } }
+      }
+    },
+    "adventure.mode.explore.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunde die Welt und triff Freunde" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνησε τον κόσμο και γνώρισε φίλους" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore the world and meet friends" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explora el mundo y conoce amigos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explore le monde et rencontre des amis" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora il mondo e incontra nuovi amici" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explora o mundo e conhece amigos" } }
+      }
+    },
+    "adventure.mode.minigames.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Mini-Spiele" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μίνι Παιχνίδια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mini-Games" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Minijuegos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mini-jeux" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Mini-giochi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Minijogos" } }
+      }
+    },
+    "adventure.mode.minigames.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Lustige Lernspiele" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Διασκεδαστικά εκπαιδευτικά παιχνίδια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fun educational mini-games" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Divertidos minijuegos educativos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Des mini-jeux éducatifs amusants" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Divertenti mini-giochi educativi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Minijogos educativos divertidos" } }
+      }
+    },
+    "adventure.storyMode.navTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschichtenmodus" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Λειτουργία Ιστορίας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Story Mode" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Modo Historia" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mode Histoire" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Modalità Storia" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Modo História" } }
+      }
+    },
+    "adventure.storyMode.chooseChapter" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kapitel wählen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Επίλεξε κεφάλαιο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose a Chapter" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Elige un capítulo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisis un chapitre" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scegli un capitolo" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Escolhe um capítulo" } }
+      }
+    },
+    "adventure.storyMode.chapterNumber" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kapitel %lld" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κεφάλαιο %lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chapter %lld" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Capítulo %lld" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Chapitre %lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Capitolo %lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Capítulo %lld" } }
+      }
+    },
+    "adventure.storyMode.chapterTitled" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kapitel %lld: %@" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κεφάλαιο %lld: %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chapter %lld: %@" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Capítulo %lld: %@" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Chapitre %lld : %@" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Capitolo %lld: %@" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Capítulo %lld: %@" } }
+      }
+    },
+    "adventure.storyMode.chapterComplete" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kapitel geschafft!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Το κεφάλαιο ολοκληρώθηκε!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chapter Complete!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Capítulo completado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Chapitre terminé !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Capitolo completato!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Capítulo concluído!" } }
+      }
+    },
+    "adventure.explore.navTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunden" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνηση" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explorar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explorer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explorar" } }
+      }
+    },
+    "adventure.explore.tree" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Das ist eine alte Eiche. Sie spendet Schatten und leckere Früchte!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αυτή είναι μια γέρικη βελανιδιά. Δίνει σκιά και νόστιμους καρπούς!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "This is an old oak tree. It gives shade and yummy fruit!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Este es un viejo roble. ¡Da sombra y frutos deliciosos!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "C'est un vieux chêne. Il donne de l'ombre et de délicieux fruits !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Questa è una vecchia quercia. Dà ombra e frutti deliziosi!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Este é um velho carvalho. Dá sombra e frutos deliciosos!" } }
+      }
+    },
+    "adventure.explore.rock" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Ein glänzender Stein! Vielleicht sind darunter Kristalle versteckt." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μια γυαλιστερή πέτρα! Μπορεί να κρύβει κρύσταλλα από κάτω." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A shiny rock! Maybe there are crystals hiding underneath." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Una roca brillante! Quizás haya cristales escondidos debajo." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Un rocher brillant ! Il y a peut-être des cristaux cachés en dessous." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Una roccia luccicante! Forse ci sono cristalli nascosti sotto." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Uma pedra brilhante! Talvez haja cristais escondidos por baixo." } }
+      }
+    },
+    "adventure.explore.foxCaveLabel" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fuchshöhle" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Σπηλιά της Αλεπούς" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fox Cave" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cueva del Zorro" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Grotte du Renard" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Grotta della Volpe" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Caverna da Raposa" } }
+      }
+    },
+    "adventure.explore.foxDialogue" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "„Pst, sei hier vorsichtig! Ich wohne in der Nähe und liebe Besuch.“" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "«Σουτ, πρόσεχε εδώ μέσα! Μένω εδώ κοντά και μου αρέσουν οι επισκέπτες.»" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"Shh, careful in here! I live nearby and I love visitors.\"" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "«Shh, ¡cuidado aquí dentro! Vivo cerca y me encantan las visitas.»" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "« Chut, fais attention ici ! J'habite tout près et j'adore les visiteurs. »" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "«Shh, attento qui dentro! Vivo qui vicino e adoro le visite.»" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "«Shh, cuidado aqui dentro! Vivo perto e adoro visitas.»" } }
+      }
+    },
+
+    "stories.navTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschichten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ιστορίες" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stories" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cuentos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Histoires" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Storie" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Histórias" } }
+      }
+    },
+    "stories.sectionHeader" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Interaktive Geschichten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Διαδραστικές Ιστορίες" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Interactive Stories" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cuentos interactivos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Histoires interactives" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Storie interattive" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Histórias interativas" } }
+      }
+    },
+    "stories.comingSoon" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschichte kommt bald!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Η ιστορία έρχεται σύντομα!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Story coming soon!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Cuento próximamente!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Histoire bientôt disponible !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Storia in arrivo!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "História em breve!" } }
+      }
+    },
+    "stories.completeTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Geschichte geschafft!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Η ιστορία ολοκληρώθηκε!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Story Complete!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Cuento completado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Histoire terminée !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Storia completata!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "História concluída!" } }
+      }
+    },
+    "stories.completeMessage" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Du hast „%@“ beendet und %lld Sterne verdient." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ολοκλήρωσες το «%@» και κέρδισες %lld αστέρια." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You finished \"%@\" and earned %lld stars." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Terminaste «%@» y ganaste %lld estrellas." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as terminé « %@ » et gagné %lld étoiles." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Hai completato «%@» e guadagnato %lld stelle." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Terminaste «%@» e ganhaste %lld estrelas." } }
+      }
+    },
+    "stories.starReward" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "+%lld" } }
+      }
+    },
+    "stories.backToStories" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Zurück zu den Geschichten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πίσω στις ιστορίες" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Back to Stories" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Volver a los cuentos" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Retour aux histoires" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Torna alle storie" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Voltar às histórias" } }
+      }
+    },
+
+    "story.babisKotsifi.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης & ο Κότσιφας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis & Kotsifi" } }
+      }
+    },
+    "story.babisKotsifi.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ένας πεινασμένος δεινόσαυρος κι ένα μικρό πουλί γίνονται οι καλύτεροι φίλοι." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A hungry dinosaur and a tiny bird become the best of friends." } }
+      }
+    },
+    "story.babisKotsifi.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης ο δεινόσαυρος ξύπνησε πεινασμένος. Ξαφνικά άκουσε ένα τιτίβισμα να έρχεται από τους θάμνους!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis the dinosaur woke up hungry. Suddenly he heard a little chirp coming from the bushes!" } }
+      }
+    },
+    "story.babisKotsifi.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ακολούθησε τον ήχο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Follow the chirping sound" } }
+      }
+    },
+    "story.babisKotsifi.scene0.choice1" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ψάξε πρώτα για μούρα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Look for berries first" } }
+      }
+    },
+    "story.babisKotsifi.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης άνοιξε τα φύλλα και βρήκε τον Κότσιφα μπερδεμένο σε ένα κλαδί, να φωνάζει για βοήθεια!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis pushed the leaves aside and found Kotsifi the bird, tangled in a branch and tweeting for help!" } }
+      }
+    },
+    "story.babisKotsifi.scene1.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βοήθησε αμέσως τον Κότσιφα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Help Kotsifi right away" } }
+      }
+    },
+    "story.babisKotsifi.scene2.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης έτρωγε γλυκά μούρα. Όμως το τιτίβισμα γινόταν όλο και πιο δυνατό και κοντινό..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis munched on some sweet berries. But that little chirp kept getting louder and closer..." } }
+      }
+    },
+    "story.babisKotsifi.scene2.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πήγαινε να δεις τι είναι ο ήχος" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Go check on the sound" } }
+      }
+    },
+    "story.babisKotsifi.scene3.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Με τον μακρύ του λαιμό, ο Μπάμπης ελευθέρωσε απαλά τον Κότσιφα. Το πουλάκι τιτίβισε χαρούμενα και κάθισε στη μύτη του!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "With his long neck, Babis gently freed Kotsifi. The little bird chirped happily and landed right on his nose!" } }
+      }
+    },
+    "story.babisKotsifi.scene3.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γίνετε κολλητοί φίλοι" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Become best friends" } }
+      }
+    },
+    "story.babisKotsifi.scene4.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Από εκείνη τη μέρα, ο Μπάμπης και ο Κότσιφας εξερευνούσαν μαζί κάθε γωνιά του δάσους. Τέλος!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "From that day on, Babis and Kotsifi explored every corner of the forest together. The End!" } }
+      }
+    },
+
+    "story.caveCrystals.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Η Σπηλιά με τους Κρυστάλλους" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Cave of Crystals" } }
+      }
+    },
+    "story.caveCrystals.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης και ο Κότσιφας ανακαλύπτουν μια αστραφτερή σπηλιά — και κάποιον απροσδόκητο μέσα." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis and Kotsifi discover a sparkling cave — and someone unexpected inside." } }
+      }
+    },
+    "story.caveCrystals.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Καθώς εξερευνούσαν, ο Μπάμπης και ο Κότσιφας βρήκαν μια σκοτεινή είσοδο σπηλιάς να λάμπει με ένα περίεργο φως." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "While exploring, Babis and Kotsifi found a dark cave entrance glowing with a strange light." } }
+      }
+    },
+    "story.caveCrystals.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κρυφοκοίταξε με θάρρος" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Peek inside bravely" } }
+      }
+    },
+    "story.caveCrystals.scene0.choice1" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φώναξε πρώτα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Call out first" } }
+      }
+    },
+    "story.caveCrystals.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μέσα, οι τοίχοι άστραφταν με όμορφους κρυστάλλους. Τότε ένας θόρυβος αντήχησε από πιο βαθιά στη σπηλιά!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Inside, the walls sparkled with beautiful crystals. Then a rustling sound echoed from deeper in the cave!" } }
+      }
+    },
+    "story.caveCrystals.scene1.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ακολούθησε τον ήχο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Follow the sound" } }
+      }
+    },
+    "story.caveCrystals.scene2.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "«Είναι κανείς εκεί;» φώναξε ο Μπάμπης. Η φωνή του αντήχησε στους κρυστάλλινους τοίχους, και κάτι θρόισε πίσω σαν απάντηση." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"Hello?\" called Babis. His voice echoed off the crystal walls, and something rustled back in reply." } }
+      }
+    },
+    "story.caveCrystals.scene2.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μπείτε μαζί" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Walk in together" } }
+      }
+    },
+    "story.caveCrystals.scene3.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ήταν η Αλεπού, μόνη και λίγο φοβισμένη. «Χάθηκα κυνηγώντας πυγολαμπίδες», παραδέχτηκε." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "It was Alepou the fox, all alone and a little scared. \"I got lost chasing fireflies,\" she admitted." } }
+      }
+    },
+    "story.caveCrystals.scene3.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πρόσφερε να τη βοηθήσεις να γυρίσει σπίτι" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Offer to help her home" } }
+      }
+    },
+    "story.caveCrystals.scene4.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης και ο Κότσιφας συνόδεψαν την Αλεπού σπίτι με ασφάλεια. Δεν ήταν τόσο τρομακτική τελικά — απλώς μια νέα φίλη! Τέλος!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis and Kotsifi walked Alepou safely home. She wasn't so scary after all — just a new friend! The End!" } }
+      }
+    },
+
+    "story.forestHero.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Φύλακας της Νύχτας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Night Guardian" } }
+      }
+    },
+    "story.forestHero.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Όταν πέφτει η νύχτα στο δάσος, ο Μπάμπης μαθαίνει τι σημαίνει να είσαι ήρωας." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "When night falls over the forest, Babis learns what it means to be a hero." } }
+      }
+    },
+    "story.forestHero.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο ήλιος έδυσε και το δάσος σκοτείνιασε. Ο Μπάμπης άκουσε τα μικρά ζωάκια να κλαψουρίζουν, φοβισμένα από τις σκιές." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The sun went down and the forest grew dark. Babis heard the little animals whimpering, afraid of the shadows." } }
+      }
+    },
+    "story.forestHero.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Παρηγόρησε τα ζωάκια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Comfort the animals" } }
+      }
+    },
+    "story.forestHero.scene0.choice1" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ψάξε την αιτία του φόβου" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Search for the source of fear" } }
+      }
+    },
+    "story.forestHero.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "«Μην ανησυχείτε», είπε τρυφερά ο Μπάμπης, και ο Κότσιφας τραγούδησε ένα απαλό τραγούδι για να τα ηρεμήσει." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"Don't worry,\" Babis said gently, and Kotsifi sang a soft song to calm everyone down." } }
+      }
+    },
+    "story.forestHero.scene1.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πήγαινε να βρεις τι τα τρόμαξε" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Go find what scared them" } }
+      }
+    },
+    "story.forestHero.scene2.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ήταν μόνο η Αλεπού, που έριχνε μεγάλη σκιά καθώς έψαχνε τον δρόμο για το σπίτι της στο σκοτάδι." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "It was only Alepou, casting a big shadow while looking for her way home in the dark." } }
+      }
+    },
+    "story.forestHero.scene2.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φωτίστε τον δρόμο μαζί" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Light the way together" } }
+      }
+    },
+    "story.forestHero.scene3.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης προχώρησε μπροστά ώστε όλοι να μπορούν να ακολουθήσουν τη σιλουέτα του με ασφάλεια μέσα στο σκοτεινό δάσος." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis walked ahead so everyone could follow his silhouette safely home through the dark forest." } }
+      }
+    },
+    "story.forestHero.scene3.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γιορτάστε στο χωριό" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Celebrate in the village" } }
+      }
+    },
+    "story.forestHero.scene4.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Όλο το χωριό πανηγύρισε για τον Μπάμπη, τον δικό τους Φύλακα της Νύχτας του δάσους. Τέλος!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The whole village cheered for Babis, the forest's very own Night Guardian. The End!" } }
+      }
+    },
+
+    "chapter.meetingBabis.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γνωρίζοντας τον Μπάμπη" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Meeting Babis" } }
+      }
+    },
+    "chapter.meetingBabis.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πες γεια στον πιο φιλικό δεινόσαυρο του δάσους." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Say hello to the friendliest dinosaur in the forest." } }
+      }
+    },
+    "chapter.meetingBabis.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βαθιά σε ένα ηλιόλουστο δάσος ζούσε ένας μεγάλος, καλόκαρδος δεινόσαυρος ονόματι Μπάμπης, που λάτρευε να εξερευνά." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Deep in a sunny forest lived a big, gentle dinosaur named Babis, who loved to explore." } }
+      }
+    },
+    "chapter.meetingBabis.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Χαιρέτησε τον Μπάμπη" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wave hello to Babis" } }
+      }
+    },
+    "chapter.meetingBabis.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης χαμογέλασε με όλο του το πρόσωπο και έβγαλε έναν φιλικό βρυχηθμό. «Ένας νέος φίλος!» σκέφτηκε." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis smiled with his whole face and let out a friendly rumble. \"A new friend!\" he thought." } }
+      }
+    },
+
+    "chapter.kotsifiArrives.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Κότσιφας Φτάνει" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi Arrives" } }
+      }
+    },
+    "chapter.kotsifiArrives.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ένα μικρό πουλί προσγειώνεται στη μύτη του Μπάμπη." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A tiny bird lands right on Babis' nose." } }
+      }
+    },
+    "chapter.kotsifiArrives.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ένα αεράτο πρωινό, ένα μικρό πουλί ήρθε φτερουγίζοντας από τα δέντρα." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "One breezy morning, a small bird came fluttering down from the trees." } }
+      }
+    },
+    "chapter.kotsifiArrives.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Άφησε το πουλί να προσγειωθεί" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Let the bird land" } }
+      }
+    },
+    "chapter.kotsifiArrives.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Κότσιφας προσγειώθηκε ακριβώς στη μύτη του Μπάμπη και τιτίβισε έναν χαρούμενο σκοπό. Μια νέα φιλία μόλις γεννήθηκε!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kotsifi landed right on Babis' nose and chirped a cheerful tune. A new friendship had begun!" } }
+      }
+    },
+
+    "chapter.cleverFox.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Η Έξυπνη Αλεπού" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Clever Fox" } }
+      }
+    },
+    "chapter.cleverFox.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μια άτακτη αλεπού ετοιμάζει ένα κόλπο." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A mischievous fox has a trick up her sleeve." } }
+      }
+    },
+    "chapter.cleverFox.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κοντά στη σπηλιά της, η Αλεπού λάτρευε να κάνει φάρσες σε όποιον περνούσε." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Near her cave, Alepou the fox loved playing tricks on anyone who passed by." } }
+      }
+    },
+    "chapter.cleverFox.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πλησίασε προσεκτικά" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Approach carefully" } }
+      }
+    },
+    "chapter.cleverFox.scene0.choice1" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Χαιρέτησε δυνατά" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Say hello loudly" } }
+      }
+    },
+    "chapter.cleverFox.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Η Αλεπού χαμογέλασε πονηρά, αλλά όταν ο Μπάμπης απλώς της χαμογέλασε ευγενικά, αποφάσισε πως ένας νέος φίλος είναι πιο διασκεδαστικός από μια φάρσα." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Alepou grinned, but when Babis just smiled kindly back, she decided a new friend was more fun than a trick." } }
+      }
+    },
+
+    "chapter.forestHero.title" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ήρωας του Δάσους" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forest Hero" } }
+      }
+    },
+    "chapter.forestHero.desc" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ο Μπάμπης βοηθά τους φίλους του και γίνεται ο ήρωας του δάσους." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Babis helps his friends and becomes the forest's hero." } }
+      }
+    },
+    "chapter.forestHero.scene0.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Όταν έπεσε η νύχτα και τα μικρά ζωάκια φοβήθηκαν, ο Μπάμπης οδήγησε όλους με ασφάλεια σπίτι." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "When night fell and the little animals felt scared, Babis led everyone safely home." } }
+      }
+    },
+    "chapter.forestHero.scene0.choice0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Οδήγησε όλους στο χωριό" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Guide everyone to the village" } }
+      }
+    },
+    "chapter.forestHero.scene1.narration" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Όλο το χωριό πανηγύρισε για τον Μπάμπη, τον Κότσιφα και την Αλεπού — τους δικούς του ήρωες του δάσους!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The whole village cheered for Babis, Kotsifi and Alepou — the forest's very own heroes!" } }
+      }
+    },
+
+    "parent.navTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Eltern" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γονείς" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Parents" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Padres" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Parents" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Genitori" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Pais" } }
+      }
+    },
+    "parent.gate.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Elternkontrolle" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πύλη Γονέων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Parental Gate" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Control parental" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Contrôle parental" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Controllo genitori" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Controlo parental" } }
+      }
+    },
+    "parent.gate.subtitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Löse das, um fortzufahren" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Λύσε το για να συνεχίσεις" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Solve this to continue" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Resuelve esto para continuar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résous ceci pour continuer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Risolvi per continuare" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Resolve isto para continuar" } }
+      }
+    },
+    "parent.gate.question" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Was ist %lld + %lld?" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πόσο κάνει %lld + %lld;" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "What is %lld + %lld?" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¿Cuánto es %lld + %lld?" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Combien font %lld + %lld ?" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Quanto fa %lld + %lld?" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Quanto é %lld + %lld?" } }
+      }
+    },
+    "parent.gate.answerField" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Antwort" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Απάντηση" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Answer" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Respuesta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réponse" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Risposta" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Resposta" } }
+      }
+    },
+    "parent.unlocked" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Freigeschaltet!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξεκλειδώθηκε!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlocked!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Desbloqueado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Déverrouillé !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Sbloccato!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Desbloqueado!" } }
+      }
+    },
+    "parent.progress.header" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fortschritt" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πρόοδος" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Progress" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Progreso" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Progression" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Progressi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Progresso" } }
+      }
+    },
+    "parent.progress.games" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abgeschlossene Spiele" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ολοκληρωμένα παιχνίδια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Games Completed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Juegos completados" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Jeux terminés" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Giochi completati" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Jogos concluídos" } }
+      }
+    },
+    "parent.progress.stories" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abgeschlossene Geschichten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ολοκληρωμένες ιστορίες" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stories Completed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cuentos completados" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Histoires terminées" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Storie completate" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Histórias concluídas" } }
+      }
+    },
+    "parent.progress.chapters" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abgeschlossene Kapitel" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ολοκληρωμένα κεφάλαια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chapters Completed" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Capítulos completados" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Chapitres terminés" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Capitoli completati" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Capítulos concluídos" } }
+      }
+    },
+    "parent.progress.stars" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sterne insgesamt" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Σύνολο αστεριών" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Total Stars" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Estrellas totales" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Total des étoiles" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Stelle totali" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Total de estrelas" } }
+      }
+    },
+    "parent.badges.header" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Abzeichen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Παράσημα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Badges" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Insignias" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Badges" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Distintivi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Emblemas" } }
+      }
+    },
+    "parent.settings.header" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Einstellungen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ρυθμίσεις" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Settings" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réglages" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Impostazioni" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Definições" } }
+      }
+    },
+    "parent.settings.narration" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sprachausgabe" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Φωνητική Αφήγηση" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Voice Narration" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Narración de voz" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Narration vocale" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Narrazione vocale" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Narração por voz" } }
+      }
+    },
+    "parent.settings.soundEffects" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Soundeffekte" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ηχητικά Εφέ" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sound Effects" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Efectos de sonido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Effets sonores" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Effetti sonori" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Efeitos sonoros" } }
+      }
+    },
+    "parent.settings.language" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sprache" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γλώσσα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Language" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Idioma" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Langue" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Lingua" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Idioma" } }
+      }
+    },
+    "settings.language.system" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Systemsprache" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γλώσσα Συστήματος" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "System Language" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Idioma del sistema" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Langue du système" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Lingua di sistema" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Idioma do sistema" } }
+      }
+    },
+
+    "accessibility.replayInstruction" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Anweisung wiederholen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Επανάληψη οδηγίας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Replay instruction" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Repetir instrucción" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Rejouer l'instruction" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Ripeti istruzione" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Repetir instrução" } }
+      }
+    },
+    "accessibility.moveUp" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach oben bewegen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μετακίνηση επάνω" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Move up" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mover arriba" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aller vers le haut" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Muovi in su" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mover para cima" } }
+      }
+    },
+    "accessibility.moveDown" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach unten bewegen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μετακίνηση κάτω" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Move down" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mover abajo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aller vers le bas" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Muovi in giù" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mover para baixo" } }
+      }
+    },
+    "accessibility.moveLeft" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach links bewegen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μετακίνηση αριστερά" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Move left" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mover a la izquierda" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aller à gauche" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Muovi a sinistra" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mover para a esquerda" } }
+      }
+    },
+    "accessibility.moveRight" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Nach rechts bewegen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μετακίνηση δεξιά" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Move right" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Mover a la derecha" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Aller à droite" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Muovi a destra" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Mover para a direita" } }
+      }
+    },
+    "accessibility.toggleDayNight" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Tag und Nacht umschalten" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εναλλαγή μέρας/νύχτας" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Toggle day and night" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Alternar día y noche" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Basculer jour/nuit" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Alterna giorno e notte" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Alternar dia e noite" } }
+      }
+    },
+    "accessibility.starsEarned" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld von %lld Sternen" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "%lld από %lld αστέρια" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld out of %lld stars" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "%lld de %lld estrellas" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "%lld étoiles sur %lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "%lld stelle su %lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "%lld de %lld estrelas" } }
+      }
+    },
+
+    "adventure.foxName" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Alepou" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αλεπού" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Alepou" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Alepou" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Alepou" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Alepou" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Alepou" } }
+      }
+    },
+
+    "world.hubTitle" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunde die Welt" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνησε τον Κόσμο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore the World" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explora el mundo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explore le monde" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora il mondo" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explora o mundo" } }
+      }
+    },
+    "world.village.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Dorf" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Χωριό" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Village" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Aldea" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Village" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Villaggio" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Aldeia" } }
+      }
+    },
+    "world.forest.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Wald" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Δάσος" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forest" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bosque" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Forêt" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Foresta" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Floresta" } }
+      }
+    },
+    "world.crystalCave.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kristallhöhle" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Σπηλιά των Κρυστάλλων" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Crystal Cave" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cueva de Cristal" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Grotte de Cristal" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Grotta di Cristallo" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Caverna de Cristal" } }
+      }
+    },
+    "world.foxCave.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Fuchshöhle" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Σπηλιά της Αλεπούς" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fox Cave" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cueva del Zorro" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Grotte du Renard" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Grotta della Volpe" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Caverna da Raposa" } }
+      }
+    },
+    "world.locked" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Gesperrt" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κλειδωμένο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Locked" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bloqueado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Verrouillé" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Bloccato" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bloqueado" } }
+      }
+    },
+    "world.unlockHint" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Löse weitere Aufgaben, um diesen Ort freizuschalten!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ολοκλήρωσε κι άλλες αποστολές για να το ξεκλειδώσεις!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Complete more quests to unlock this place!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Completa más misiones para desbloquear este lugar!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Termine plus de quêtes pour débloquer cet endroit !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Completa altre missioni per sbloccare questo posto!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Completa mais missões para desbloquear este lugar!" } }
+      }
+    },
+    "world.locationUnlocked" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Neuer Ort freigeschaltet!" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ξεκλειδώθηκε νέο μέρος!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New place unlocked!" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¡Nuevo lugar desbloqueado!" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nouvel endroit débloqué !" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Nuovo posto sbloccato!" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Novo lugar desbloqueado!" } }
+      }
+    },
+    "world.enterLocation" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunden" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνηση" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explorar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explorer" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explorar" } }
+      }
+    },
+    "world.questBanner" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Aufgabe: %@" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αποστολή: %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quest: %@" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Misión: %@" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Quête : %@" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Missione: %@" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Missão: %@" } }
+      }
+    },
+    "world.questProgress" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "%lld/%lld" } }
+      }
+    },
+    "world.inventory" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Inventar" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αντικείμενα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Inventory" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Inventario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Inventaire" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Inventario" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Inventário" } }
+      }
+    },
+    "world.itemCrystal" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Kristall" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Κρύσταλλο" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Crystal" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cristal" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cristal" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cristallo" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Cristal" } }
+      }
+    },
+
+    "quest.meetKotsifi.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Finde Kotsifi" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Βρες τον Κότσιφα" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Find Kotsifi" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Encuentra a Kotsifi" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trouve Kotsifi" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Trova Kotsifi" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Encontra o Kotsifi" } }
+      }
+    },
+    "quest.meetKotsifi.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunde das Dorf und begrüße Kotsifi." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνησε το χωριό και χαιρέτησε τον Κότσιφα." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore the village and say hello to Kotsifi." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explora la aldea y saluda a Kotsifi." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explore le village et dis bonjour à Kotsifi." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora il villaggio e saluta Kotsifi." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explora a aldeia e cumprimenta o Kotsifi." } }
+      }
+    },
+    "quest.findCave.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Entdecke den Höhleneingang" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ανακάλυψε την είσοδο της σπηλιάς" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Discover the Cave Entrance" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Descubre la entrada de la cueva" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Découvre l'entrée de la grotte" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Scopri l'ingresso della grotta" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Descobre a entrada da caverna" } }
+      }
+    },
+    "quest.findCave.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Erkunde den Wald und finde den Eingang zur Kristallhöhle." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Εξερεύνησε το δάσος και βρες την είσοδο της Σπηλιάς των Κρυστάλλων." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore the forest and find the entrance to the Crystal Cave." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Explora el bosque y encuentra la entrada a la Cueva de Cristal." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explore la forêt et trouve l'entrée de la Grotte de Cristal." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Esplora la foresta e trova l'ingresso della Grotta di Cristallo." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Explora a floresta e encontra a entrada da Caverna de Cristal." } }
+      }
+    },
+    "quest.collectStones.title" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Sammle 3 glänzende Steine" } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μάζεψε 3 γυαλιστερές πέτρες" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Collect 3 Shiny Stones" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Recoge 3 piedras brillantes" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ramasse 3 pierres brillantes" } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Raccogli 3 pietre luccicanti" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Recolhe 3 pedras brilhantes" } }
+      }
+    },
+    "quest.collectStones.desc" : {
+      "localizations" : {
+        "de" : { "stringUnit" : { "state" : "translated", "value" : "Durchsuche die Kristallhöhle nach 3 funkelnden Steinen." } },
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Ψάξε στη Σπηλιά των Κρυστάλλων για 3 αστραφτερές πέτρες." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Search the Crystal Cave for 3 sparkling stones." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Busca 3 piedras centelleantes en la Cueva de Cristal." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cherche 3 pierres scintillantes dans la Grotte de Cristal." } },
+        "it" : { "stringUnit" : { "state" : "translated", "value" : "Cerca 3 pietre scintillanti nella Grotta di Cristallo." } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Procura 3 pedras cintilantes na Caverna de Cristal." } }
+      }
+    },
+
+    "dialogue.village.kotsifi.line0" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Γεια σου Μπάμπη! Σε περιμένω όλο το πρωί!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hi Babis! I've been waiting for you all morning!" } }
+      }
+    },
+    "dialogue.village.kotsifi.line1" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Πάμε για εξερεύνηση μαζί — το δάσος σίγουρα κρύβει εκπλήξεις για μας!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Let's go exploring together — I bet the forest has surprises for us!" } }
+      }
+    },
+    "dialogue.village.flowers" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Αυτά τα λουλούδια μυρίζουν υπέροχα. Τις αγαπούν και οι μέλισσες!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "These flowers smell wonderful. Bees love them too!" } }
+      }
+    },
+    "dialogue.forest.footprints" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Περίεργα ίχνη... οδηγούν βαθύτερα στο δάσος!" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Strange footprints... they lead deeper into the forest!" } }
+      }
+    },
+    "dialogue.forest.caveEntrance" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μια είσοδος σπηλιάς! Να ρίξουμε μια ματιά μέσα;" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A cave entrance! Should we take a look inside?" } }
+      }
+    },
+    "dialogue.cave.stone" : {
+      "localizations" : {
+        "el" : { "stringUnit" : { "state" : "translated", "value" : "Μια γυαλιστερή πέτρα! Λάμπει σαν μικρό αστέρι." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "A shiny stone! It sparkles like a tiny star." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

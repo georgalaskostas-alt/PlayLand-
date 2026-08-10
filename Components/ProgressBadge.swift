@@ -3,7 +3,7 @@ import SwiftUI
 /// A small "Completed!" pill shown on games, stories and chapters. Pairs an
 /// icon with text so completion is never communicated by color alone.
 struct ProgressBadge: View {
-    var text: String = "Completed!"
+    var text: String = Loc.t("games.completed")
 
     var body: some View {
         HStack(spacing: 4) {

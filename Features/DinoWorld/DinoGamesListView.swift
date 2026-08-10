@@ -2,18 +2,21 @@ import SwiftUI
 
 struct DinoGamesListView: View {
     @EnvironmentObject var progressManager: ProgressViewModel
+    @EnvironmentObject var appSettings: AppSettings
 
-    let games = [
-        MenuItem(id: "dino_dig", title: "Dino Dig", description: "Excavate hidden fossils!", iconImageName: AppAssets.PlannedGameIcons.dinoDig),
-        MenuItem(id: "dino_match", title: "Dino Match", description: "Match pairs of dino friends!", iconImageName: AppAssets.PlannedGameIcons.dinoMatch),
-        MenuItem(id: "dino_farm", title: "Dino Farm", description: "Feed and care for Babis!", iconImageName: AppAssets.PlannedGameIcons.dinoFarm),
-        MenuItem(id: "dino_sort", title: "Dino Sort", description: "Sort dinos big or small!", iconImageName: AppAssets.PlannedGameIcons.dinoSort)
-    ]
+    private var games: [MenuItem] {
+        [
+            MenuItem(id: "dino_dig", title: Loc.t("dino.dig.title"), description: Loc.t("dino.dig.desc"), iconImageName: AppAssets.PlannedGameIcons.dinoDig),
+            MenuItem(id: "dino_match", title: Loc.t("dino.match.title"), description: Loc.t("dino.match.desc"), iconImageName: AppAssets.PlannedGameIcons.dinoMatch),
+            MenuItem(id: "dino_farm", title: Loc.t("dino.farm.title"), description: Loc.t("dino.farm.desc"), iconImageName: AppAssets.PlannedGameIcons.dinoFarm),
+            MenuItem(id: "dino_sort", title: Loc.t("dino.sort.title"), description: Loc.t("dino.sort.desc"), iconImageName: AppAssets.PlannedGameIcons.dinoSort)
+        ]
+    }
 
     var body: some View {
         NavigationStack {
             List {
-                Section(header: Text("Dino Games")) {
+                Section(header: Text(Loc.t("dino.sectionHeader"))) {
                     ForEach(games) { game in
                         NavigationLink(destination: dinoView(for: game)) {
                             GameCard(
@@ -25,7 +28,7 @@ struct DinoGamesListView: View {
                     }
                 }
             }
-            .navigationTitle("Dino World")
+            .navigationTitle(Loc.t("dino.navTitle"))
             .navigationBarTitleDisplayMode(.large)
         }
     }
@@ -37,7 +40,7 @@ struct DinoGamesListView: View {
         case "dino_match": DinoMatchGame()
         case "dino_farm": DinoFarmGame()
         case "dino_sort": DinoSortGame()
-        default: Text("Coming soon!")
+        default: EmptyView()
         }
     }
 }

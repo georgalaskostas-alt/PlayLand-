@@ -17,5 +17,8 @@ struct IconTile: View {
             .background(background)
             .clipShape(RoundedRectangle(cornerRadius: size * 0.22))
             .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
+            // Purely decorative next to a text label — hidden so VoiceOver
+            // doesn't read a missing-asset placeholder's system name aloud.
+            .accessibilityHidden(true)
     }
 }
