@@ -73,13 +73,29 @@ struct WorldObject: Identifiable {
     /// once an earlier goal is met) sets this instead of needing a whole
     /// separate location.
     var unlockRequirement: LocationUnlockRequirement = .alwaysUnlocked
+    /// Production scenery art for this object (a tree, a rock, a flower
+    /// patch), if it has any — `nil` for objects with no environment-art
+    /// equivalent yet. `emoji` remains the fallback whenever this is `nil`
+    /// or doesn't resolve. Collectible objects don't need this field: their
+    /// world-tile art comes from `ItemLibrary` via `collectibleItemId`
+    /// instead, so item art has exactly one source of truth.
+    var assetName: String? = nil
 }
 
 struct WorldLocation: Identifiable {
     let id: String
     let titleKey: String
     let backgroundAsset: String
+    /// The playable world surface for this location (see
+    /// `AppAssets.Grounds`). Falls back to `backgroundAsset` — today's
+    /// exact look — until real ground art exists; see
+    /// `WorldLocation.resolvedGroundAsset`.
+    let groundAsset: String
     let objects: [WorldObject]
+
+    var resolvedGroundAsset: String {
+        AppAssets.exists(groundAsset) ? groundAsset : backgroundAsset
+    }
 }
 
 enum LocationUnlockRequirement {
@@ -94,6 +110,7 @@ enum WorldLibrary {
             id: "village",
             titleKey: "world.village.title",
             backgroundAsset: AppAssets.Backgrounds.village,
+            groundAsset: AppAssets.Grounds.village,
             objects: [
                 WorldObject(
                     id: "village_kotsifi",
@@ -102,13 +119,13 @@ enum WorldLibrary {
                     dialogue: [
                         DialogueNode(
                             speakerKey: "adventure.kotsifiName",
-                            portraitAsset: AppAssets.Characters.kotsifi,
+                            portraitAsset: KotsifiAssetResolver.portraitAsset(for: .happy),
                             textKey: "dialogue.village.kotsifi.line0",
                             choices: [DialogueChoice(textKey: "action.continue", nextIndex: 1)]
                         ),
                         DialogueNode(
                             speakerKey: "adventure.kotsifiName",
-                            portraitAsset: AppAssets.Characters.kotsifi,
+                            portraitAsset: KotsifiAssetResolver.portraitAsset(for: .talking),
                             textKey: "dialogue.village.kotsifi.line1",
                             choices: []
                         )
@@ -126,7 +143,8 @@ enum WorldLibrary {
                             textKey: "adventure.explore.tree",
                             choices: []
                         )
-                    ]
+                    ],
+                    assetName: AppAssets.Environment.tree1
                 ),
                 WorldObject(
                     id: "village_flowers",
@@ -139,7 +157,8 @@ enum WorldLibrary {
                             textKey: "dialogue.village.flowers",
                             choices: []
                         )
-                    ]
+                    ],
+                    assetName: AppAssets.Environment.flowerPatch1
                 ),
                 // MARK: The Lost Forest Supplies — Chapter 1, "The Empty Basket"
                 WorldObject(
@@ -183,7 +202,7 @@ enum WorldLibrary {
                             DialogueNode(speakerKey: WorldSpeaker.narrator, portraitAsset: AppAssets.Characters.babis, textKey: "dialogue.village.chest.locked", choices: [])
                         ],
                         approachDialogue: [
-                            DialogueNode(speakerKey: "adventure.kotsifiName", portraitAsset: AppAssets.Characters.kotsifi, textKey: "dialogue.village.chest.approach0", choices: [DialogueChoice(textKey: "action.continue", nextIndex: 1)]),
+                            DialogueNode(speakerKey: "adventure.kotsifiName", portraitAsset: KotsifiAssetResolver.portraitAsset(for: .surprised), textKey: "dialogue.village.chest.approach0", choices: [DialogueChoice(textKey: "action.continue", nextIndex: 1)]),
                             DialogueNode(speakerKey: WorldSpeaker.narrator, portraitAsset: AppAssets.Characters.babis, textKey: "dialogue.village.chest.approach1", choices: [])
                         ],
                         openedFlavorDialogue: [
@@ -199,6 +218,7 @@ enum WorldLibrary {
             id: "forest",
             titleKey: "world.forest.title",
             backgroundAsset: AppAssets.Backgrounds.forestDay,
+            groundAsset: AppAssets.Grounds.forest,
             objects: [
                 WorldObject(
                     id: "forest_tree",
@@ -206,7 +226,8 @@ enum WorldLibrary {
                     position: UnitPoint(x: 0.2, y: 0.35),
                     dialogue: [
                         DialogueNode(speakerKey: WorldSpeaker.narrator, portraitAsset: AppAssets.Characters.babis, textKey: "adventure.explore.tree", choices: [])
-                    ]
+                    ],
+                    assetName: AppAssets.Environment.tree2
                 ),
                 WorldObject(
                     id: "forest_rock",
@@ -214,7 +235,8 @@ enum WorldLibrary {
                     position: UnitPoint(x: 0.8, y: 0.4),
                     dialogue: [
                         DialogueNode(speakerKey: WorldSpeaker.narrator, portraitAsset: AppAssets.Characters.babis, textKey: "adventure.explore.rock", choices: [])
-                    ]
+                    ],
+                    assetName: AppAssets.Environment.rock1
                 ),
                 WorldObject(
                     id: "forest_footprints",
@@ -239,6 +261,7 @@ enum WorldLibrary {
             id: "crystal_cave",
             titleKey: "world.crystalCave.title",
             backgroundAsset: AppAssets.Backgrounds.cave,
+            groundAsset: AppAssets.Grounds.crystalCave,
             objects: [
                 WorldObject(id: "stone_1", emoji: "💎", position: UnitPoint(x: 0.25, y: 0.35), dialogue: [
                     DialogueNode(speakerKey: WorldSpeaker.narrator, portraitAsset: AppAssets.Characters.babis, textKey: "dialogue.cave.stone", choices: [])
@@ -255,13 +278,14 @@ enum WorldLibrary {
             id: "fox_cave",
             titleKey: "world.foxCave.title",
             backgroundAsset: AppAssets.Backgrounds.foxCave,
+            groundAsset: AppAssets.Grounds.foxArea,
             objects: [
                 WorldObject(
                     id: "fox_cave_alepou",
                     emoji: "🦊",
                     position: UnitPoint(x: 0.5, y: 0.5),
                     dialogue: [
-                        DialogueNode(speakerKey: "adventure.foxName", portraitAsset: AppAssets.Characters.fox, textKey: "adventure.explore.foxDialogue", choices: [])
+                        DialogueNode(speakerKey: "adventure.foxName", portraitAsset: FoxAssetResolver.portraitAsset(for: .friendly), textKey: "adventure.explore.foxDialogue", choices: [])
                     ],
                     questId: "uncover_fox_secret"
                 )

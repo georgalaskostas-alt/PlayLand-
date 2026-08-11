@@ -1,7 +1,4 @@
 import SwiftUI
-#if canImport(UIKit)
-import UIKit
-#endif
 
 /// Every emotional/activity state Babis can visually be in. New cases are
 /// safe to add at any time — `BabisAssetResolver` degrades gracefully for
@@ -23,6 +20,12 @@ enum BabisVisualState: CaseIterable {
 
     /// The planned Assets.xcassets name for this state. Most of these do
     /// not exist yet — see the asset manifest in the project report.
+    ///
+    /// `.sad`, `.tired` and `.sleeping` are not reachable from any active
+    /// gameplay path today (verified: nothing outside this file switches
+    /// on them). They're kept as forward-compatible cases, but since no
+    /// screen ever requests them, they never need their own art — the
+    /// standard fallback chain below already resolves them to `.neutral`.
     var plannedAssetName: String {
         switch self {
         case .hungry: return "babis_hungry"
@@ -40,6 +43,12 @@ enum BabisVisualState: CaseIterable {
         case .sleeping: return "babis_sleeping"
         }
     }
+
+    /// The 4-frame run cycle, in order. Only `.running`'s primary asset
+    /// (`babis_run_01`) is reachable via `plannedAssetName`/the state
+    /// machine; frames 2-4 exist solely for frame-cycling animation while
+    /// Babis is moving (see `LocationExploreView`).
+    static let runFrames = ["babis_run_01", "babis_run_02", "babis_run_03", "babis_run_04"]
 }
 
 /// Resolves a `BabisVisualState` to the best available artwork, using the
@@ -47,41 +56,30 @@ enum BabisVisualState: CaseIterable {
 /// "neutral" asset, then the one character asset guaranteed to exist
 /// (`babis_dinosaur`). This can never crash and never silently claims art
 /// exists that hasn't been added — it only ever renders a name it has
-/// actually verified is present in the catalog.
+/// actually verified is present in the catalog. Built on
+/// `CharacterAssetResolver`, the same primitive `KotsifiAssetResolver` and
+/// `FoxAssetResolver` use, so there's one fallback algorithm, not three.
 enum BabisAssetResolver {
     /// True only if `state`'s own specific asset exists — i.e. a caller
     /// can trust the art to convey this exact mood, rather than a
     /// same-neutral-image-for-everything fallback needing help (like
     /// desaturation) to read as distinct.
     static func hasSpecificAsset(for state: BabisVisualState) -> Bool {
-        assetExists(state.plannedAssetName)
-    }
-
-    static func image(for state: BabisVisualState) -> Image {
-        if let name = resolvedAssetName(for: state) {
-            return Image(name)
-        }
-        return AppAssets.image(AppAssets.Characters.babis)
+        AppAssets.exists(state.plannedAssetName)
     }
 
     /// The concrete asset name that will actually be used for `state`,
-    /// following the fallback chain, or `nil` if nothing beyond the
-    /// guaranteed default exists.
-    private static func resolvedAssetName(for state: BabisVisualState) -> String? {
-        if assetExists(state.plannedAssetName) {
-            return state.plannedAssetName
-        }
-        if state != .neutral, assetExists(BabisVisualState.neutral.plannedAssetName) {
-            return BabisVisualState.neutral.plannedAssetName
-        }
-        return nil
+    /// following the fallback chain (state's own → neutral → guaranteed
+    /// default). Always resolves to something real and present.
+    static func resolvedAssetName(for state: BabisVisualState) -> String {
+        CharacterAssetResolver.resolvedAssetName(
+            assetName: state.plannedAssetName,
+            neutralAssetName: BabisVisualState.neutral.plannedAssetName,
+            guaranteedDefault: AppAssets.Characters.babis
+        )
     }
 
-    private static func assetExists(_ name: String) -> Bool {
-        #if canImport(UIKit)
-        return UIImage(named: name) != nil
-        #else
-        return false
-        #endif
+    static func image(for state: BabisVisualState) -> Image {
+        AppAssets.image(resolvedAssetName(for: state))
     }
 }

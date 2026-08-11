@@ -22,6 +22,10 @@ struct LocationExploreView: View {
     @State private var chestReward: ChestRewardPresentation?
     @State private var collectedObjectIds: Set<String> = []
     @State private var justUnlockedLocationKey: String?
+    /// True while Babis is actively being moved (drag or D-pad), driving
+    /// the run/fly frame-cycle animation. Never a source of movement logic
+    /// itself — position math is untouched by this.
+    @State private var isMoving = false
 
     private let step: CGFloat = 0.05
 
@@ -53,17 +57,11 @@ struct LocationExploreView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                PlayLandBackground(imageName: location.backgroundAsset, scrimOpacity: 0)
+                PlayLandBackground(imageName: location.resolvedGroundAsset, scrimOpacity: 0)
 
                 ForEach(remainingObjects) { object in
                     Button(action: { interact(with: object) }) {
-                        if let chest = object.chest {
-                            chestIcon(for: chest, state: chestState(for: chest, requirement: object.unlockRequirement))
-                        } else {
-                            Text(object.emoji)
-                                .font(.system(size: 50))
-                                .frame(width: PlayLandMetrics.primaryTouchTarget, height: PlayLandMetrics.primaryTouchTarget)
-                        }
+                        objectVisual(for: object)
                     }
                     .position(x: object.position.x * geometry.size.width, y: object.position.y * geometry.size.height)
                     .accessibilityLabel(Text(objectAccessibilityLabel(for: object)))
@@ -76,6 +74,9 @@ struct LocationExploreView: View {
                         DragGesture()
                             .onChanged { value in
                                 move(to: CGPoint(x: value.location.x / geometry.size.width, y: value.location.y / geometry.size.height))
+                            }
+                            .onEnded { _ in
+                                isMoving = false
                             }
                     )
 
@@ -135,6 +136,65 @@ struct LocationExploreView: View {
         }
     }
 
+    /// The world-tile art for `object`, if any exists: its own `assetName`
+    /// (scenery like a tree or rock), or — for a collectible — the same
+    /// art `ItemLibrary` already uses for that item everywhere else, so
+    /// item art has exactly one source of truth.
+    private func worldTileAsset(for object: WorldObject) -> String? {
+        if let assetName = object.assetName { return assetName }
+        if let itemId = object.collectibleItemId { return ItemLibrary.item(withId: itemId)?.assetName }
+        return nil
+    }
+
+    @ViewBuilder
+    private func objectVisual(for object: WorldObject) -> some View {
+        Group {
+            if let chest = object.chest {
+                chestIcon(for: chest, state: chestState(for: chest, requirement: object.unlockRequirement))
+            } else if let assetName = worldTileAsset(for: object), AppAssets.exists(assetName) {
+                AppAssets.image(assetName)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: PlayLandMetrics.worldSceneryVisualSize, height: PlayLandMetrics.worldSceneryVisualSize)
+            } else {
+                Text(object.emoji)
+                    .font(.system(size: 50))
+            }
+        }
+        // The tappable region stays a fixed, forgiving logical size no
+        // matter how big the art renders or how much transparent padding
+        // its source PNG has — production scenery reads at landscape scale
+        // visually without ever changing what's actually tappable.
+        .frame(width: PlayLandMetrics.primaryTouchTarget, height: PlayLandMetrics.primaryTouchTarget)
+        .contentShape(Rectangle())
+    }
+
+    /// Cycles through `frames` (filtered to ones that actually exist) on a
+    /// fixed interval while `isAnimating` is true. Built on `TimelineView`,
+    /// which pauses itself whenever it isn't being drawn — there's no
+    /// `Timer` to invalidate and nothing that can keep running off-screen.
+    /// Falls back to a single static image when animation shouldn't run:
+    /// Reduce Motion is on, nothing is actually moving, or none of
+    /// `frames` resolve yet (today's case — a zero-regression no-op).
+    @ViewBuilder
+    private func animatedCharacter(frames: [String], interval: Double, isAnimating: Bool, fallback: Image, size: CGFloat) -> some View {
+        let existingFrames = frames.filter(AppAssets.exists)
+        if isAnimating, !reduceMotion, !existingFrames.isEmpty {
+            TimelineView(.periodic(from: .now, by: interval)) { timeline in
+                let index = Int(timeline.date.timeIntervalSinceReferenceDate / interval) % existingFrames.count
+                AppAssets.image(existingFrames[index])
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size, height: size)
+            }
+        } else {
+            fallback
+                .resizable()
+                .scaledToFit()
+                .frame(width: size, height: size)
+        }
+    }
+
     private func chestIcon(for chest: ChestDefinition, state: ChestVisualState) -> some View {
         ZStack {
             AppAssets.image(state == .opened ? AppAssets.PlannedProps.chestOpen : AppAssets.PlannedProps.chestClosed)
@@ -155,28 +215,34 @@ struct LocationExploreView: View {
     }
 
     private func player(in geometry: GeometryProxy) -> some View {
-        AppAssets.image(AppAssets.Characters.babisSide)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 90, height: 90)
-            .position(x: playerPosition.x * geometry.size.width, y: playerPosition.y * geometry.size.height)
-            .accessibilityLabel(Text(Loc.t("adventure.babisName")))
+        animatedCharacter(
+            frames: BabisVisualState.runFrames,
+            interval: 0.12,
+            isAnimating: isMoving,
+            fallback: AppAssets.image(AppAssets.Characters.babisSide),
+            size: 90
+        )
+        .position(x: playerPosition.x * geometry.size.width, y: playerPosition.y * geometry.size.height)
+        .accessibilityLabel(Text(Loc.t("adventure.babisName")))
     }
 
     private func companion(in geometry: GeometryProxy) -> some View {
-        AppAssets.image(AppAssets.Characters.kotsifiSide)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 52, height: 52)
-            .position(
-                x: min(0.95, playerPosition.x + 0.09) * geometry.size.width,
-                y: max(0.05, playerPosition.y - 0.07) * geometry.size.height
-            )
-            // A longer, separate animation than the player's own movement is
-            // what makes Kotsifi read as "trailing behind" rather than
-            // rigidly glued to Babis's exact coordinate every frame.
-            .animation(PlayLandAnimation.respecting(reduceMotion, .easeOut(duration: 0.45)), value: playerPosition)
-            .accessibilityHidden(true)
+        animatedCharacter(
+            frames: [AppAssets.KotsifiStates.fly1, AppAssets.KotsifiStates.fly2, AppAssets.KotsifiStates.fly3],
+            interval: 0.15,
+            isAnimating: isMoving,
+            fallback: AppAssets.image(AppAssets.Characters.kotsifiSide),
+            size: 52
+        )
+        .position(
+            x: min(0.95, playerPosition.x + 0.09) * geometry.size.width,
+            y: max(0.05, playerPosition.y - 0.07) * geometry.size.height
+        )
+        // A longer, separate animation than the player's own movement is
+        // what makes Kotsifi read as "trailing behind" rather than
+        // rigidly glued to Babis's exact coordinate every frame.
+        .animation(PlayLandAnimation.respecting(reduceMotion, .easeOut(duration: 0.45)), value: playerPosition)
+        .accessibilityHidden(true)
     }
 
     private var dPad: some View {
@@ -253,13 +319,22 @@ struct LocationExploreView: View {
     }
 
     private func move(dx: CGFloat, dy: CGFloat) {
+        isMoving = true
         withAnimation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.2))) {
             playerPosition.x = min(0.95, max(0.05, playerPosition.x + dx))
             playerPosition.y = min(0.92, max(0.15, playerPosition.y + dy))
         }
+        // A D-pad tap is a single instantaneous move, not a continuous
+        // gesture with its own onEnded — clear the run/fly animation after
+        // it's had a couple of frames to play, the same one-shot
+        // `asyncAfter` pattern already used for `unlockToast` below.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            isMoving = false
+        }
     }
 
     private func move(to point: CGPoint) {
+        isMoving = true
         playerPosition = CGPoint(
             x: min(0.95, max(0.05, point.x)),
             y: min(0.92, max(0.15, point.y))

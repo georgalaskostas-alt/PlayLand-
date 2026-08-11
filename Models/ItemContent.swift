@@ -62,7 +62,7 @@ enum ItemLibrary {
         ItemDefinition(id: "water", category: .water, nameKey: "item.water", emoji: "💧", assetName: "water_item"),
         ItemDefinition(id: "crystal", category: .quest, nameKey: "item.crystal", emoji: "💎", assetName: "crystal_item"),
         ItemDefinition(id: "golden_feather", category: .quest, nameKey: "item.goldenFeather", emoji: "🪶", assetName: "golden_feather"),
-        ItemDefinition(id: "key", category: .quest, nameKey: "item.key", emoji: "🔑", assetName: nil),
+        ItemDefinition(id: "key", category: .quest, nameKey: "item.key", emoji: "🔑", assetName: "key_item"),
         ItemDefinition(id: "map_fragment", category: .quest, nameKey: "item.mapFragment", emoji: "🗺️", assetName: "map_fragment"),
         ItemDefinition(id: "leaf", category: .collectible, nameKey: "item.leaf", emoji: "🍃", assetName: nil),
         ItemDefinition(id: "star_token", category: .collectible, nameKey: "item.starToken", emoji: "⭐", assetName: nil)

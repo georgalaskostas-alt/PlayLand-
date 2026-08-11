@@ -74,6 +74,19 @@ struct DinoFarmGame: View {
     private var fallbackMood: FallbackMoodTreatment { FallbackMoodTreatment(happiness: happiness, goal: goal) }
     private var hasArtForDisplayState: Bool { BabisAssetResolver.hasSpecificAsset(for: displayState) }
 
+    /// The prop that visually confirms the current reaction — a full bowl
+    /// for eating/drinking, a splash/bubbles beat for the dirty→clean
+    /// cleaning sequence. `nil` outside those transient reactions.
+    private var reactionPropAsset: String? {
+        switch reactionState {
+        case .eating: return AppAssets.DinoFarmProps.foodBowlFull
+        case .drinking: return AppAssets.DinoFarmProps.waterBowlFull
+        case .dirty: return AppAssets.DinoFarmProps.mudSplash
+        case .clean: return AppAssets.DinoFarmProps.soapBubbles
+        default: return nil
+        }
+    }
+
     var body: some View {
         ZStack {
             VStack(spacing: 24) {
@@ -88,6 +101,21 @@ struct DinoFarmGame: View {
                             .offset(x: 10, y: fallbackMood.verticalOffset - 10)
                             .accessibilityHidden(true)
                     }
+
+                    if let reactionPropAsset, AppAssets.exists(reactionPropAsset) {
+                        VStack {
+                            Spacer()
+                            HStack {
+                                AppAssets.image(reactionPropAsset)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: PlayLandMetrics.worldPropAccentSize, height: PlayLandMetrics.worldPropAccentSize)
+                                Spacer()
+                            }
+                        }
+                        .transition(.opacity.combined(with: .scale(scale: 0.7)))
+                        .accessibilityHidden(true)
+                    }
                 }
                 .frame(height: 200)
 
@@ -101,9 +129,9 @@ struct DinoFarmGame: View {
                 .padding(.horizontal, 30)
 
                 HStack(spacing: 16) {
-                    careButton(title: Loc.t("dino.farm.feed"), emoji: "🍓", amount: 20) { care(amount: 20, reaction: .eating) }
-                    careButton(title: Loc.t("dino.farm.water"), emoji: "💧", amount: 15) { care(amount: 15, reaction: .drinking) }
-                    careButton(title: Loc.t("dino.farm.clean"), emoji: "🧼", amount: 15) { performClean(amount: 15) }
+                    careButton(title: Loc.t("dino.farm.feed"), assetName: AppAssets.DinoFarmProps.foodBowlEmpty, emoji: "🍓") { care(amount: 20, reaction: .eating) }
+                    careButton(title: Loc.t("dino.farm.water"), assetName: AppAssets.DinoFarmProps.waterBowlEmpty, emoji: "💧") { care(amount: 15, reaction: .drinking) }
+                    careButton(title: Loc.t("dino.farm.clean"), assetName: AppAssets.DinoFarmProps.cleaningBrush, emoji: "🧼") { performClean(amount: 15) }
                 }
 
                 Spacer()
@@ -147,10 +175,22 @@ struct DinoFarmGame: View {
         return 1
     }
 
-    private func careButton(title: String, emoji: String, amount: Int, action: @escaping () -> Void) -> some View {
+    @ViewBuilder
+    private func careIcon(assetName: String, emoji: String) -> some View {
+        if AppAssets.exists(assetName) {
+            AppAssets.image(assetName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 30, height: 30)
+        } else {
+            Text(emoji).font(.system(size: 30))
+        }
+    }
+
+    private func careButton(title: String, assetName: String, emoji: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 6) {
-                Text(emoji).font(.system(size: 30))
+                careIcon(assetName: assetName, emoji: emoji)
                 Text(title).font(.subheadline.weight(.semibold))
             }
             .frame(maxWidth: .infinity)

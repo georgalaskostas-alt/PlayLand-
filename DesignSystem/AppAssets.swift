@@ -70,27 +70,102 @@ enum AppAssets {
         static let scroll = "ui_scroll"
     }
 
-    /// World-interaction props planned for the Real-Time Adventure (chests,
-    /// bridges, cave props). Not yet in the catalog — see `PlannedProps`
-    /// usages, all routed through `AppAssets.image(_:)`.
+    /// Chests and the village's story-basket prop. Not yet in the catalog
+    /// as of this pass — every usage is routed through `AppAssets.image(_:)`
+    /// or `AppAssets.exists(_:)`, so they light up the moment art lands.
     enum PlannedProps {
         static let chestClosed = "chest_closed"
         static let chestOpen = "chest_open"
+        static let foodBasketEmpty = "food_basket_empty"
+        static let foodBasketFull = "food_basket_full"
+    }
+
+    /// Non-interactive scenery used to dress `WorldLocation`s. Referenced by
+    /// `WorldObject.assetName` for the objects that already exist as emoji
+    /// today (a tree, a rock, a flower patch) — see `WorldContent.swift`.
+    /// The rest (bushes, stump, sign, log, mushrooms) have no corresponding
+    /// `WorldObject` yet, so these names are wired but currently unused;
+    /// see the asset integration report.
+    enum Environment {
+        static let tree1 = "tree_01"
+        static let tree2 = "tree_02"
+        static let tree3 = "tree_03"
+        static let bush1 = "bush_01"
+        static let bush2 = "bush_02"
+        static let rock1 = "rock_01"
+        static let rock2 = "rock_02"
+        static let flowerPatch1 = "flower_patch_01"
+        static let treeStump = "tree_stump"
+        static let woodSign = "wood_sign"
+        static let log = "log"
+        static let mushrooms = "mushrooms"
+    }
+
+    /// The playable "world surface" for each `WorldLocation`, distinct from
+    /// `Backgrounds` (which also serves the hub's small decorative
+    /// thumbnails and Story scenes). See `WorldLocation.groundAsset`.
+    enum Grounds {
+        static let forest = "rpg_forest_ground_01"
+        static let village = "rpg_village_ground"
+        static let crystalCave = "rpg_crystal_cave_ground"
+        /// No "Night Forest" `WorldLocation` exists yet (only a `.comingSoon`
+        /// campaign stub) — wired for when one is built, unused today.
+        static let nightForest = "rpg_night_forest_ground"
+        static let foxArea = "rpg_fox_area_ground"
+    }
+
+    /// Kotsifi's emotional/activity states. See `KotsifiVisualState`.
+    enum KotsifiStates {
+        static let idle = "kotsifi_idle"
+        static let happy = "kotsifi_happy"
+        static let surprised = "kotsifi_surprised"
+        static let talking = "kotsifi_talking"
+        static let fly1 = "kotsifi_fly_01"
+        static let fly2 = "kotsifi_fly_02"
+        static let fly3 = "kotsifi_fly_03"
+    }
+
+    /// Alepou (the fox)'s emotional states. See `FoxVisualState`.
+    enum FoxStates {
+        static let neutral = "fox_neutral"
+        static let smirk = "fox_smirk"
+        static let surprised = "fox_surprised"
+        static let worried = "fox_worried"
+        static let friendly = "fox_friendly"
+        static let talking = "fox_talking"
+    }
+
+    /// Dino Farm care-loop props (bowls, cleaning feedback).
+    enum DinoFarmProps {
+        static let foodBowlEmpty = "food_bowl_empty"
+        static let foodBowlFull = "food_bowl_full"
+        static let waterBowlEmpty = "water_bowl_empty"
+        static let waterBowlFull = "water_bowl_full"
+        static let cleaningBrush = "cleaning_brush"
+        static let mudSplash = "mud_splash"
+        static let soapBubbles = "soap_bubbles"
     }
 
     /// A placeholder glyph shown in development when a named asset is
     /// missing from the catalog, so a gap is obvious instead of blank space.
     private static let missingAssetPlaceholder = "questionmark.square.dashed"
 
+    /// Whether `name` currently exists in the asset catalog. The single
+    /// primitive every resolver (`BabisAssetResolver`, `KotsifiAssetResolver`,
+    /// `FoxAssetResolver`, `ItemDefinition`, world-object/ground rendering)
+    /// is built on, so there's exactly one asset-existence check in the app.
+    static func exists(_ name: String) -> Bool {
+        #if canImport(UIKit)
+        return UIImage(named: name) != nil
+        #else
+        return false
+        #endif
+    }
+
     /// Returns `Image(name)` when the asset exists in the catalog, or a
     /// neutral system placeholder otherwise. Never crashes on a missing name.
     static func image(_ name: String) -> Image {
-        #if canImport(UIKit)
-        if UIImage(named: name) == nil {
-            return Image(systemName: missingAssetPlaceholder)
-        }
-        #endif
-        return Image(name)
+        exists(name) ? Image(name) : Image(systemName: missingAssetPlaceholder)
     }
 
     /// All planned-but-not-yet-added asset names, for diagnostics/QA builds.
@@ -101,12 +176,18 @@ enum AppAssets {
             PlannedGameIcons.dinoFarm, PlannedGameIcons.dinoSort,
             PlannedUI.star, PlannedUI.check, PlannedUI.lock, PlannedUI.play,
             PlannedUI.book, PlannedUI.paw, PlannedUI.gamepad, PlannedUI.card, PlannedUI.map, PlannedUI.speaker, PlannedUI.scroll,
-            PlannedProps.chestClosed, PlannedProps.chestOpen
+            PlannedProps.chestClosed, PlannedProps.chestOpen, PlannedProps.foodBasketEmpty, PlannedProps.foodBasketFull,
+            Environment.tree1, Environment.tree2, Environment.tree3, Environment.bush1, Environment.bush2,
+            Environment.rock1, Environment.rock2, Environment.flowerPatch1, Environment.treeStump,
+            Environment.woodSign, Environment.log, Environment.mushrooms,
+            Grounds.forest, Grounds.village, Grounds.crystalCave, Grounds.nightForest, Grounds.foxArea,
+            DinoFarmProps.foodBowlEmpty, DinoFarmProps.foodBowlFull, DinoFarmProps.waterBowlEmpty, DinoFarmProps.waterBowlFull,
+            DinoFarmProps.cleaningBrush, DinoFarmProps.mudSplash, DinoFarmProps.soapBubbles
         ]
-        #if canImport(UIKit)
-        return planned.filter { UIImage(named: $0) == nil }
-        #else
-        return planned
-        #endif
+        // Character emotional/activity states (Babis/Kotsifi/Fox) are
+        // intentionally excluded — each has its own resolver
+        // (`BabisAssetResolver`/`KotsifiAssetResolver`/`FoxAssetResolver`)
+        // with a per-state `hasSpecificAsset(for:)` diagnostic instead.
+        return planned.filter { !exists($0) }
     }
 }
