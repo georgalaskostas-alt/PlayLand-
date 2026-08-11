@@ -71,21 +71,28 @@ struct ExploreModeView: View {
         .accessibilityLabel(Text(isUnlocked ? Loc.t(location.titleKey) : "\(Loc.t(location.titleKey)) — \(Loc.t("world.locked"))"))
     }
 
-    private var inventorySummary: [(String, Int)] {
-        let crystalCount = progressManager.itemCount("crystal")
-        return crystalCount > 0 ? [("crystal", crystalCount)] : []
+    /// Every item the player is holding, with a count — generic over
+    /// `ItemLibrary` so a new item never needs new summary-display logic
+    /// here, only a new `ItemDefinition` entry.
+    private var inventorySummary: [(ItemDefinition, Int)] {
+        ItemLibrary.items.compactMap { item in
+            let count = progressManager.itemCount(item.id)
+            return count > 0 ? (item, count) : nil
+        }
     }
 
     private var inventoryRow: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 10) {
             Text(Loc.t("world.inventory") + ":")
                 .font(PlayLandTypography.caption.weight(.semibold))
-            ForEach(inventorySummary, id: \.0) { itemId, count in
+            ForEach(inventorySummary, id: \.0.id) { item, count in
                 HStack(spacing: 4) {
-                    Text("💎")
-                    Text("\(Loc.t("world.itemCrystal")) × \(count)")
+                    item.icon.frame(width: 18, height: 18)
+                    Text("×\(count)")
                 }
                 .font(PlayLandTypography.caption)
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(Text("\(Loc.t(item.nameKey)) × \(count)"))
             }
         }
     }

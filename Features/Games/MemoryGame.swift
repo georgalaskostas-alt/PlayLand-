@@ -12,6 +12,13 @@ struct MemoryGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    /// When non-nil, this game is being played as an RPG challenge gate
+    /// rather than launched from the Games tab: on success this closure
+    /// runs *instead of* the normal dismiss, so a wrapping context (a
+    /// chest, a bridge) can apply its own reward/quest-progress flow.
+    /// Regular play (this left `nil`) is completely unaffected.
+    var onChallengeComplete: ((Int) -> Void)?
+
     private let symbols = ["🦖", "🦕", "🥚", "🌿", "🍃", "🦴"]
 
     @State private var cards: [MemoryCard] = []
@@ -56,7 +63,11 @@ struct MemoryGame: View {
                     buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("memory_game", stars: stars)
-                        dismiss()
+                        if let onChallengeComplete {
+                            onChallengeComplete(stars)
+                        } else {
+                            dismiss()
+                        }
                     }
                 )
             }

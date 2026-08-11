@@ -1,8 +1,9 @@
 import SwiftUI
 
-/// The celebration panel shown when a game, story or chapter is finished:
-/// badge art, a headline, an optional message, a star result and a
-/// continue button. Used by every mini-game and by the story/chapter flows.
+/// The celebration panel shown when a game, story, chapter or RPG
+/// challenge is finished: art, a headline, an optional message, an
+/// optional reward item, a star result and a continue button. Used by
+/// every mini-game, the story/chapter flows, and chest rewards.
 struct CompletionCelebrationView: View {
     let title: String
     let message: String
@@ -10,12 +11,20 @@ struct CompletionCelebrationView: View {
     let buttonTitle: String
     let action: () -> Void
 
+    /// Defaults to the badges sheet (games/stories); chest rewards pass
+    /// `AppAssets.PlannedProps.chestOpen` instead.
+    var imageAssetName: String = AppAssets.Badges.sheet
+    /// When set, shows "you found this many of this item" below the
+    /// message — used by chest/challenge rewards, unused (nil) elsewhere.
+    var rewardItemId: String?
+    var rewardItemCount: Int = 0
+
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hasAppeared = false
 
     var body: some View {
         VStack(spacing: 20) {
-            AppAssets.image(AppAssets.Badges.sheet)
+            AppAssets.image(imageAssetName)
                 .resizable()
                 .scaledToFit()
                 .frame(height: 110)
@@ -28,6 +37,15 @@ struct CompletionCelebrationView: View {
                 .font(PlayLandTypography.body)
                 .foregroundColor(PlayLandColors.secondaryText)
                 .multilineTextAlignment(.center)
+
+            if let rewardItemId, let item = ItemLibrary.item(withId: rewardItemId) {
+                HStack(spacing: 8) {
+                    item.icon.frame(width: 32, height: 32)
+                    Text("×\(rewardItemCount) \(Loc.t(item.nameKey))")
+                        .font(PlayLandTypography.body.weight(.semibold))
+                }
+                .accessibilityElement(children: .combine)
+            }
 
             StarCounter(stars: stars)
 

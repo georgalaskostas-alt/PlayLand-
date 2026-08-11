@@ -5,6 +5,9 @@ struct WordMatchingGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    /// See `MemoryGame.onChallengeComplete`.
+    var onChallengeComplete: ((Int) -> Void)?
+
     @State private var pairs: [MatchWordPair] = []
     @State private var words: [String] = []
     @State private var selectedEmoji: String?
@@ -54,7 +57,11 @@ struct WordMatchingGame: View {
                     buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("word_matching", stars: stars)
-                        dismiss()
+                        if let onChallengeComplete {
+                            onChallengeComplete(stars)
+                        } else {
+                            dismiss()
+                        }
                     }
                 )
             }

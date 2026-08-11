@@ -13,17 +13,41 @@ struct LocationExploreView: View {
 
     @State private var playerPosition: CGPoint = CGPoint(x: 0.5, y: 0.75)
     @State private var activeDialogue: [DialogueNode]?
+    /// Runs once, then clears, when `activeDialogue` is dismissed — used to
+    /// chain "approach dialogue closes → challenge launches" for chests
+    /// without the dialogue engine needing to know chests exist.
+    @State private var pendingAfterDialogue: (() -> Void)?
+    @State private var activeChallenge: RPGChallenge?
+    @State private var chestPendingChallenge: ChestDefinition?
+    @State private var chestReward: ChestRewardPresentation?
     @State private var collectedObjectIds: Set<String> = []
     @State private var justUnlockedLocationKey: String?
 
     private let step: CGFloat = 0.05
 
+    /// Chests stay visible even when locked (a visible progression cue);
+    /// every other unlock-gated object simply doesn't render until its
+    /// requirement is met.
     private var remainingObjects: [WorldObject] {
-        location.objects.filter { !collectedObjectIds.contains($0.id) }
+        location.objects.filter { object in
+            guard !collectedObjectIds.contains(object.id) else { return false }
+            if object.chest != nil { return true }
+            return progressManager.isRequirementMet(object.unlockRequirement)
+        }
     }
 
     private var activeQuest: Quest? {
         location.objects.compactMap { $0.questId }.compactMap(QuestLibrary.quest(withId:)).first { !progressManager.isQuestCompleted($0.id) }
+    }
+
+    /// The current chapter of any available campaign that plays out here,
+    /// if it isn't finished yet — shown as a friendlier "what to do right
+    /// now" banner above the raw quest banner.
+    private var activeChapterGoal: CampaignChapter? {
+        CampaignLibrary.campaigns
+            .filter { $0.status == .available }
+            .compactMap { CampaignLibrary.currentChapter(for: $0, progress: progressManager) }
+            .first { $0.locationId == location.id }
     }
 
     var body: some View {
@@ -33,9 +57,13 @@ struct LocationExploreView: View {
 
                 ForEach(remainingObjects) { object in
                     Button(action: { interact(with: object) }) {
-                        Text(object.emoji)
-                            .font(.system(size: 50))
-                            .frame(width: PlayLandMetrics.primaryTouchTarget, height: PlayLandMetrics.primaryTouchTarget)
+                        if let chest = object.chest {
+                            chestIcon(for: chest, state: chestState(for: chest, requirement: object.unlockRequirement))
+                        } else {
+                            Text(object.emoji)
+                                .font(.system(size: 50))
+                                .frame(width: PlayLandMetrics.primaryTouchTarget, height: PlayLandMetrics.primaryTouchTarget)
+                        }
                     }
                     .position(x: object.position.x * geometry.size.width, y: object.position.y * geometry.size.height)
                     .accessibilityLabel(Text(objectAccessibilityLabel(for: object)))
@@ -51,7 +79,10 @@ struct LocationExploreView: View {
                             }
                     )
 
-                VStack {
+                VStack(spacing: 8) {
+                    if let activeChapterGoal {
+                        chapterGoalBanner(for: activeChapterGoal)
+                    }
                     if let activeQuest {
                         questBanner(for: activeQuest)
                     }
@@ -70,13 +101,55 @@ struct LocationExploreView: View {
             if let activeDialogue {
                 DialogueView(nodes: activeDialogue) {
                     self.activeDialogue = nil
+                    let next = pendingAfterDialogue
+                    pendingAfterDialogue = nil
+                    next?()
                 }
                 .presentationDetents([.medium])
             }
         }
+        .fullScreenCover(item: $activeChallenge) { challenge in
+            ChallengeLauncherView(challenge: challenge) { outcome in
+                activeChallenge = nil
+                let chest = chestPendingChallenge
+                chestPendingChallenge = nil
+                handleChallengeOutcome(outcome, chest: chest)
+            }
+        }
+        .fullScreenCover(item: $chestReward) { reward in
+            CompletionCelebrationView(
+                title: Loc.t("world.chestOpened"),
+                message: Loc.t(reward.chest.rewardPraiseKey),
+                stars: reward.stars,
+                buttonTitle: Loc.t("action.continue"),
+                action: { chestReward = nil },
+                imageAssetName: AppAssets.PlannedProps.chestOpen,
+                rewardItemId: reward.chest.challenge.rewardItemId,
+                rewardItemCount: reward.chest.challenge.rewardItemCount
+            )
+        }
         .overlay(alignment: .top) {
             if let key = justUnlockedLocationKey {
                 unlockToast(titleKey: key)
+            }
+        }
+    }
+
+    private func chestIcon(for chest: ChestDefinition, state: ChestVisualState) -> some View {
+        ZStack {
+            AppAssets.image(state == .opened ? AppAssets.PlannedProps.chestOpen : AppAssets.PlannedProps.chestClosed)
+                .resizable()
+                .scaledToFit()
+                .frame(width: PlayLandMetrics.primaryTouchTarget, height: PlayLandMetrics.primaryTouchTarget)
+                .opacity(state == .locked ? 0.55 : 1.0)
+
+            if state == .locked {
+                Image(systemName: "lock.fill")
+                    .font(.caption.bold())
+                    .foregroundColor(.white)
+                    .padding(5)
+                    .background(Circle().fill(Color.black.opacity(0.6)))
+                    .offset(x: 18, y: -18)
             }
         }
     }
@@ -137,6 +210,22 @@ struct LocationExploreView: View {
         .accessibilityLabel(Text(Loc.t(label)))
     }
 
+    private func chapterGoalBanner(for chapter: CampaignChapter) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(Loc.t(chapter.titleKey))
+                .font(PlayLandTypography.caption.weight(.bold))
+            Text(Loc.t(chapter.goalKey))
+                .font(PlayLandTypography.caption)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(PlayLandColors.sunOrange)
+        .foregroundColor(.white)
+        .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusSmall))
+        .padding(.horizontal)
+    }
+
     private func questBanner(for quest: Quest) -> some View {
         HStack {
             Text(Loc.t("world.questBanner", Loc.t(quest.titleKey)))
@@ -178,19 +267,68 @@ struct LocationExploreView: View {
     }
 
     private func interact(with object: WorldObject) {
-        activeDialogue = object.dialogue
         AudioManager.shared.play(.buttonTap)
+
+        if let chest = object.chest {
+            interactWithChest(chest, object: object)
+            return
+        }
+
+        activeDialogue = object.dialogue
 
         if let questId = object.questId {
             let previouslyUnlocked = Set(WorldLibrary.unlockRequirements.keys.filter(progressManager.isLocationUnlocked))
             progressManager.progressQuest(questId)
             if let itemId = object.collectibleItemId {
-                progressManager.collectItem(itemId)
+                progressManager.collectItem(itemId, count: object.collectibleItemCount)
                 // Only one-off collectibles (a stone, an item) disappear once
                 // picked up; NPCs and landmarks stay put for repeat visits.
                 collectedObjectIds.insert(object.id)
             }
             announceNewlyUnlockedLocations(previouslyUnlocked: previouslyUnlocked)
+        }
+    }
+
+    /// Tap → approach dialogue → challenge → reward, per the chest state:
+    /// locked shows a "not yet" hint, challenge-available plays the approach
+    /// dialogue then launches the mini-game, opened just shows flavor text.
+    /// Walking away or losing the mini-game leaves the chest exactly as it
+    /// was — there's no penalty and no lockout on retrying.
+    private func interactWithChest(_ chest: ChestDefinition, object: WorldObject) {
+        switch chestState(for: chest, requirement: object.unlockRequirement) {
+        case .locked:
+            activeDialogue = chest.lockedHintDialogue
+        case .opened:
+            activeDialogue = chest.openedFlavorDialogue
+        case .challengeAvailable:
+            activeDialogue = chest.approachDialogue
+            pendingAfterDialogue = {
+                chestPendingChallenge = chest
+                activeChallenge = chest.challenge
+            }
+        }
+    }
+
+    private func chestState(for chest: ChestDefinition, requirement: LocationUnlockRequirement) -> ChestVisualState {
+        if progressManager.isChallengeCompleted(chest.id) { return .opened }
+        if !progressManager.isRequirementMet(requirement) { return .locked }
+        return .challengeAvailable
+    }
+
+    private func handleChallengeOutcome(_ outcome: ChallengeOutcome, chest: ChestDefinition?) {
+        guard let chest else { return }
+        switch outcome {
+        case .cancelled:
+            break
+        case .success(let stars):
+            progressManager.completeChallenge(chest.id, rewardStars: chest.challenge.rewardStars)
+            if let rewardItemId = chest.challenge.rewardItemId {
+                progressManager.collectItem(rewardItemId, count: chest.challenge.rewardItemCount)
+            }
+            if let questId = chest.challenge.questIdToProgress {
+                progressManager.progressQuest(questId)
+            }
+            chestReward = ChestRewardPresentation(id: chest.id, chest: chest, stars: stars)
         }
     }
 
@@ -209,9 +347,20 @@ struct LocationExploreView: View {
     }
 
     private func objectAccessibilityLabel(for object: WorldObject) -> String {
+        if object.chest != nil {
+            return Loc.t("world.chest.accessibilityLabel")
+        }
         if let firstNode = object.dialogue.first, firstNode.speakerKey != WorldSpeaker.narrator {
             return Loc.t(firstNode.speakerKey)
         }
         return object.emoji
     }
+}
+
+/// Wraps a won chest's data with its per-attempt star rating so
+/// `.fullScreenCover(item:)` can present the reward celebration.
+private struct ChestRewardPresentation: Identifiable {
+    let id: String
+    let chest: ChestDefinition
+    let stars: Int
 }

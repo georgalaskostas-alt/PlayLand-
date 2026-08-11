@@ -13,6 +13,9 @@ struct DinoSortGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    /// See `MemoryGame.onChallengeComplete`.
+    var onChallengeComplete: ((Int) -> Void)?
+
     @State private var creatures: [SortCreature] = [
         SortCreature(id: 0, imageName: AppAssets.Characters.babis, name: "Babis", isBig: true),
         SortCreature(id: 1, imageName: AppAssets.Characters.babisSide, name: "Babis", isBig: true),
@@ -68,7 +71,11 @@ struct DinoSortGame: View {
                     buttonTitle: Loc.t("dino.sort.completeButton"),
                     action: {
                         progressManager.completeGame("dino_sort", stars: stars)
-                        dismiss()
+                        if let onChallengeComplete {
+                            onChallengeComplete(stars)
+                        } else {
+                            dismiss()
+                        }
                     }
                 )
             }

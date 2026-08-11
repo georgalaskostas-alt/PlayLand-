@@ -5,6 +5,9 @@ struct LetterRecognitionGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    /// See `MemoryGame.onChallengeComplete`.
+    var onChallengeComplete: ((Int) -> Void)?
+
     @State private var questions: [LetterQuestion] = []
     @State private var currentQuestion = 0
     @State private var score = 0
@@ -50,7 +53,11 @@ struct LetterRecognitionGame: View {
                     buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("letter_recognition", stars: stars)
-                        dismiss()
+                        if let onChallengeComplete {
+                            onChallengeComplete(stars)
+                        } else {
+                            dismiss()
+                        }
                     }
                 )
             }

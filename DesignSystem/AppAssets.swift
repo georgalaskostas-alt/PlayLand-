@@ -66,6 +66,16 @@ enum AppAssets {
         static let map = "ui_map"
         /// Introduced for the "replay spoken instruction" control.
         static let speaker = "ui_speaker"
+        /// Introduced for the campaign/quest-log entry point.
+        static let scroll = "ui_scroll"
+    }
+
+    /// World-interaction props planned for the Real-Time Adventure (chests,
+    /// bridges, cave props). Not yet in the catalog — see `PlannedProps`
+    /// usages, all routed through `AppAssets.image(_:)`.
+    enum PlannedProps {
+        static let chestClosed = "chest_closed"
+        static let chestOpen = "chest_open"
     }
 
     /// A placeholder glyph shown in development when a named asset is
@@ -90,7 +100,8 @@ enum AppAssets {
             PlannedGameIcons.memoryGame, PlannedGameIcons.dinoDig, PlannedGameIcons.dinoMatch,
             PlannedGameIcons.dinoFarm, PlannedGameIcons.dinoSort,
             PlannedUI.star, PlannedUI.check, PlannedUI.lock, PlannedUI.play,
-            PlannedUI.book, PlannedUI.paw, PlannedUI.gamepad, PlannedUI.card, PlannedUI.map, PlannedUI.speaker
+            PlannedUI.book, PlannedUI.paw, PlannedUI.gamepad, PlannedUI.card, PlannedUI.map, PlannedUI.speaker, PlannedUI.scroll,
+            PlannedProps.chestClosed, PlannedProps.chestOpen
         ]
         #if canImport(UIKit)
         return planned.filter { UIImage(named: $0) == nil }

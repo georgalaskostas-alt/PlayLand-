@@ -12,7 +12,11 @@ enum QuestLibrary {
     static let quests: [Quest] = [
         Quest(id: "meet_kotsifi", titleKey: "quest.meetKotsifi.title", descriptionKey: "quest.meetKotsifi.desc", requiredProgress: 1, rewardStars: 3),
         Quest(id: "find_cave_entrance", titleKey: "quest.findCave.title", descriptionKey: "quest.findCave.desc", requiredProgress: 1, rewardStars: 3),
-        Quest(id: "collect_stones", titleKey: "quest.collectStones.title", descriptionKey: "quest.collectStones.desc", requiredProgress: 3, rewardStars: 5)
+        Quest(id: "collect_stones", titleKey: "quest.collectStones.title", descriptionKey: "quest.collectStones.desc", requiredProgress: 3, rewardStars: 5),
+        // MARK: The Lost Forest Supplies (campaign 1)
+        Quest(id: "gather_supplies", titleKey: "quest.gatherSupplies.title", descriptionKey: "quest.gatherSupplies.desc", requiredProgress: 2, rewardStars: 3),
+        Quest(id: "open_first_chest", titleKey: "quest.openFirstChest.title", descriptionKey: "quest.openFirstChest.desc", requiredProgress: 1, rewardStars: 3),
+        Quest(id: "uncover_fox_secret", titleKey: "quest.uncoverFoxSecret.title", descriptionKey: "quest.uncoverFoxSecret.desc", requiredProgress: 1, rewardStars: 5)
     ]
 
     static func quest(withId id: String) -> Quest? {

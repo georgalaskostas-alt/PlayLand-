@@ -1,12 +1,11 @@
 import SwiftUI
 
-/// Babis' emotional state, driven entirely by `happiness`. The game must
-/// never show Babis as already happy before the child has done anything —
-/// the single `babis_dinosaur` art asset is drawn smiling, so mood is
-/// communicated with saturation, position and motion instead of a
-/// different character pose (see the final report for the character-state
-/// art assets that would let mood use real artwork instead).
-enum DinoMood: Equatable {
+/// Grayscale/offset treatment used ONLY as a fallback while a
+/// `BabisVisualState` has no dedicated artwork yet (see
+/// `BabisAssetResolver`). Once real art exists for a state, `DinoFarmGame`
+/// renders it directly and this treatment is skipped entirely — it must
+/// never be presented as if it were the intended premium look.
+private enum FallbackMoodTreatment: Equatable {
     case sad
     case neutral
     case improving
@@ -52,10 +51,28 @@ struct DinoFarmGame: View {
     @State private var happiness = 0
     @State private var taps = 0
     @State private var isFinished = false
+    /// A brief per-action reaction (eating, drinking, a dirty→clean beat)
+    /// shown right after a care button tap, then cleared back to whatever
+    /// `progressState` says. `nil` means "show the progress state."
+    @State private var reactionState: BabisVisualState?
 
     private let goal = 100
 
-    private var mood: DinoMood { DinoMood(happiness: happiness, goal: goal) }
+    /// Babis' state from overall care progress alone: starts hungry,
+    /// settles to neutral, then happy, then excited once the goal is met.
+    private var progressState: BabisVisualState {
+        if isFinished { return .excited }
+        let ratio = Double(happiness) / Double(goal)
+        switch ratio {
+        case ..<0.34: return .hungry
+        case ..<0.7: return .neutral
+        default: return .happy
+        }
+    }
+
+    private var displayState: BabisVisualState { reactionState ?? progressState }
+    private var fallbackMood: FallbackMoodTreatment { FallbackMoodTreatment(happiness: happiness, goal: goal) }
+    private var hasArtForDisplayState: Bool { BabisAssetResolver.hasSpecificAsset(for: displayState) }
 
     var body: some View {
         ZStack {
@@ -63,19 +80,12 @@ struct DinoFarmGame: View {
                 GameHeader(title: Loc.t("dino.farm.title"), subtitle: Loc.t("dino.farm.instruction"))
 
                 ZStack(alignment: .topTrailing) {
-                    AppAssets.image(AppAssets.Characters.babis)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 180)
-                        .saturation(mood.saturation)
-                        .offset(y: mood.verticalOffset)
-                        .scaleEffect(mood == .happy ? 1.08 : 1.0)
-                        .animation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce), value: happiness)
+                    babisArt
 
-                    if mood.showsThoughtBubble {
+                    if !hasArtForDisplayState, !isFinished, fallbackMood.showsThoughtBubble {
                         Text("💭")
                             .font(.system(size: 34))
-                            .offset(x: 10, y: mood.verticalOffset - 10)
+                            .offset(x: 10, y: fallbackMood.verticalOffset - 10)
                             .accessibilityHidden(true)
                     }
                 }
@@ -91,9 +101,9 @@ struct DinoFarmGame: View {
                 .padding(.horizontal, 30)
 
                 HStack(spacing: 16) {
-                    careButton(title: Loc.t("dino.farm.feed"), emoji: "🍃", amount: 20)
-                    careButton(title: Loc.t("dino.farm.clean"), emoji: "🧼", amount: 15)
-                    careButton(title: Loc.t("dino.farm.play"), emoji: "🎾", amount: 15)
+                    careButton(title: Loc.t("dino.farm.feed"), emoji: "🍓", amount: 20) { care(amount: 20, reaction: .eating) }
+                    careButton(title: Loc.t("dino.farm.water"), emoji: "💧", amount: 15) { care(amount: 15, reaction: .drinking) }
+                    careButton(title: Loc.t("dino.farm.clean"), emoji: "🧼", amount: 15) { performClean(amount: 15) }
                 }
 
                 Spacer()
@@ -115,14 +125,30 @@ struct DinoFarmGame: View {
         }
     }
 
+    @ViewBuilder
+    private var babisArt: some View {
+        BabisAssetResolver.image(for: displayState)
+            .resizable()
+            .scaledToFit()
+            .frame(height: 180)
+            // Only the fallback (no dedicated art for this state yet) needs
+            // desaturation and a vertical nudge to read as a distinct mood —
+            // real artwork already conveys the mood on its own.
+            .saturation(hasArtForDisplayState ? 1.0 : fallbackMood.saturation)
+            .offset(y: hasArtForDisplayState ? 0 : fallbackMood.verticalOffset)
+            .scaleEffect(displayState == .excited ? 1.08 : 1.0)
+            .animation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce), value: happiness)
+            .animation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.2)), value: reactionState)
+    }
+
     private var stars: Int {
         if taps <= 6 { return 3 }
         if taps <= 9 { return 2 }
         return 1
     }
 
-    private func careButton(title: String, emoji: String, amount: Int) -> some View {
-        Button(action: { care(amount: amount) }) {
+    private func careButton(title: String, emoji: String, amount: Int, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             VStack(spacing: 6) {
                 Text(emoji).font(.system(size: 30))
                 Text(title).font(.subheadline.weight(.semibold))
@@ -137,12 +163,40 @@ struct DinoFarmGame: View {
         .disabled(isFinished)
     }
 
-    private func care(amount: Int) {
+    private func care(amount: Int, reaction: BabisVisualState) {
         taps += 1
         happiness = min(goal, happiness + amount)
         AudioManager.shared.play(.correct)
-        if happiness >= goal {
-            withAnimation { isFinished = true }
+        showReaction(reaction, for: 0.9)
+        finishIfGoalMet()
+    }
+
+    /// Cleaning gets its own two-beat reaction — a flash of "dirty" (being
+    /// scrubbed) settling into "clean" — instead of a single static state.
+    private func performClean(amount: Int) {
+        taps += 1
+        happiness = min(goal, happiness + amount)
+        AudioManager.shared.play(.correct)
+
+        withAnimation { reactionState = .dirty }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+            withAnimation { reactionState = .clean }
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
+            withAnimation { reactionState = nil }
+        }
+        finishIfGoalMet()
+    }
+
+    private func showReaction(_ state: BabisVisualState, for duration: Double) {
+        withAnimation { reactionState = state }
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            withAnimation { reactionState = nil }
+        }
+    }
+
+    private func finishIfGoalMet() {
+        guard happiness >= goal else { return }
+        withAnimation { isFinished = true }
     }
 }

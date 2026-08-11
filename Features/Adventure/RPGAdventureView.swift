@@ -4,10 +4,11 @@ struct RPGAdventureView: View {
     @EnvironmentObject var appSettings: AppSettings
 
     enum RPGMode: String, CaseIterable {
-        case story, explore, minigames
+        case campaign, story, explore, minigames
 
         var titleKey: String {
             switch self {
+            case .campaign: return "adventure.mode.campaign.title"
             case .story: return "adventure.mode.story.title"
             case .explore: return "adventure.mode.explore.title"
             case .minigames: return "adventure.mode.minigames.title"
@@ -16,6 +17,7 @@ struct RPGAdventureView: View {
 
         var descriptionKey: String {
             switch self {
+            case .campaign: return "adventure.mode.campaign.desc"
             case .story: return "adventure.mode.story.desc"
             case .explore: return "adventure.mode.explore.desc"
             case .minigames: return "adventure.mode.minigames.desc"
@@ -24,6 +26,7 @@ struct RPGAdventureView: View {
 
         var icon: String {
             switch self {
+            case .campaign: return AppAssets.PlannedUI.scroll
             case .story: return AppAssets.PlannedUI.book
             case .explore: return AppAssets.PlannedUI.map
             case .minigames: return AppAssets.PlannedUI.gamepad
@@ -101,6 +104,8 @@ struct RPGAdventureView: View {
     @ViewBuilder
     private func rpgModeView(for mode: RPGMode) -> some View {
         switch mode {
+        case .campaign:
+            CampaignListView()
         case .story:
             StoryModeView()
         case .explore:

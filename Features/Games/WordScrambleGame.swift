@@ -5,6 +5,9 @@ struct WordScrambleGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
+    /// See `MemoryGame.onChallengeComplete`.
+    var onChallengeComplete: ((Int) -> Void)?
+
     @State private var words: [ScrambleWord] = []
     @State private var currentIndex = 0
     @State private var scrambledLetters: [Character] = []
@@ -74,7 +77,11 @@ struct WordScrambleGame: View {
                     buttonTitle: Loc.t("action.continue"),
                     action: {
                         progressManager.completeGame("word_scramble", stars: score)
-                        dismiss()
+                        if let onChallengeComplete {
+                            onChallengeComplete(score)
+                        } else {
+                            dismiss()
+                        }
                     }
                 )
             }
