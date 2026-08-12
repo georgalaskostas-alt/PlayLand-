@@ -16,9 +16,22 @@ private struct PanelHeightKey: PreferenceKey {
 ///
 /// Every size in this view is derived from the enclosing `GeometryReader`'s
 /// *local* coordinate space — never from `UIScreen.main.bounds`, and never
-/// left to a child's own "ideal" size, which is what let content overflow
-/// horizontally before (see `PanelHeightKey` and the width-pinning comments
-/// below for exactly where and why).
+/// left to a child's own "ideal" size.
+///
+/// A first attempt at the horizontal-overflow fix here relied on
+/// `.frame(maxWidth: .infinity, alignment: .leading)` propagating a bounded
+/// width down through a `ScrollView` and an `HStack`. That's ambiguous:
+/// `maxWidth: .infinity` only says "expand to fill *whatever's offered*" —
+/// it doesn't itself guarantee what's offered is already the real,
+/// margin-adjusted screen width, and a vertical `ScrollView`'s cross-axis
+/// sizing of unconstrained content is exactly the kind of thing that can
+/// differ from what static reading of the modifier chain suggests, which
+/// is what a real-device test caught. The panel below now computes its
+/// width *once*, from `geometry.size.width`, and passes that single
+/// concrete number down as a fixed `.frame(width:)` — not a `maxWidth` —
+/// so there's nothing left to negotiate: every descendant (the dialogue
+/// bubble, the choice buttons) is handed the same already-correct value
+/// and can only wrap within it, never claim more.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -50,29 +63,48 @@ struct InteractiveSceneView: View {
                     .id(currentScene.background)
 
                 if horizontalSizeClass == .regular {
-                    // iPad / regular width: artwork beside the panel.
-                    HStack(spacing: 20) {
-                        let regionHeight = geometry.size.height - 40
-                        let regionWidth = geometry.size.width * 0.42
+                    // iPad / regular width: artwork beside the panel. The
+                    // panel's width is computed once, right here, as
+                    // exactly the leftover HStack space (total width minus
+                    // the artwork's own width, the inter-item spacing, and
+                    // this HStack's own .padding(20) on both sides) — not
+                    // left for `maxWidth: .infinity` to resolve inside the
+                    // ScrollView further down. It's the *exact* leftover
+                    // amount, not an under-estimate, so the HStack's two
+                    // children exactly fill the space the HStack itself
+                    // was given; the panel's own internal 16pt padding
+                    // (see `panelContent`) provides its text inset, rather
+                    // than a second, separate margin subtracted here that
+                    // would leave asymmetric unclaimed space on one side.
+                    let outerPadding: CGFloat = 20
+                    let interItemSpacing: CGFloat = 20
+                    let regionHeight = geometry.size.height - 40
+                    let regionWidth = geometry.size.width * 0.42
+                    let panelWidth = max(geometry.size.width - regionWidth - interItemSpacing - outerPadding * 2, 0)
 
+                    HStack(spacing: interItemSpacing) {
                         sceneArt(regionSize: CGSize(width: regionWidth, height: regionHeight))
                             .frame(width: regionWidth, height: regionHeight)
 
-                        panel(cap: regionHeight)
-                            .frame(maxWidth: .infinity)
+                        panel(cap: regionHeight, width: panelWidth)
                     }
-                    .padding(20)
+                    .padding(outerPadding)
                 } else {
-                    // iPhone / compact width: artwork on top, panel below.
-                    VStack(spacing: 0) {
-                        let regionHeight = sceneHeight(totalHeight: geometry.size.height)
+                    // iPhone / compact width: artwork on top, panel below,
+                    // centered with an equal margin on both sides. Same
+                    // principle as the iPad branch: the panel's width is
+                    // computed once from `geometry.size.width` and handed
+                    // down as a concrete number.
+                    let regionHeight = sceneHeight(totalHeight: geometry.size.height)
+                    let panelWidth = max(geometry.size.width - PlayLandMetrics.contentHorizontalMargin * 2, 0)
 
+                    VStack(alignment: .center, spacing: 0) {
                         sceneArt(regionSize: CGSize(width: geometry.size.width, height: regionHeight))
                             .frame(width: geometry.size.width, height: regionHeight)
 
                         Spacer(minLength: 0)
 
-                        panel(cap: geometry.size.height * 0.55)
+                        panel(cap: geometry.size.height * 0.55, width: panelWidth)
                     }
                 }
             }
@@ -151,35 +183,33 @@ struct InteractiveSceneView: View {
 
     // MARK: - Interaction panel
 
-    private func panel(cap: CGFloat) -> some View {
+    /// `width` is the exact, already-margin-adjusted width computed by the
+    /// caller (see `body`) — a fixed number, not a `maxWidth` ceiling. Both
+    /// the `ScrollView` and its content are pinned to this same literal
+    /// value, so nothing here can end up wider than what was actually
+    /// computed, regardless of what a `ScrollView`'s cross-axis sizing or
+    /// an `HStack`'s flexibility heuristics would otherwise decide on
+    /// their own. Padding (in `panelContent`) is applied *before* this
+    /// fixed frame, i.e. inside `width` — never outside it, which would
+    /// silently add back the overflow this exists to prevent.
+    private func panel(cap: CGFloat, width: CGFloat) -> some View {
         ScrollView {
             panelContent
-                // This is the fix for the reported horizontal clipping.
-                // A vertical ScrollView does NOT constrain its content's
-                // width to its own viewport — it proposes the content's own
-                // *ideal* width along the cross axis. Without this pinned
-                // here, at the top of the content tree, a long sentence (no
-                // narrower ancestor forces it to wrap) renders on one
-                // unwrapped line and the excess is clipped at the right
-                // edge — exactly the reported bug. Pinning maxWidth here
-                // forces every descendant (narration text, choice buttons)
-                // to negotiate within the real available width instead.
-                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(width: width, alignment: .leading)
                 .background(
                     GeometryReader { proxy in
                         Color.clear.preference(key: PanelHeightKey.self, value: proxy.size.height)
                     }
                 )
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: width)
         // Size to the panel's actual measured content, capped — not a
         // flat `maxHeight`, which a ScrollView will greedily fill even
-        // when its content is one short line, producing the reported
-        // oversized empty panel under a single choice.
+        // when its content is one short line, producing an oversized
+        // empty panel under a single choice.
         .frame(height: measuredPanelHeight > 0 ? min(measuredPanelHeight, cap) : nil)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
-        .padding(.horizontal, 12)
         .padding(.bottom, 12)
         .onPreferenceChange(PanelHeightKey.self) { measuredPanelHeight = $0 }
     }

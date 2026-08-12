@@ -18,6 +18,16 @@ enum PlayLandMetrics {
 
     static let cardShadowRadius: CGFloat = 10
 
+    /// The one horizontal inset used to compute a screen's readable content
+    /// width (narration, choice buttons, dialogue) from the real width a
+    /// container offers — never a device-specific constant. See
+    /// `InteractiveSceneView` for the canonical usage: compute
+    /// `containerWidth - contentHorizontalMargin * 2` once, then pass that
+    /// single number down as a fixed `.frame(width:)` so every descendant
+    /// wraps against the same, unambiguous value instead of each
+    /// negotiating its own via `maxWidth: .infinity` propagation.
+    static let contentHorizontalMargin: CGFloat = 16
+
     /// Fixed, intentional (never raw-PNG-driven) logical render sizes for
     /// the RPG world. Every world image is wrapped in `.resizable()
     /// .scaledToFit().frame(width:height:)` using one of these, so a large
