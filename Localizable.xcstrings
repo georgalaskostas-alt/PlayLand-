@@ -2996,43 +2996,43 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis ist hungrig, durstig und schmutzig. Füttere, tränke und wasche ihn, bis er glücklich ist!"
+            "value": "Babis braucht deine Hilfe! Sieh ihn dir genau an. Was, glaubst du, braucht er?"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ο Μπάμπης πεινάει, διψάει και είναι λερωμένος. Τάισέ τον, πότισέ τον και καθάρισέ τον μέχρι να χαρεί!"
+            "value": "Ο Μπάμπης χρειάζεται τη βοήθειά σου! Κοίταξέ τον προσεκτικά. Τι νομίζεις ότι χρειάζεται;"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis is hungry, thirsty and dirty. Feed, water and clean him until he's happy!"
+            "value": "Babis needs your help! Look at him carefully. What do you think he needs?"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis tiene hambre, sed y está sucio. ¡Aliméntalo, dale agua y límpialo hasta que esté feliz!"
+            "value": "¡Babis necesita tu ayuda! Míralo con atención. ¿Qué crees que necesita?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis a faim, soif et est sale. Nourris-le, donne-lui de l'eau et lave-le jusqu'à ce qu'il soit heureux !"
+            "value": "Babis a besoin de ton aide ! Regarde-le attentivement. Que penses-tu qu'il lui faut ?"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis ha fame, sete ed è sporco. Nutrilo, dagli da bere e lavalo finché non è felice!"
+            "value": "Babis ha bisogno del tuo aiuto! Guardalo attentamente. Cosa pensi che gli serva?"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "O Babis está com fome, sede e sujo. Alimenta-o, dá-lhe água e limpa-o até ele ficar feliz!"
+            "value": "O Babis precisa da tua ajuda! Olha bem para ele. O que achas que ele precisa?"
           }
         }
       }
@@ -3272,43 +3272,43 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Du hast dich mit %lld Aktionen um Babis gekümmert."
+            "value": "Du hast es geschafft! Du hast Babis genau beobachtet und herausgefunden, was er alles brauchte!"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Φρόντισες τον Μπάμπη με %lld ενέργειες."
+            "value": "Τα κατάφερες! Παρατήρησες προσεκτικά τον Μπάμπη και βρήκες όλα όσα χρειαζόταν!"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You cared for Babis with %lld actions."
+            "value": "You did it! You watched Babis carefully and figured out everything he needed!"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cuidaste a Babis con %lld acciones."
+            "value": "¡Lo lograste! Observaste a Babis con atención y descubriste todo lo que necesitaba!"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu as pris soin de Babis avec %lld actions."
+            "value": "Tu as réussi ! Tu as bien observé Babis et découvert tout ce dont il avait besoin !"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ti sei preso cura di Babis con %lld azioni."
+            "value": "Ce l'hai fatta! Hai osservato Babis con attenzione e capito tutto ciò di cui aveva bisogno!"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cuidaste do Babis com %lld ações."
+            "value": "Conseguiste! Observaste o Babis com atenção e descobriste tudo o que ele precisava!"
           }
         }
       }
@@ -10363,6 +10363,650 @@
           "stringUnit": {
             "state": "translated",
             "value": "Cuidado: %lld/%lld"
+          }
+        }
+      }
+    },
+    "dino.farm.hint.dirty.general": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm, das ist es nicht. Schau dir Babis genau an — was fällt dir auf?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Χμμ, δεν είναι αυτό. Κοίταξε καλά τον Μπάμπη — τι παρατηρείς;"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm, that's not it. Take a good look at Babis — what do you notice?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm, no es eso. Mira bien a Babis — ¿qué notas?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm, ce n'est pas ça. Regarde bien Babis — que remarques-tu ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm, non è questo. Guarda bene Babis — cosa noti?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hmm, não é isso. Olha bem para o Babis — o que reparas?"
+          }
+        }
+      }
+    },
+    "dino.farm.hint.dirty.specific": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Siehst du den Schlamm auf Babis? Was könnte helfen, ihn sauber zu machen?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Βλέπεις τη λάσπη πάνω στον Μπάμπη; Τι θα μπορούσε να τον καθαρίσει;"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Can you see the mud on Babis? What could help clean it?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Ves el barro en Babis? ¿Qué podría ayudar a limpiarlo?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu vois la boue sur Babis ? Qu'est-ce qui pourrait aider à la nettoyer ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vedi il fango su Babis? Cosa potrebbe aiutare a pulirlo?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vês a lama no Babis? O que poderia ajudar a limpá-lo?"
+          }
+        }
+      }
+    },
+    "dino.farm.hint.hungry.general": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nicht ganz! Schau dir Babis genau an. Was, glaubst du, braucht er?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Όχι ακριβώς! Κοίταξε προσεκτικά τον Μπάμπη. Τι νομίζεις ότι χρειάζεται;"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not quite! Look closely at Babis. What do you think he needs?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡No es eso! Mira de cerca a Babis. ¿Qué crees que necesita?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas tout à fait ! Regarde bien Babis. Que penses-tu qu'il lui faut ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non proprio! Guarda bene Babis. Cosa pensi che gli serva?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não é bem isso! Olha bem para o Babis. O que achas que ele precisa?"
+          }
+        }
+      }
+    },
+    "dino.farm.hint.hungry.specific": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Schau dir Babis' Bauch und seinen Gesichtsausdruck an. Was könnte er brauchen?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Κοίταξε την κοιλίτσα και την έκφραση του Μπάμπη. Τι μπορεί να χρειάζεται;"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look at Babis's tummy and expression. What might he need?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mira la barriguita y la expresión de Babis. ¿Qué podría necesitar?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Regarde le ventre et l'expression de Babis. De quoi pourrait-il avoir besoin ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guarda la pancina e l'espressione di Babis. Di cosa potrebbe aver bisogno?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Olha para a barriguinha e a expressão do Babis. Do que será que ele precisa?"
+          }
+        }
+      }
+    },
+    "dino.farm.hint.thirsty.general": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Das ist es nicht. Schau dir Babis noch einmal an — was könnte er brauchen?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Δεν είναι αυτό. Κοίταξε ξανά τον Μπάμπη — τι μπορεί να χρειάζεται;"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's not it. Look at Babis again — what could he need?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No es eso. Mira de nuevo a Babis — ¿qué podría necesitar?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce n'est pas ça. Regarde encore Babis — de quoi pourrait-il avoir besoin ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non è questo. Guarda di nuovo Babis — di cosa potrebbe aver bisogno?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não é isso. Olha novamente para o Babis — do que ele poderá precisar?"
+          }
+        }
+      }
+    },
+    "dino.farm.hint.thirsty.specific": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sieht durstig aus. Welcher Gegenstand könnte ihm etwas zu trinken geben?"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ο Μπάμπης φαίνεται διψασμένος. Ποιο αντικείμενο θα του έδινε κάτι να πιει;"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis looks thirsty. Which item could give him something to drink?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis parece tener sed. ¿Qué objeto podría darle algo de beber?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis semble avoir soif. Quel objet pourrait lui donner quelque chose à boire ?"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sembra assetato. Quale oggetto potrebbe dargli qualcosa da bere?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Babis parece ter sede. Que item lhe poderia dar algo para beber?"
+          }
+        }
+      }
+    },
+    "dino.farm.praise.dirty": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Klasse! Du hast bemerkt, dass Babis schmutzig war, und die Bürste gewählt."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μπράβο! Παρατήρησες ότι ο Μπάμπης ήταν λερωμένος και διάλεξες τη βούρτσα."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Great job! You noticed that Babis was dirty and chose the brush."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Muy bien! Notaste que Babis estaba sucio y elegiste el cepillo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bravo ! Tu as remarqué que Babis était sale et tu as choisi la brosse."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ottimo lavoro! Hai notato che Babis era sporco e hai scelto la spazzola."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muito bem! Reparaste que o Babis estava sujo e escolheste a escova."
+          }
+        }
+      }
+    },
+    "dino.farm.praise.hungry": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gut gemacht! Babis war hungrig, Essen war also die richtige Wahl."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Μπράβο! Ο Μπάμπης πεινούσε, οπότε το φαγητό ήταν η σωστή επιλογή."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Well done! Babis was hungry, so food was the right choice."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Bien hecho! Babis tenía hambre, así que la comida era la opción correcta."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bien joué ! Babis avait faim, la nourriture était donc le bon choix."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ben fatto! Babis aveva fame, quindi il cibo era la scelta giusta."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muito bem! O Babis tinha fome, por isso a comida era a escolha certa."
+          }
+        }
+      }
+    },
+    "dino.farm.praise.thirsty": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgezeichnet! Babis war durstig, und du hast ihm Wasser gegeben."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Εξαιρετικά! Ο Μπάμπης διψούσε και του έδωσες νερό."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excellent! Babis was thirsty, and you gave him water."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Excelente! Babis tenía sed, y le diste agua."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excellent ! Babis avait soif, et tu lui as donné de l'eau."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eccellente! Babis aveva sete e gli hai dato dell'acqua."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Excelente! O Babis tinha sede, e deste-lhe água."
+          }
+        }
+      }
+    },
+    "dino.farm.state.dirty": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sieht schmutzig aus."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ο Μπάμπης φαίνεται λερωμένος."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis looks dirty."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis se ve sucio."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis a l'air sale."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sembra sporco."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Babis parece sujo."
+          }
+        }
+      }
+    },
+    "dino.farm.state.hungry": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sieht hungrig aus."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ο Μπάμπης φαίνεται πεινασμένος."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis looks hungry."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis se ve hambriento."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis a l'air d'avoir faim."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sembra affamato."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Babis parece esfomeado."
+          }
+        }
+      }
+    },
+    "dino.farm.state.thirsty": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sieht durstig aus."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ο Μπάμπης φαίνεται διψασμένος."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis looks thirsty."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis se ve sediento."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis a l'air d'avoir soif."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sembra assetato."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Babis parece ter sede."
+          }
+        }
+      }
+    },
+    "dino.farm.state.happy": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sieht glücklich aus."
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ο Μπάμπης φαίνεται χαρούμενος."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis looks happy."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis se ve feliz."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis a l'air heureux."
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis sembra felice."
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Babis parece feliz."
+          }
+        }
+      }
+    },
+    "dino.farm.state.excited": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis ist sehr glücklich und aufgeregt!"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ο Μπάμπης είναι πολύ χαρούμενος και ενθουσιασμένος!"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis is very happy and excited!"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¡Babis está muy feliz y emocionado!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis est très heureux et excité !"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Babis è molto felice ed entusiasta!"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Babis está muito feliz e entusiasmado!"
           }
         }
       }
