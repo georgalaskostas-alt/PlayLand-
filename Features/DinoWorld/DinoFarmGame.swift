@@ -11,12 +11,13 @@ private enum FallbackMoodTreatment: Equatable {
     case improving
     case happy
 
-    init(happiness: Int, goal: Int) {
-        let ratio = Double(happiness) / Double(goal)
-        switch ratio {
-        case ..<0.25: self = .sad
-        case ..<0.5: self = .neutral
-        case ..<1.0: self = .improving
+    /// Keyed off how many of the 3 care needs are still unmet (0-3), not a
+    /// continuous meter — there is no continuous meter anymore.
+    init(remainingNeeds: Int) {
+        switch remainingNeeds {
+        case 3: self = .sad
+        case 2: self = .neutral
+        case 1: self = .improving
         default: self = .happy
         }
     }
@@ -48,43 +49,58 @@ struct DinoFarmGame: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    @State private var happiness = 0
+    /// The 3 care needs. All start `true` — unsatisfied and visible —
+    /// the instant the screen appears, so Babis's need is communicated
+    /// BEFORE the child does anything, never only after a tap.
+    @State private var needsFood = true
+    @State private var needsWater = true
+    @State private var needsCleaning = true
     @State private var taps = 0
     @State private var isFinished = false
-    /// A brief per-action reaction (eating, drinking, a dirty→clean beat)
-    /// shown right after a care button tap, then cleared back to whatever
-    /// `progressState` says. `nil` means "show the progress state."
+    /// A brief per-action reaction (eating, drinking, a "just been
+    /// scrubbed" beat) shown right after a care button tap, then cleared
+    /// back to whatever `progressState` says. `nil` means "show the
+    /// persistent need/progress state."
     @State private var reactionState: BabisVisualState?
 
-    private let goal = 100
+    private let totalNeeds = 3
 
-    /// Babis' state from overall care progress alone: starts hungry,
-    /// settles to neutral, then happy, then excited once the goal is met.
+    private var satisfiedNeeds: Int {
+        totalNeeds - [needsFood, needsWater, needsCleaning].filter { $0 }.count
+    }
+
+    /// Babis' persistent state from which needs are still unmet — dirty
+    /// takes visual priority (the most immediately obvious problem), then
+    /// hunger, then thirst, so exactly one state drives the character art
+    /// even though several needs can be true at once. Never happy/excited
+    /// until every need is satisfied.
     private var progressState: BabisVisualState {
         if isFinished { return .excited }
-        let ratio = Double(happiness) / Double(goal)
-        switch ratio {
-        case ..<0.34: return .hungry
-        case ..<0.7: return .neutral
-        default: return .happy
-        }
+        if needsCleaning { return .dirty }
+        if needsFood { return .hungry }
+        if needsWater { return .thirsty }
+        return .happy
     }
 
     private var displayState: BabisVisualState { reactionState ?? progressState }
-    private var fallbackMood: FallbackMoodTreatment { FallbackMoodTreatment(happiness: happiness, goal: goal) }
+    private var fallbackMood: FallbackMoodTreatment { FallbackMoodTreatment(remainingNeeds: totalNeeds - satisfiedNeeds) }
     private var hasArtForDisplayState: Bool { BabisAssetResolver.hasSpecificAsset(for: displayState) }
 
-    /// The prop that visually confirms the current reaction — a full bowl
-    /// for eating/drinking, a splash/bubbles beat for the dirty→clean
-    /// cleaning sequence. `nil` outside those transient reactions.
-    private var reactionPropAsset: String? {
-        switch reactionState {
-        case .eating: return AppAssets.DinoFarmProps.foodBowlFull
-        case .drinking: return AppAssets.DinoFarmProps.waterBowlFull
-        case .dirty: return AppAssets.DinoFarmProps.mudSplash
-        case .clean: return AppAssets.DinoFarmProps.soapBubbles
-        default: return nil
+    /// The accent prop shown alongside Babis: a transient confirmation for
+    /// whichever action was just tapped (a full bowl, a burst of bubbles),
+    /// or — with no reaction playing — a persistent mud spot for as long
+    /// as cleaning is still needed, reinforcing the need the same way the
+    /// character art itself does.
+    private var accentPropAsset: String? {
+        if let reactionState {
+            switch reactionState {
+            case .eating: return AppAssets.DinoFarmProps.foodBowlFull
+            case .drinking: return AppAssets.DinoFarmProps.waterBowlFull
+            case .clean: return AppAssets.DinoFarmProps.soapBubbles
+            default: return nil
+            }
         }
+        return needsCleaning ? AppAssets.DinoFarmProps.mudSplash : nil
     }
 
     var body: some View {
@@ -102,11 +118,11 @@ struct DinoFarmGame: View {
                             .accessibilityHidden(true)
                     }
 
-                    if let reactionPropAsset, AppAssets.exists(reactionPropAsset) {
+                    if let accentPropAsset, AppAssets.exists(accentPropAsset) {
                         VStack {
                             Spacer()
                             HStack {
-                                AppAssets.image(reactionPropAsset)
+                                AppAssets.image(accentPropAsset)
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: PlayLandMetrics.worldPropAccentSize, height: PlayLandMetrics.worldPropAccentSize)
@@ -120,18 +136,18 @@ struct DinoFarmGame: View {
                 .frame(height: 200)
 
                 VStack(spacing: 6) {
-                    ProgressView(value: Double(happiness), total: Double(goal))
+                    ProgressView(value: Double(satisfiedNeeds), total: Double(totalNeeds))
                         .tint(PlayLandColors.leafGreen)
-                    Text(Loc.t("dino.farm.happinessLabel", happiness, goal))
+                    Text(Loc.t("dino.farm.needsLabel", satisfiedNeeds, totalNeeds))
                         .font(PlayLandTypography.body)
                         .foregroundColor(PlayLandColors.secondaryText)
                 }
                 .padding(.horizontal, 30)
 
                 HStack(spacing: 16) {
-                    careButton(title: Loc.t("dino.farm.feed"), assetName: AppAssets.DinoFarmProps.foodBowlEmpty, emoji: "🍓") { care(amount: 20, reaction: .eating) }
-                    careButton(title: Loc.t("dino.farm.water"), assetName: AppAssets.DinoFarmProps.waterBowlEmpty, emoji: "💧") { care(amount: 15, reaction: .drinking) }
-                    careButton(title: Loc.t("dino.farm.clean"), assetName: AppAssets.DinoFarmProps.cleaningBrush, emoji: "🧼") { performClean(amount: 15) }
+                    careButton(title: Loc.t("dino.farm.feed"), assetName: AppAssets.DinoFarmProps.foodBowlEmpty, emoji: "🍓", isSatisfied: !needsFood, action: feed)
+                    careButton(title: Loc.t("dino.farm.water"), assetName: AppAssets.DinoFarmProps.waterBowlEmpty, emoji: "💧", isSatisfied: !needsWater, action: water)
+                    careButton(title: Loc.t("dino.farm.clean"), assetName: AppAssets.DinoFarmProps.cleaningBrush, emoji: "🧼", isSatisfied: !needsCleaning, action: clean)
                 }
 
                 Spacer()
@@ -165,13 +181,16 @@ struct DinoFarmGame: View {
             .saturation(hasArtForDisplayState ? 1.0 : fallbackMood.saturation)
             .offset(y: hasArtForDisplayState ? 0 : fallbackMood.verticalOffset)
             .scaleEffect(displayState == .excited ? 1.08 : 1.0)
-            .animation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce), value: happiness)
+            .animation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce), value: satisfiedNeeds)
             .animation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.2)), value: reactionState)
     }
 
+    /// Satisfying all 3 needs in exactly 3 taps (one per need) earns the
+    /// full 3 stars; extra, unnecessary taps cost a star the same way
+    /// replaying any other game for a better score does.
     private var stars: Int {
-        if taps <= 6 { return 3 }
-        if taps <= 9 { return 2 }
+        if taps <= 3 { return 3 }
+        if taps <= 5 { return 2 }
         return 1
     }
 
@@ -187,10 +206,18 @@ struct DinoFarmGame: View {
         }
     }
 
-    private func careButton(title: String, assetName: String, emoji: String, action: @escaping () -> Void) -> some View {
+    private func careButton(title: String, assetName: String, emoji: String, isSatisfied: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             VStack(spacing: 6) {
-                careIcon(assetName: assetName, emoji: emoji)
+                ZStack(alignment: .topTrailing) {
+                    careIcon(assetName: assetName, emoji: emoji)
+                    if isSatisfied {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(PlayLandColors.leafGreen)
+                            .background(Circle().fill(.white))
+                            .offset(x: 8, y: -8)
+                    }
+                }
                 Text(title).font(.subheadline.weight(.semibold))
             }
             .frame(maxWidth: .infinity)
@@ -199,33 +226,40 @@ struct DinoFarmGame: View {
             .background(PlayLandColors.warmCream)
             .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
             .shadow(color: .black.opacity(0.1), radius: 3, y: 2)
+            .opacity(isSatisfied ? 0.6 : 1.0)
         }
-        .disabled(isFinished)
+        .disabled(isFinished || isSatisfied)
     }
 
-    private func care(amount: Int, reaction: BabisVisualState) {
+    private func feed() {
+        guard needsFood else { return }
         taps += 1
-        happiness = min(goal, happiness + amount)
         AudioManager.shared.play(.correct)
-        showReaction(reaction, for: 0.9)
-        finishIfGoalMet()
+        showReaction(.eating, for: 0.9)
+        needsFood = false
+        finishIfAllNeedsMet()
     }
 
-    /// Cleaning gets its own two-beat reaction — a flash of "dirty" (being
-    /// scrubbed) settling into "clean" — instead of a single static state.
-    private func performClean(amount: Int) {
+    private func water() {
+        guard needsWater else { return }
         taps += 1
-        happiness = min(goal, happiness + amount)
         AudioManager.shared.play(.correct)
+        showReaction(.drinking, for: 0.9)
+        needsWater = false
+        finishIfAllNeedsMet()
+    }
 
-        withAnimation { reactionState = .dirty }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
-            withAnimation { reactionState = .clean }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.1) {
-            withAnimation { reactionState = nil }
-        }
-        finishIfGoalMet()
+    /// Babis is already shown dirty from the moment the screen appears —
+    /// tapping Clean plays a short "just been scrubbed" confirmation and
+    /// then reveals whatever need is next (or happy/excited if that was
+    /// the last one). There's no separate "become dirty" step to play.
+    private func clean() {
+        guard needsCleaning else { return }
+        taps += 1
+        AudioManager.shared.play(.correct)
+        showReaction(.clean, for: 0.9)
+        needsCleaning = false
+        finishIfAllNeedsMet()
     }
 
     private func showReaction(_ state: BabisVisualState, for duration: Double) {
@@ -235,8 +269,8 @@ struct DinoFarmGame: View {
         }
     }
 
-    private func finishIfGoalMet() {
-        guard happiness >= goal else { return }
+    private func finishIfAllNeedsMet() {
+        guard !needsFood, !needsWater, !needsCleaning else { return }
         withAnimation { isFinished = true }
     }
 }

@@ -2996,43 +2996,43 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis ist hungrig und einsam. Füttere, wasche und spiele mit ihm, bis er glücklich ist!"
+            "value": "Babis ist hungrig, durstig und schmutzig. Füttere, tränke und wasche ihn, bis er glücklich ist!"
           }
         },
         "el": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ο Μπάμπης πεινάει και είναι μόνος. Τάισέ τον, καθάρισέ τον και παίξε μαζί του μέχρι να χαρεί!"
+            "value": "Ο Μπάμπης πεινάει, διψάει και είναι λερωμένος. Τάισέ τον, πότισέ τον και καθάρισέ τον μέχρι να χαρεί!"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis is hungry and lonely. Feed, clean and play with him until he's happy!"
+            "value": "Babis is hungry, thirsty and dirty. Feed, water and clean him until he's happy!"
           }
         },
         "es": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis tiene hambre y está solo. ¡Aliméntalo, límpialo y juega con él hasta que esté feliz!"
+            "value": "Babis tiene hambre, sed y está sucio. ¡Aliméntalo, dale agua y límpialo hasta que esté feliz!"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis a faim et se sent seul. Nourris-le, lave-le et joue avec lui jusqu'à ce qu'il soit heureux !"
+            "value": "Babis a faim, soif et est sale. Nourris-le, donne-lui de l'eau et lave-le jusqu'à ce qu'il soit heureux !"
           }
         },
         "it": {
           "stringUnit": {
             "state": "translated",
-            "value": "Babis ha fame ed è solo. Nutrilo, lavalo e gioca con lui finché non è felice!"
+            "value": "Babis ha fame, sete ed è sporco. Nutrilo, dagli da bere e lavalo finché non è felice!"
           }
         },
         "pt": {
           "stringUnit": {
             "state": "translated",
-            "value": "O Babis está com fome e sozinho. Alimenta-o, limpa-o e brinca com ele até ele ficar feliz!"
+            "value": "O Babis está com fome, sede e sujo. Alimenta-o, dá-lhe água e limpa-o até ele ficar feliz!"
           }
         }
       }
@@ -10317,6 +10317,52 @@
           "stringUnit": {
             "state": "translated",
             "value": "%lld / %lld capítulos concluídos"
+          }
+        }
+      }
+    },
+    "dino.farm.needsLabel": {
+      "localizations": {
+        "de": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Versorgt: %lld/%lld"
+          }
+        },
+        "el": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Φροντίδα: %lld/%lld"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Care: %lld/%lld"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuidado: %lld/%lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soin : %lld/%lld"
+          }
+        },
+        "it": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cure: %lld/%lld"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuidado: %lld/%lld"
           }
         }
       }
