@@ -18,14 +18,14 @@ enum PlayLandMetrics {
 
     static let cardShadowRadius: CGFloat = 10
 
-    /// The one horizontal inset used to compute a screen's readable content
-    /// width (narration, choice buttons, dialogue) from the real width a
-    /// container offers — never a device-specific constant. See
-    /// `InteractiveSceneView` for the canonical usage: compute
-    /// `containerWidth - contentHorizontalMargin * 2` once, then pass that
-    /// single number down as a fixed `.frame(width:)` so every descendant
-    /// wraps against the same, unambiguous value instead of each
-    /// negotiating its own via `maxWidth: .infinity` propagation.
+    /// The one horizontal inset used for a screen's readable content
+    /// (narration, choice buttons, dialogue) — never a device-specific
+    /// constant. See `InteractiveSceneView` for the canonical usage:
+    /// applied as real `.padding(.horizontal, contentHorizontalMargin)`
+    /// at the content's call site, with a local `GeometryReader` measuring
+    /// whatever width remains after it — not computed via arithmetic, so
+    /// there's no hand-tracked sum of paddings/spacings that can drift out
+    /// of sync with the real layout.
     static let contentHorizontalMargin: CGFloat = 16
 
     /// Fixed, intentional (never raw-PNG-driven) logical render sizes for
