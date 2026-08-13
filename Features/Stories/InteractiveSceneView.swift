@@ -5,47 +5,51 @@ import SwiftUI
 /// Adventure's Story Mode chapters, so the scene/choice engine only needs
 /// to exist once.
 ///
-/// ## Three attempts at the horizontal-overflow fix, and why the first two
-/// weren't enough
+/// ## The two confirmed bugs, from real-device diagnostic evidence
 ///
-/// 1. `.frame(maxWidth: .infinity, alignment: .leading)` pinned inside a
-///    `ScrollView`. `maxWidth: .infinity` sets no *upper bound* — if
-///    anything inside still reported wanting more width than was on
-///    screen, the whole chain would happily grow to fit it.
-/// 2. A width computed via arithmetic (`geometry.size.width` minus a
-///    hand-tracked sum of paddings/spacings), applied as a fixed
-///    `.frame(width:)`, with the interaction panel wrapped in its own
-///    `GeometryReader` for both width *and* height. This one was
-///    over-engineered in a different direction: using that inner
-///    `GeometryReader`'s *height* to size the panel created a circular
-///    dependency (the panel's rendered height depended on a
-///    `PreferenceKey` measurement of its own content, which itself only
-///    stabilized after the panel had already rendered), and on the very
-///    first layout pass — before any measurement exists — a bare
-///    `GeometryReader` is greedy: it competed with the `Spacer()` above it
-///    for the entire remaining `VStack` height rather than sizing to its
-///    two short choice buttons. That's the "massively oversized empty
-///    panel" a real device confirmed. The *width* half of that fix (the
-///    reader-as-sizing-wall idea) wasn't actually wrong, but the
-///    left-clipping persisted anyway, and two rounds of unconfirmed
-///    layout theory is enough — this pass simplifies instead of adding a
-///    third layer of geometry math on top of the first two.
+/// A diagnostic build (colored borders + runtime frame logging on a
+/// physical iPhone) tracked down two structural issues that no amount of
+/// static layout reasoning had found:
 ///
-/// The current approach removes all of that in favor of the plainest
-/// SwiftUI idiom for "content that wraps and sizes to itself": narration
-/// and choices live in a normal `VStack` with
-/// `.frame(maxWidth: .infinity, alignment: .leading)` and a real
-/// `.padding(.horizontal:)`, and the surrounding `ScrollView` uses
-/// `.fixedSize(horizontal: false, vertical: true)` + `.frame(maxHeight:)`
-/// — a standard, well-documented pairing: `fixedSize` makes the scroll
-/// view report its *content's* natural height to its parent (so a short
-/// panel only ever claims a short amount of space — no `PreferenceKey`
-/// measurement needed), and `frame(maxHeight:)` is purely an upper bound
-/// that only starts clipping/scrolling once content genuinely exceeds it.
-/// The one remaining `GeometryReader`, at the very top of `body`, is
-/// still needed: it's what tells this view the real width/height it has
-/// to divide between artwork and panel in the first place, and there is
-/// no way to know that without asking the container.
+/// 1. **Narration width.** Choice buttons were always contained correctly;
+///    narration was not — its text painted outside the left edge of the
+///    screen. The cause was `HStack { SpeakerButton; CharacterDialogueBubble }`
+///    in `panelContent`: an `HStack` splits its offered width between its
+///    children, and that negotiation is what let the bubble claim more
+///    width than it was actually offered, even though `CharacterDialogueBubble`'s
+///    own modifiers were fine in isolation. Choices never went through this
+///    negotiation, which is exactly why they were unaffected.
+///
+///    Fixed by removing `SpeakerButton` from narration's horizontal sizing
+///    path entirely: it's now a `ZStack` overlay on top of
+///    `CharacterDialogueBubble` instead of a sibling beside it. A `ZStack`
+///    proposes its own full resolved size to *each* child independently —
+///    there's no splitting — so `SpeakerButton` can no longer influence the
+///    width `CharacterDialogueBubble` receives. The bubble now gets the
+///    same bounded width choice buttons get, from the same parent.
+///
+/// 2. **Panel height.** `ScrollView` + `.fixedSize(horizontal: false,
+///    vertical: true)` + `.frame(maxHeight:)` — a commonly-cited pattern
+///    for "content-driven height with a cap" — was confirmed on-device to
+///    not behave that way in this hierarchy: the panel rendered far taller
+///    than its actual content, leaving large empty space below the choice
+///    buttons.
+///
+///    Fixed by making the panel a plain, ordinary `VStack` with no
+///    `ScrollView` and no height cap of its own — its height comes only
+///    from its children (narration + choices) plus padding, the same way
+///    any normal SwiftUI view sizes itself. For scenes whose *total*
+///    on-screen content (artwork + panel) genuinely exceeds the available
+///    height — long narration, larger Dynamic Type sizes — the iPhone
+///    layout wraps artwork+panel together in one outer `ScrollView`, so
+///    there is exactly one, clearly-owned scrolling region and it only
+///    engages when content actually overflows. A normal short scene never
+///    triggers it.
+///
+/// The one remaining `GeometryReader`, at the very top of `body`, is still
+/// needed: it's what tells this view the real width/height it has to
+/// divide between artwork and panel, and there is no way to know that
+/// without asking the container.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -74,65 +78,56 @@ struct InteractiveSceneView: View {
                     .id(currentScene.background)
 
                 if horizontalSizeClass == .regular {
-                    // iPad / regular width: artwork beside the panel.
-                    // `.frame(maxWidth: .infinity)` tells the HStack "give
-                    // this child the leftover space after the artwork's
-                    // fixed regionWidth" — the panel itself never claims
-                    // more than that, or more vertical space than its own
-                    // content needs (see `panel(maxHeight:)`).
+                    // iPad / regular width: artwork beside the panel,
+                    // side by side. `.frame(maxWidth: .infinity)` gives the
+                    // panel the leftover width after the artwork's fixed
+                    // regionWidth; the panel's height comes purely from its
+                    // own content (see `panel`).
                     let regionHeight = geometry.size.height - 40
                     let regionWidth = geometry.size.width * 0.42
 
                     HStack(alignment: .top, spacing: 20) {
                         sceneArt(regionSize: CGSize(width: regionWidth, height: regionHeight))
                             .frame(width: regionWidth, height: regionHeight)
-                            .debugLayout("art", .orange)
 
-                        panel(maxHeight: regionHeight)
+                        panel
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                     .padding(20)
                 } else {
                     // iPhone / compact width: artwork on top at a fixed
-                    // fraction of the screen (independent of how much
-                    // dialogue text there is — no circular "artwork size
-                    // depends on panel size which depends on artwork size"
-                    // to reason about), then the panel sized to its own
-                    // content directly below it, then a trailing Spacer
-                    // absorbing whatever's left.
+                    // fraction of the screen, then the content-sized panel
+                    // directly below it. The two are wrapped in a single
+                    // outer ScrollView so genuinely tall content (long
+                    // narration, large Dynamic Type) can scroll — but a
+                    // normal short scene's total height stays under the
+                    // screen's, so it never actually scrolls or leaves
+                    // empty space.
                     let artHeight = geometry.size.height * 0.42
 
-                    VStack(spacing: 12) {
-                        sceneArt(regionSize: CGSize(width: geometry.size.width, height: artHeight))
-                            .frame(width: geometry.size.width, height: artHeight)
-                            .debugLayout("art", .orange)
+                    ScrollView {
+                        VStack(spacing: 12) {
+                            sceneArt(regionSize: CGSize(width: geometry.size.width, height: artHeight))
+                                .frame(width: geometry.size.width, height: artHeight)
 
-                        panel(maxHeight: geometry.size.height * 0.48)
-                            .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
-                            .debugLayout("marginContainer", .pink)
-
-                        Spacer(minLength: 0)
+                            panel
+                                .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
+                                .padding(.bottom, 12)
+                        }
+                        .frame(width: geometry.size.width)
                     }
-                    .padding(.bottom, 12)
                 }
             }
             // Hard backstop: nothing rendered inside this scene can ever
             // claim more width or height than the device actually has.
             .frame(width: geometry.size.width, height: geometry.size.height)
             .clipped()
-            .debugLayout("scene", .red)
         }
         .animation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.3)), value: currentIndex)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { enterScene() }
         .onChange(of: currentIndex) { _ in enterScene() }
-        // TEMPORARY — see DesignSystem/LayoutDebugTemp.swift. Collects
-        // every `.debugLayout(...)` frame from this entire view (including
-        // CharacterDialogueBubble's, a different file — PreferenceKey
-        // values propagate up regardless of which file attached them) and
-        // prints them once per layout pass.
-        .onPreferenceChange(DebugFramePreferenceKey.self) { printLayoutDebug($0) }
     }
 
     // MARK: - Scene art
@@ -185,41 +180,37 @@ struct InteractiveSceneView: View {
 
     // MARK: - Interaction panel
 
-    /// Sizes itself to `panelContent`'s own natural height — a short
-    /// scene (narration + 1-2 choices) produces a short, compact panel —
-    /// and only starts clipping/scrolling once that natural height
-    /// exceeds `maxHeight`. No measurement, no `PreferenceKey`, no nested
-    /// `GeometryReader`: `.fixedSize(vertical: true)` is what makes a
-    /// `ScrollView` report its content's real height to its parent
-    /// instead of greedily claiming whatever the parent offers, and
-    /// `.frame(maxHeight:)` is a plain upper bound layered on top of that.
-    private func panel(maxHeight: CGFloat) -> some View {
-        ScrollView {
-            panelContent
-        }
-        .fixedSize(horizontal: false, vertical: true)
-        .frame(maxHeight: maxHeight)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
-        .debugLayout("panel", .blue)
+    /// A plain, content-sized panel: its height comes only from
+    /// `panelContent`'s children and padding — no `ScrollView`, no height
+    /// cap, no measurement. See the type-level doc comment for why the
+    /// previous `ScrollView` + `fixedSize` + `frame(maxHeight:)` approach
+    /// is gone.
+    private var panel: some View {
+        panelContent
+            .background(.ultraThinMaterial)
+            .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
     }
 
-    /// `.frame(maxWidth: .infinity, alignment: .leading)` here is what
-    /// makes this content claim exactly the width its parent (the
-    /// `ScrollView` above) offers — no more, no less — so narration and
-    /// choice buttons wrap against a real, finite width instead of each
-    /// negotiating their own.
+    /// Narration and choices are siblings in one `VStack` that receives
+    /// the parent's full offered width via
+    /// `.frame(maxWidth: .infinity, alignment: .leading)` — the same
+    /// bounded width for both, no separate width computation for either.
+    /// `SpeakerButton` is layered on top of `CharacterDialogueBubble` as a
+    /// `ZStack` overlay so it never participates in the bubble's width
+    /// negotiation (see the type-level doc comment).
     private var panelContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            HStack(alignment: .top, spacing: 10) {
-                SpeakerButton(text: narrationText)
+            ZStack(alignment: .topTrailing) {
                 CharacterDialogueBubble(text: narrationText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+
+                SpeakerButton(text: narrationText)
+                    .padding(8)
             }
 
             if currentScene.choices.isEmpty {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
-                    .debugLayout("choices", .cyan)
             } else {
                 VStack(spacing: 10) {
                     ForEach(currentScene.choices) { choice in
@@ -229,12 +220,10 @@ struct InteractiveSceneView: View {
                         .buttonStyle(PlayLandChoiceButtonStyle())
                     }
                 }
-                .debugLayout("choices", .cyan)
             }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .debugLayout("panelContent", .green)
     }
 
     private func choose(_ choice: StoryChoice) {
