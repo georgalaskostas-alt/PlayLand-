@@ -24,50 +24,126 @@ struct StoryContent: Identifiable {
 }
 
 enum StoryLibrary {
+    private static func next(_ scene: Int) -> [StoryChoice] {
+        [StoryChoice(textKey: "story.babisKotsifi.continue", nextSceneIndex: scene)]
+    }
+
     static let stories: [StoryContent] = [
         StoryContent(
             id: "babis_kotsifi",
             titleKey: "story.babisKotsifi.title",
             descriptionKey: "story.babisKotsifi.desc",
-            coverImageName: AppAssets.Characters.babis,
+            coverImageName: BabisVisualState.happy.plannedAssetName,
             scenes: [
+                // 0 — The dinosaur everyone fears
                 StoryScene(
                     background: AppAssets.Backgrounds.forestDay,
-                    characters: [AppAssets.Characters.babis],
+                    characters: [BabisVisualState.neutral.plannedAssetName],
                     narrationKey: "story.babisKotsifi.scene0.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.babisKotsifi.scene0.choice0", nextSceneIndex: 1),
-                        StoryChoice(textKey: "story.babisKotsifi.scene0.choice1", nextSceneIndex: 2)
-                    ]
+                    choices: next(1)
                 ),
+                // 1 — Kotsifi lands on Babis's nose
                 StoryScene(
                     background: AppAssets.Backgrounds.forestDay,
-                    characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi],
+                    characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.KotsifiStates.idle],
                     narrationKey: "story.babisKotsifi.scene1.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.babisKotsifi.scene1.choice0", nextSceneIndex: 3)
-                    ]
+                    choices: next(2)
                 ),
+                // 2 — Kotsifi sees the kindness underneath
                 StoryScene(
                     background: AppAssets.Backgrounds.forestDay,
-                    characters: [AppAssets.Characters.babis],
+                    characters: [BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.talking],
                     narrationKey: "story.babisKotsifi.scene2.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.babisKotsifi.scene2.choice0", nextSceneIndex: 1)
-                    ]
+                    choices: next(3)
                 ),
+                // 3 — The agreement that starts their friendship
                 StoryScene(
                     background: AppAssets.Backgrounds.forestDay,
-                    characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi],
+                    characters: [BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.happy],
                     narrationKey: "story.babisKotsifi.scene3.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.babisKotsifi.scene3.choice0", nextSceneIndex: 4)
-                    ]
+                    choices: next(4)
                 ),
+                // 4 — Kotsifi guides Babis to water
+                StoryScene(
+                    background: AppAssets.Backgrounds.forestDay,
+                    characters: [BabisVisualState.drinking.plannedAssetName, AppAssets.KotsifiStates.happy],
+                    narrationKey: "story.babisKotsifi.scene4.narration",
+                    choices: next(5)
+                ),
+                // 5 — The orchard and a full tummy
                 StoryScene(
                     background: AppAssets.Backgrounds.village,
-                    characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi],
-                    narrationKey: "story.babisKotsifi.scene4.narration",
+                    characters: [BabisVisualState.eating.plannedAssetName, AppAssets.KotsifiStates.happy],
+                    narrationKey: "story.babisKotsifi.scene5.narration",
+                    choices: next(6)
+                ),
+                // 6 — They become best friends
+                StoryScene(
+                    background: AppAssets.Backgrounds.forestDay,
+                    characters: [BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.happy],
+                    narrationKey: "story.babisKotsifi.scene6.narration",
+                    choices: next(7)
+                ),
+                // 7 — The fox watches from the bushes
+                StoryScene(
+                    background: AppAssets.Backgrounds.forestDay,
+                    characters: [AppAssets.FoxStates.smirk, BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.idle],
+                    narrationKey: "story.babisKotsifi.scene7.narration",
+                    choices: next(8)
+                ),
+                // 8 — The theft from Babis's cave
+                StoryScene(
+                    background: AppAssets.Backgrounds.foxCave,
+                    characters: [AppAssets.FoxStates.smirk],
+                    narrationKey: "story.babisKotsifi.scene8.narration",
+                    choices: next(9)
+                ),
+                // 9 — Babis discovers what is missing
+                StoryScene(
+                    background: AppAssets.Backgrounds.cave,
+                    characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.KotsifiStates.surprised],
+                    narrationKey: "story.babisKotsifi.scene9.narration",
+                    choices: [
+                        StoryChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 10),
+                        StoryChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 10)
+                    ]
+                ),
+                // 10 — Kotsifi uses his special skill: seeing from high above
+                StoryScene(
+                    background: AppAssets.Backgrounds.forestDay,
+                    characters: [AppAssets.KotsifiStates.fly1, BabisVisualState.neutral.plannedAssetName],
+                    narrationKey: "story.babisKotsifi.scene10.narration",
+                    choices: next(11)
+                ),
+                // 11 — Babis chooses a plan instead of acting in anger
+                StoryScene(
+                    background: AppAssets.Backgrounds.forestNight,
+                    characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.KotsifiStates.idle],
+                    narrationKey: "story.babisKotsifi.scene11.narration",
+                    choices: next(12)
+                ),
+                // 12 — The fox is confronted and must choose how to make amends
+                StoryScene(
+                    background: AppAssets.Backgrounds.foxCave,
+                    characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.FoxStates.worried, AppAssets.KotsifiStates.idle],
+                    narrationKey: "story.babisKotsifi.scene12.narration",
+                    choices: [
+                        StoryChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13),
+                        StoryChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13)
+                    ]
+                ),
+                // 13 — Returning what was stolen and apologizing
+                StoryScene(
+                    background: AppAssets.Backgrounds.village,
+                    characters: [AppAssets.FoxStates.friendly, BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.happy],
+                    narrationKey: "story.babisKotsifi.scene13.narration",
+                    choices: next(14)
+                ),
+                // 14 — Babis becomes the forest's hero
+                StoryScene(
+                    background: AppAssets.Backgrounds.forestDay,
+                    characters: [BabisVisualState.excited.plannedAssetName, AppAssets.KotsifiStates.happy, AppAssets.FoxStates.friendly],
+                    narrationKey: "story.babisKotsifi.scene14.narration",
                     choices: []
                 )
             ]
@@ -91,25 +167,19 @@ enum StoryLibrary {
                     background: AppAssets.Backgrounds.cave,
                     characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi],
                     narrationKey: "story.caveCrystals.scene1.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.caveCrystals.scene1.choice0", nextSceneIndex: 3)
-                    ]
+                    choices: [StoryChoice(textKey: "story.caveCrystals.scene1.choice0", nextSceneIndex: 3)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.cave,
                     characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi],
                     narrationKey: "story.caveCrystals.scene2.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.caveCrystals.scene2.choice0", nextSceneIndex: 3)
-                    ]
+                    choices: [StoryChoice(textKey: "story.caveCrystals.scene2.choice0", nextSceneIndex: 3)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.foxCave,
                     characters: [AppAssets.Characters.fox, AppAssets.Characters.babis],
                     narrationKey: "story.caveCrystals.scene3.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.caveCrystals.scene3.choice0", nextSceneIndex: 4)
-                    ]
+                    choices: [StoryChoice(textKey: "story.caveCrystals.scene3.choice0", nextSceneIndex: 4)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.village,
@@ -138,25 +208,19 @@ enum StoryLibrary {
                     background: AppAssets.Backgrounds.forestNight,
                     characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi],
                     narrationKey: "story.forestHero.scene1.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.forestHero.scene1.choice0", nextSceneIndex: 2)
-                    ]
+                    choices: [StoryChoice(textKey: "story.forestHero.scene1.choice0", nextSceneIndex: 2)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.forestNight,
                     characters: [AppAssets.Characters.babis, AppAssets.Characters.fox],
                     narrationKey: "story.forestHero.scene2.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.forestHero.scene2.choice0", nextSceneIndex: 3)
-                    ]
+                    choices: [StoryChoice(textKey: "story.forestHero.scene2.choice0", nextSceneIndex: 3)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.forestNight,
                     characters: [AppAssets.Characters.babis, AppAssets.Characters.fox, AppAssets.Characters.kotsifi],
                     narrationKey: "story.forestHero.scene3.narration",
-                    choices: [
-                        StoryChoice(textKey: "story.forestHero.scene3.choice0", nextSceneIndex: 4)
-                    ]
+                    choices: [StoryChoice(textKey: "story.forestHero.scene3.choice0", nextSceneIndex: 4)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.village,
@@ -195,9 +259,7 @@ enum ChapterLibrary {
                     background: AppAssets.Backgrounds.forestDay,
                     characters: [AppAssets.Characters.babis],
                     narrationKey: "chapter.meetingBabis.scene0.narration",
-                    choices: [
-                        StoryChoice(textKey: "chapter.meetingBabis.scene0.choice0", nextSceneIndex: 1)
-                    ]
+                    choices: [StoryChoice(textKey: "chapter.meetingBabis.scene0.choice0", nextSceneIndex: 1)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.forestDay,
@@ -218,9 +280,7 @@ enum ChapterLibrary {
                     background: AppAssets.Backgrounds.forestDay,
                     characters: [AppAssets.Characters.babis],
                     narrationKey: "chapter.kotsifiArrives.scene0.narration",
-                    choices: [
-                        StoryChoice(textKey: "chapter.kotsifiArrives.scene0.choice0", nextSceneIndex: 1)
-                    ]
+                    choices: [StoryChoice(textKey: "chapter.kotsifiArrives.scene0.choice0", nextSceneIndex: 1)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.forestDay,
@@ -265,9 +325,7 @@ enum ChapterLibrary {
                     background: AppAssets.Backgrounds.forestNight,
                     characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox],
                     narrationKey: "chapter.forestHero.scene0.narration",
-                    choices: [
-                        StoryChoice(textKey: "chapter.forestHero.scene0.choice0", nextSceneIndex: 1)
-                    ]
+                    choices: [StoryChoice(textKey: "chapter.forestHero.scene0.choice0", nextSceneIndex: 1)]
                 ),
                 StoryScene(
                     background: AppAssets.Backgrounds.village,
