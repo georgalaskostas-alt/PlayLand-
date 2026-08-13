@@ -21,11 +21,11 @@ enum PlayLandMetrics {
     /// The one horizontal inset used for a screen's readable content
     /// (narration, choice buttons, dialogue) — never a device-specific
     /// constant. See `InteractiveSceneView` for the canonical usage:
-    /// applied as real `.padding(.horizontal, contentHorizontalMargin)`
-    /// at the content's call site, with a local `GeometryReader` measuring
-    /// whatever width remains after it — not computed via arithmetic, so
-    /// there's no hand-tracked sum of paddings/spacings that can drift out
-    /// of sync with the real layout.
+    /// applied as ordinary `.padding(.horizontal, contentHorizontalMargin)`
+    /// on the content itself, which — combined with that content's own
+    /// `.frame(maxWidth: .infinity, alignment: .leading)` — is enough for
+    /// it to wrap against its parent's real width. No arithmetic, no
+    /// measurement.
     static let contentHorizontalMargin: CGFloat = 16
 
     /// Fixed, intentional (never raw-PNG-driven) logical render sizes for
