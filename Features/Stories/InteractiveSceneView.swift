@@ -86,6 +86,7 @@ struct InteractiveSceneView: View {
                     HStack(alignment: .top, spacing: 20) {
                         sceneArt(regionSize: CGSize(width: regionWidth, height: regionHeight))
                             .frame(width: regionWidth, height: regionHeight)
+                            .debugLayout("art", .orange)
 
                         panel(maxHeight: regionHeight)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -104,9 +105,11 @@ struct InteractiveSceneView: View {
                     VStack(spacing: 12) {
                         sceneArt(regionSize: CGSize(width: geometry.size.width, height: artHeight))
                             .frame(width: geometry.size.width, height: artHeight)
+                            .debugLayout("art", .orange)
 
                         panel(maxHeight: geometry.size.height * 0.48)
                             .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
+                            .debugLayout("marginContainer", .pink)
 
                         Spacer(minLength: 0)
                     }
@@ -117,12 +120,19 @@ struct InteractiveSceneView: View {
             // claim more width or height than the device actually has.
             .frame(width: geometry.size.width, height: geometry.size.height)
             .clipped()
+            .debugLayout("scene", .red)
         }
         .animation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.3)), value: currentIndex)
         .navigationTitle(title)
         .navigationBarTitleDisplayMode(.inline)
         .onAppear { enterScene() }
         .onChange(of: currentIndex) { _ in enterScene() }
+        // TEMPORARY — see DesignSystem/LayoutDebugTemp.swift. Collects
+        // every `.debugLayout(...)` frame from this entire view (including
+        // CharacterDialogueBubble's, a different file — PreferenceKey
+        // values propagate up regardless of which file attached them) and
+        // prints them once per layout pass.
+        .onPreferenceChange(DebugFramePreferenceKey.self) { printLayoutDebug($0) }
     }
 
     // MARK: - Scene art
@@ -191,6 +201,7 @@ struct InteractiveSceneView: View {
         .frame(maxHeight: maxHeight)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
+        .debugLayout("panel", .blue)
     }
 
     /// `.frame(maxWidth: .infinity, alignment: .leading)` here is what
@@ -208,6 +219,7 @@ struct InteractiveSceneView: View {
             if currentScene.choices.isEmpty {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
+                    .debugLayout("choices", .cyan)
             } else {
                 VStack(spacing: 10) {
                     ForEach(currentScene.choices) { choice in
@@ -217,10 +229,12 @@ struct InteractiveSceneView: View {
                         .buttonStyle(PlayLandChoiceButtonStyle())
                     }
                 }
+                .debugLayout("choices", .cyan)
             }
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .debugLayout("panelContent", .green)
     }
 
     private func choose(_ choice: StoryChoice) {

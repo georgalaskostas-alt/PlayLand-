@@ -28,9 +28,16 @@ struct CharacterDialogueBubble: View {
             .foregroundColor(.white)
             .multilineTextAlignment(.leading)
             .fixedSize(horizontal: false, vertical: true)
+            // TEMPORARY — see DesignSystem/LayoutDebugTemp.swift. Measures
+            // the raw Text's own bounds, before padding/frame are applied,
+            // so it's possible to tell whether the Text itself is already
+            // wider than intended at this point vs. becoming so later.
+            .debugLayout("narrationText", .yellow)
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color.black.opacity(0.55))
             .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
+            // TEMPORARY — see DesignSystem/LayoutDebugTemp.swift.
+            .debugLayout("dialogueBubble", .purple)
     }
 }
