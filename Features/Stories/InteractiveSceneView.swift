@@ -14,12 +14,53 @@ struct InteractiveSceneView: View {
 
     @State private var currentIndex = 0
     @State private var hasEnteredScene = false
+    @State private var choiceFeedback: String?
+
+    private struct PresentedChoice: Identifiable {
+        let id = UUID()
+        let textKey: String
+        let nextSceneIndex: Int?
+        let isCorrect: Bool
+        let feedbackKey: String?
+    }
 
     private var currentScene: StoryScene {
         scenes[min(currentIndex, scenes.count - 1)]
     }
 
     private var narrationText: String { Loc.t(currentScene.narrationKey) }
+
+    /// A few key scenes become reasoning moments instead of simple "continue"
+    /// taps. Wrong answers do not advance the story; they trigger a gentle,
+    /// spoken educational hint and let the child try again.
+    private var presentedChoices: [PresentedChoice] {
+        switch currentScene.narrationKey {
+        case "story.babisKotsifi.scene4.narration":
+            return [
+                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.left", nextSceneIndex: 5, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.right", nextSceneIndex: 5, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.water")
+            ]
+        case "story.babisKotsifi.scene5.narration":
+            return [
+                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.right", nextSceneIndex: 6, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.left", nextSceneIndex: 6, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.food")
+            ]
+        case "story.babisKotsifi.scene9.narration":
+            return [
+                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 10, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 10, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.clues")
+            ]
+        case "story.babisKotsifi.scene12.narration":
+            return [
+                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")
+            ]
+        default:
+            return currentScene.choices.map {
+                PresentedChoice(textKey: $0.textKey, nextSceneIndex: $0.nextSceneIndex, isCorrect: true, feedbackKey: nil)
+            }
+        }
+    }
 
     var body: some View {
         GeometryReader { geometry in
@@ -138,8 +179,6 @@ struct InteractiveSceneView: View {
 
     private var panelContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            // Narration owns the full available width. The replay/help control is
-            // deliberately placed on its own row so it can never cover story text.
             CharacterDialogueBubble(text: narrationText)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -148,14 +187,26 @@ struct InteractiveSceneView: View {
                 SpeakerButton(text: narrationText)
             }
 
-            if currentScene.choices.isEmpty {
+            if let choiceFeedback {
+                Text(choiceFeedback)
+                    .font(PlayLandTypography.body)
+                    .foregroundColor(.white)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.black.opacity(0.35))
+                    .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
+            if presentedChoices.isEmpty {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: 10) {
-                    ForEach(currentScene.choices) { choice in
+                    ForEach(presentedChoices) { choice in
                         Button(action: { choose(choice) }) {
-                            Text(Loc.t(choice.textKey))
+                            Text(StoryText.t(choice.textKey))
                         }
                         .buttonStyle(PlayLandChoiceButtonStyle())
                     }
@@ -166,7 +217,20 @@ struct InteractiveSceneView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func choose(_ choice: StoryChoice) {
+    private func choose(_ choice: PresentedChoice) {
+        if !choice.isCorrect {
+            AudioManager.shared.play(.buttonTap)
+            if let feedbackKey = choice.feedbackKey {
+                let feedback = StoryText.t(feedbackKey)
+                withAnimation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.2))) {
+                    choiceFeedback = feedback
+                }
+                SpeechManager.shared.speak(text: feedback)
+            }
+            return
+        }
+
+        choiceFeedback = nil
         AudioManager.shared.play(.storyNext)
         guard let next = choice.nextSceneIndex, scenes.indices.contains(next) else {
             onFinished()
@@ -177,6 +241,7 @@ struct InteractiveSceneView: View {
     }
 
     private func enterScene() {
+        choiceFeedback = nil
         SpeechManager.shared.speak(text: narrationText)
         withAnimation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce)) {
             hasEnteredScene = true
