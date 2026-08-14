@@ -12,57 +12,85 @@ struct DinoMatchGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
-    private let images = [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox]
+    private let imagePool = [
+        AppAssets.Characters.babis,
+        AppAssets.Characters.kotsifi,
+        AppAssets.Characters.fox,
+        "babis_happy",
+        "babis_hungry",
+        "kotsifi_happy",
+        "kotsifi_surprised",
+        "fox_friendly"
+    ]
+    private let totalLevels = 5
 
+    @State private var level = 1
     @State private var cards: [MatchCard] = []
     @State private var faceUpIndices: [Int] = []
     @State private var moves = 0
+    @State private var totalMoves = 0
+    @State private var showLevelComplete = false
     @State private var isFinished = false
+
+    private var pairCount: Int { min(imagePool.count, 2 + level) }
+    private var columns: Int { pairCount <= 4 ? 3 : 4 }
 
     var body: some View {
         ZStack {
             ScrollView {
-            VStack(spacing: 20) {
-                GameHeader(title: Loc.t("dino.match.title"), subtitle: Loc.t("dino.match.instruction"))
+                VStack(spacing: 20) {
+                    GameHeader(title: Loc.t("dino.match.title"), subtitle: Loc.t("dino.match.instruction"))
+                    Text(levelLabel)
+                        .font(PlayLandTypography.heading)
+                        .foregroundColor(PlayLandColors.sunOrange)
 
-                LazyVGrid(columns: Array(repeating: GridItem(spacing: 12), count: 3), spacing: 12) {
-                    ForEach(cards) { card in
-                        Button(action: { flip(card) }) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
-                                    .fill(card.isMatched ? PlayLandColors.leafGreen.opacity(0.2) : PlayLandColors.skyBlue.opacity(0.15))
-
-                                if card.isFaceUp || card.isMatched {
-                                    AppAssets.image(card.imageName)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .padding(10)
-                                } else {
-                                    Text("❓")
-                                        .font(.system(size: 34))
+                    LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: columns), spacing: 10) {
+                        ForEach(cards) { card in
+                            Button(action: { flip(card) }) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
+                                        .fill(card.isMatched ? PlayLandColors.leafGreen.opacity(0.2) : PlayLandColors.skyBlue.opacity(0.15))
+                                    if card.isFaceUp || card.isMatched {
+                                        AppAssets.image(card.imageName)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .padding(7)
+                                    } else {
+                                        Text("❓").font(.system(size: 30))
+                                    }
                                 }
+                                .frame(height: columns == 3 ? 100 : 82)
                             }
-                            .frame(height: 100)
+                            .disabled(card.isFaceUp || card.isMatched)
                         }
-                        .disabled(card.isFaceUp || card.isMatched)
                     }
-                }
-                .padding(.horizontal)
+                    .padding(.horizontal)
 
-                Spacer()
+                    Text(isGreek ? "Κινήσεις: \(moves)" : "Moves: \(moves)")
+                        .font(PlayLandTypography.body)
+                }
+                .padding()
             }
-            .padding()
-            .onAppear(perform: setupCards)
+            .onAppear(perform: setupLevel)
+
+            if showLevelComplete {
+                CompletionCelebrationView(
+                    title: levelCompleteTitle,
+                    message: levelCompleteMessage,
+                    stars: levelStars,
+                    buttonTitle: level < totalLevels ? nextLevelTitle : Loc.t("action.continue"),
+                    action: advanceLevel
+                )
             }
 
             if isFinished {
                 CompletionCelebrationView(
                     title: Loc.t("dino.match.completeTitle"),
-                    message: Loc.t("dino.match.completeMessage", moves),
-                    stars: stars,
+                    message: finalMessage,
+                    stars: finalStars,
                     buttonTitle: Loc.t("dino.match.completeButton"),
                     action: {
-                        progressManager.completeGame("dino_match", stars: stars)
+                        progressManager.completeGame("dino_match", stars: finalStars)
                         dismiss()
                     }
                 )
@@ -70,40 +98,41 @@ struct DinoMatchGame: View {
         }
     }
 
-    private var stars: Int {
-        if moves <= 5 { return 3 }
-        if moves <= 8 { return 2 }
-        return 1
-    }
+    private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
+    private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels) — \(pairCount) ζευγάρια" : "Level \(level) of \(totalLevels) — \(pairCount) pairs" }
+    private var levelCompleteTitle: String { isGreek ? "Τα βρήκες όλα!" : "All pairs found!" }
+    private var levelCompleteMessage: String { isGreek ? "Στην επόμενη πίστα υπάρχουν περισσότερες κάρτες." : "The next board has more cards." }
+    private var nextLevelTitle: String { isGreek ? "Επόμενη πίστα" : "Next level" }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τα 5 επίπεδα μνήμης." : "You completed all 5 memory levels." }
+    private var levelStars: Int { moves <= pairCount + 2 ? 3 : (moves <= pairCount * 2 ? 2 : 1) }
+    private var finalStars: Int { totalMoves <= 45 ? 3 : (totalMoves <= 65 ? 2 : 1) }
 
-    private func setupCards() {
-        let deck = (images + images).shuffled()
+    private func setupLevel() {
+        let chosen = Array(imagePool.prefix(pairCount))
+        let deck = (chosen + chosen).shuffled()
         cards = deck.enumerated().map { MatchCard(id: $0.offset, imageName: $0.element) }
         faceUpIndices = []
         moves = 0
-        isFinished = false
+        showLevelComplete = false
     }
 
     private func flip(_ card: MatchCard) {
         guard let index = cards.firstIndex(where: { $0.id == card.id }) else { return }
         guard faceUpIndices.count < 2 else { return }
-
         cards[index].isFaceUp = true
         faceUpIndices.append(index)
 
         if faceUpIndices.count == 2 {
             moves += 1
+            totalMoves += 1
             let first = faceUpIndices[0]
             let second = faceUpIndices[1]
-
             if cards[first].imageName == cards[second].imageName {
                 cards[first].isMatched = true
                 cards[second].isMatched = true
                 faceUpIndices = []
                 AudioManager.shared.play(.correct)
-                if cards.allSatisfy({ $0.isMatched }) {
-                    withAnimation { isFinished = true }
-                }
+                if cards.allSatisfy({ $0.isMatched }) { withAnimation { showLevelComplete = true } }
             } else {
                 AudioManager.shared.play(.wrong)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
@@ -112,6 +141,16 @@ struct DinoMatchGame: View {
                     faceUpIndices = []
                 }
             }
+        }
+    }
+
+    private func advanceLevel() {
+        if level >= totalLevels {
+            showLevelComplete = false
+            isFinished = true
+        } else {
+            level += 1
+            setupLevel()
         }
     }
 }
