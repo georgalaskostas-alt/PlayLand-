@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 extension ProgressViewModel {
     private func levelStorageKey(for gameId: String) -> String { "gameLevel.\(gameId)" }
