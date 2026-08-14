@@ -13,9 +13,6 @@ struct StoryScene: Identifiable {
     let characters: [String]
     let narrationKey: String
     let choices: [StoryChoice]
-    /// Optional full-scene illustration. When the asset is not installed yet,
-    /// the story renderer keeps using `background + characters`, so artwork can
-    /// land progressively without blocking the story itself.
     let illustration: String?
 
     init(
@@ -43,21 +40,22 @@ struct StoryContent: Identifiable {
 
 enum StoryIllustrations {
     enum BabisKotsifi {
-        static let scene00 = "story_babis_kotsifi_00_feared_dinosaur"
-        static let scene01 = "story_babis_kotsifi_01_bird_on_nose"
-        static let scene02 = "story_babis_kotsifi_02_kind_heart"
-        static let scene03 = "story_babis_kotsifi_03_friendship_agreement"
-        static let scene04 = "story_babis_kotsifi_04_lake"
-        static let scene05 = "story_babis_kotsifi_05_orchard"
-        static let scene06 = "story_babis_kotsifi_06_best_friends"
-        static let scene07 = "story_babis_kotsifi_07_fox_spies"
-        static let scene08 = "story_babis_kotsifi_08_fox_steals"
-        static let scene09 = "story_babis_kotsifi_09_missing_supplies"
-        static let scene10 = "story_babis_kotsifi_10_bird_high_tree"
-        static let scene11 = "story_babis_kotsifi_11_night_plan"
-        static let scene12 = "story_babis_kotsifi_12_fox_confronted"
-        static let scene13 = "story_babis_kotsifi_13_returns_supplies"
-        static let scene14 = "story_babis_kotsifi_14_forest_hero"
+        static let scene00 = "story_babis_kotsifi_00"
+        static let scene01 = "story_babis_kotsifi_01"
+        static let scene02 = "story_babis_kotsifi_02"
+        static let scene03 = "story_babis_kotsifi_03"
+        static let scene04 = "story_babis_kotsifi_04"
+        static let scene05 = "story_babis_kotsifi_05"
+        static let scene06 = "story_babis_kotsifi_06"
+        static let scene07 = "story_babis_kotsifi_07"
+        static let scene08 = "story_babis_kotsifi_08"
+        static let scene09 = "story_babis_kotsifi_09"
+        static let scene10 = "story_babis_kotsifi_10"
+        static let scene11 = "story_babis_kotsifi_11"
+        static let scene12 = "story_babis_kotsifi_12"
+        static let scene13 = "story_babis_kotsifi_13"
+        static let scene14 = "story_babis_kotsifi_14"
+        static let scene15 = "story_babis_kotsifi_15"
     }
 }
 
@@ -81,13 +79,14 @@ enum StoryLibrary {
                 StoryScene(background: AppAssets.Backgrounds.village, characters: [BabisVisualState.eating.plannedAssetName, AppAssets.KotsifiStates.happy], narrationKey: "story.babisKotsifi.scene5.narration", choices: next(6), illustration: StoryIllustrations.BabisKotsifi.scene05),
                 StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.happy], narrationKey: "story.babisKotsifi.scene6.narration", choices: next(7), illustration: StoryIllustrations.BabisKotsifi.scene06),
                 StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.FoxStates.smirk, BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.idle], narrationKey: "story.babisKotsifi.scene7.narration", choices: next(8), illustration: StoryIllustrations.BabisKotsifi.scene07),
-                StoryScene(background: AppAssets.Backgrounds.foxCave, characters: [AppAssets.FoxStates.smirk], narrationKey: "story.babisKotsifi.scene8.narration", choices: next(9), illustration: StoryIllustrations.BabisKotsifi.scene08),
+                StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.FoxStates.smirk], narrationKey: "story.babisKotsifi.scene8.narration", choices: next(9), illustration: StoryIllustrations.BabisKotsifi.scene08),
                 StoryScene(background: AppAssets.Backgrounds.cave, characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.KotsifiStates.surprised], narrationKey: "story.babisKotsifi.scene9.narration", choices: [StoryChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 10), StoryChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 10)], illustration: StoryIllustrations.BabisKotsifi.scene09),
-                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.KotsifiStates.fly1, BabisVisualState.neutral.plannedAssetName], narrationKey: "story.babisKotsifi.scene10.narration", choices: next(11), illustration: StoryIllustrations.BabisKotsifi.scene10),
-                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.KotsifiStates.idle], narrationKey: "story.babisKotsifi.scene11.narration", choices: next(12), illustration: StoryIllustrations.BabisKotsifi.scene11),
-                StoryScene(background: AppAssets.Backgrounds.foxCave, characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.FoxStates.worried, AppAssets.KotsifiStates.idle], narrationKey: "story.babisKotsifi.scene12.narration", choices: [StoryChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13), StoryChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13)], illustration: StoryIllustrations.BabisKotsifi.scene12),
-                StoryScene(background: AppAssets.Backgrounds.village, characters: [AppAssets.FoxStates.friendly, BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.happy], narrationKey: "story.babisKotsifi.scene13.narration", choices: next(14), illustration: StoryIllustrations.BabisKotsifi.scene13),
-                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [BabisVisualState.excited.plannedAssetName, AppAssets.KotsifiStates.happy, AppAssets.FoxStates.friendly], narrationKey: "story.babisKotsifi.scene14.narration", choices: [], illustration: StoryIllustrations.BabisKotsifi.scene14)
+                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.KotsifiStates.fly1], narrationKey: "story.babisKotsifi.scene10.treeNarration", choices: next(11), illustration: StoryIllustrations.BabisKotsifi.scene10),
+                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.KotsifiStates.fly1, BabisVisualState.neutral.plannedAssetName], narrationKey: "story.babisKotsifi.scene11.smokeNarration", choices: next(12), illustration: StoryIllustrations.BabisKotsifi.scene11),
+                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.KotsifiStates.idle], narrationKey: "story.babisKotsifi.scene11.narration", choices: next(13), illustration: StoryIllustrations.BabisKotsifi.scene12),
+                StoryScene(background: AppAssets.Backgrounds.foxCave, characters: [BabisVisualState.neutral.plannedAssetName, AppAssets.FoxStates.worried, AppAssets.KotsifiStates.idle], narrationKey: "story.babisKotsifi.scene12.narration", choices: [StoryChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 14), StoryChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 14)], illustration: StoryIllustrations.BabisKotsifi.scene13),
+                StoryScene(background: AppAssets.Backgrounds.village, characters: [AppAssets.FoxStates.friendly, BabisVisualState.happy.plannedAssetName, AppAssets.KotsifiStates.happy], narrationKey: "story.babisKotsifi.scene13.narration", choices: next(15), illustration: StoryIllustrations.BabisKotsifi.scene14),
+                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [BabisVisualState.excited.plannedAssetName, AppAssets.KotsifiStates.happy, AppAssets.FoxStates.friendly], narrationKey: "story.babisKotsifi.scene14.narration", choices: [], illustration: StoryIllustrations.BabisKotsifi.scene15)
             ]
         ),
         StoryContent(
