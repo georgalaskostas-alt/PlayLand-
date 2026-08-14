@@ -13,6 +13,16 @@ enum RPGArea: Int, CaseIterable {
         case .foxArea: return "rpg_fox_area_ground"
         }
     }
+
+    var completionId: String {
+        switch self {
+        case .forest: return "rpg_area_forest"
+        case .village: return "rpg_area_village"
+        case .crystalCave: return "rpg_area_crystal_cave"
+        case .nightForest: return "rpg_area_night_forest"
+        case .foxArea: return "rpg_finale"
+        }
+    }
 }
 
 final class RPGGameState: ObservableObject {
@@ -29,7 +39,28 @@ final class RPGGameState: ObservableObject {
     @Published var questComplete = false
     @Published var message = ""
 
+    private weak var progress: ProgressViewModel?
     var isGreek: Bool { AppSettings.shared.resolvedLanguage == .greek }
+
+    func attach(progress: ProgressViewModel) {
+        self.progress = progress
+        apples = progress.itemCount("apple_item")
+        wood = progress.itemCount("log")
+        water = progress.itemCount("water_item")
+        berries = progress.itemCount("berries_item")
+        carrots = progress.itemCount("carrot_item")
+        crystals = progress.itemCount("crystal_item")
+        keys = progress.itemCount("key_item")
+        fragments = progress.itemCount("map_fragment")
+        goldenFeathers = progress.itemCount("golden_feather")
+        questComplete = progress.isChallengeCompleted(RPGArea.foxArea.completionId)
+
+        if progress.isChallengeCompleted(RPGArea.nightForest.completionId) { area = .foxArea }
+        else if progress.isChallengeCompleted(RPGArea.crystalCave.completionId) { area = .nightForest }
+        else if progress.isChallengeCompleted(RPGArea.village.completionId) { area = .crystalCave }
+        else if progress.isChallengeCompleted(RPGArea.forest.completionId) { area = .village }
+        else { area = .forest }
+    }
 
     var currentAreaTitle: String {
         switch area {
@@ -62,18 +93,20 @@ final class RPGGameState: ObservableObject {
     }
 
     func collect(kind: String) {
+        let itemId: String
         switch kind {
-        case "apple": apples += 1
-        case "wood": wood += 1
-        case "water": water += 1
-        case "berries": berries += 1
-        case "carrot": carrots += 1
-        case "crystal": crystals += 1
-        case "key": keys += 1
-        case "fragment": fragments += 1
-        case "feather": goldenFeathers += 1
-        default: break
+        case "apple": apples += 1; itemId = "apple_item"
+        case "wood": wood += 1; itemId = "log"
+        case "water": water += 1; itemId = "water_item"
+        case "berries": berries += 1; itemId = "berries_item"
+        case "carrot": carrots += 1; itemId = "carrot_item"
+        case "crystal": crystals += 1; itemId = "crystal_item"
+        case "key": keys += 1; itemId = "key_item"
+        case "fragment": fragments += 1; itemId = "map_fragment"
+        case "feather": goldenFeathers += 1; itemId = "golden_feather"
+        default: return
         }
+        progress?.collectItem(itemId)
         AudioManager.shared.play(.correct)
         if areaGoalComplete && area != .foxArea {
             setMessage(greek: "Ο στόχος της περιοχής ολοκληρώθηκε! Βρες το σεντούκι ή την έξοδο.", english: "Area objective complete! Find the chest or exit.")
@@ -82,12 +115,14 @@ final class RPGGameState: ObservableObject {
 
     func advanceArea() {
         guard area != .foxArea, let next = RPGArea(rawValue: area.rawValue + 1) else { return }
+        progress?.completeChallenge(area.completionId, rewardStars: 2)
         area = next
         setMessageForCurrentArea()
     }
 
     func completeQuest() {
         questComplete = true
+        progress?.completeChallenge(RPGArea.foxArea.completionId, rewardStars: 5)
         AudioManager.shared.play(.storyNext)
         setMessage(greek: "Μεγάλη αποστολή ολοκληρώθηκε! Ο Μπάμπης βοήθησε όλο το δάσος!", english: "Great quest complete! Babis helped the whole forest!")
     }
@@ -102,13 +137,12 @@ final class RPGGameState: ObservableObject {
         }
     }
 
-    func setMessage(greek: String, english: String) {
-        message = isGreek ? greek : english
-    }
+    func setMessage(greek: String, english: String) { message = isGreek ? greek : english }
 }
 
 struct BabisRPGGameView: View {
     @EnvironmentObject var appSettings: AppSettings
+    @EnvironmentObject var progressManager: ProgressViewModel
     @StateObject private var gameState = RPGGameState()
     @State private var scene: BabisRPGScene?
 
@@ -116,8 +150,7 @@ struct BabisRPGGameView: View {
         GeometryReader { geometry in
             ZStack(alignment: .top) {
                 if let scene {
-                    SpriteView(scene: scene, options: [.allowsTransparency])
-                        .ignoresSafeArea()
+                    SpriteView(scene: scene, options: [.allowsTransparency]).ignoresSafeArea()
                 } else {
                     Color.black.ignoresSafeArea()
                 }
@@ -126,10 +159,8 @@ struct BabisRPGGameView: View {
                     HStack {
                         Text(gameState.currentAreaTitle)
                             .font(.headline.weight(.bold))
-                            .padding(.horizontal, 12)
-                            .padding(.vertical, 8)
-                            .background(.ultraThinMaterial)
-                            .clipShape(Capsule())
+                            .padding(.horizontal, 12).padding(.vertical, 8)
+                            .background(.ultraThinMaterial).clipShape(Capsule())
                         Spacer()
                     }
 
@@ -144,8 +175,7 @@ struct BabisRPGGameView: View {
                         Text(gameState.message)
                             .font(.subheadline.weight(.semibold))
                             .multilineTextAlignment(.center)
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 9)
+                            .padding(.horizontal, 14).padding(.vertical, 9)
                             .background(.ultraThinMaterial)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                             .frame(maxWidth: 620)
@@ -155,17 +185,15 @@ struct BabisRPGGameView: View {
 
                     Text(appSettings.resolvedLanguage == .greek ? "Άγγιξε το έδαφος για να κινηθεί ο Μπάμπης" : "Tap the ground to move Babis")
                         .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 14)
-                        .padding(.vertical, 8)
-                        .background(.ultraThinMaterial)
-                        .clipShape(Capsule())
+                        .padding(.horizontal, 14).padding(.vertical, 8)
+                        .background(.ultraThinMaterial).clipShape(Capsule())
                         .padding(.bottom, 12)
                 }
-                .padding(.horizontal, 12)
-                .padding(.top, 8)
+                .padding(.horizontal, 12).padding(.top, 8)
             }
             .onAppear {
                 if scene == nil {
+                    gameState.attach(progress: progressManager)
                     gameState.setMessageForCurrentArea()
                     scene = BabisRPGScene(size: geometry.size, gameState: gameState)
                 }
@@ -182,9 +210,7 @@ struct BabisRPGGameView: View {
             Text(value).font(.subheadline.weight(.bold).monospacedDigit())
             if complete { Image(systemName: "checkmark.circle.fill").foregroundColor(PlayLandColors.leafGreen) }
         }
-        .padding(.horizontal, 9)
-        .padding(.vertical, 7)
-        .background(.ultraThinMaterial)
-        .clipShape(Capsule())
+        .padding(.horizontal, 9).padding(.vertical, 7)
+        .background(.ultraThinMaterial).clipShape(Capsule())
     }
 }
