@@ -30,30 +30,30 @@ struct InteractiveSceneView: View {
 
     private var narrationText: String { StoryText.t(currentScene.narrationKey) }
 
-    /// A few key scenes become reasoning moments instead of simple "continue"
+    /// Key story beats become reasoning moments instead of simple "continue"
     /// taps. Wrong answers do not advance the story; they trigger a gentle,
     /// spoken educational hint and let the child try again.
     private var presentedChoices: [PresentedChoice] {
         switch currentScene.narrationKey {
         case "story.babisKotsifi.scene4.narration":
             return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.left", nextSceneIndex: 5, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.right", nextSceneIndex: 5, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.water")
+                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.left", nextSceneIndex: 4, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.right", nextSceneIndex: 4, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.water")
             ]
         case "story.babisKotsifi.scene5.narration":
             return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.right", nextSceneIndex: 6, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.left", nextSceneIndex: 6, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.food")
+                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.right", nextSceneIndex: 5, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.left", nextSceneIndex: 5, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.food")
             ]
         case "story.babisKotsifi.scene9.narration":
             return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 10, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 10, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.clues")
+                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 9, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 9, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.clues")
             ]
         case "story.babisKotsifi.scene12.narration":
             return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 14, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 14, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")
+                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")
             ]
         default:
             return currentScene.choices.map {
@@ -109,9 +109,9 @@ struct InteractiveSceneView: View {
     // MARK: - Scene art
 
     private var installedIllustrationName: String? {
-        // Final production story artwork is numbered 00...15, matching the
-        // sixteen story beats exactly.
-        let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex)
+        // The final production set is numbered 01...15. Story index 0 maps to
+        // illustration 01, index 1 to 02, and so on.
+        let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
         if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
            AppAssets.exists(productionName) {
             return productionName
