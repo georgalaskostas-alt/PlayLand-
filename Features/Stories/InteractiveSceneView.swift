@@ -124,12 +124,14 @@ struct InteractiveSceneView: View {
 
     private var panelContent: some View {
         VStack(alignment: .leading, spacing: 14) {
-            ZStack(alignment: .topTrailing) {
-                CharacterDialogueBubble(text: narrationText)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+            // Narration owns the full available width. The replay/help control is
+            // deliberately placed on its own row so it can never cover story text.
+            CharacterDialogueBubble(text: narrationText)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
+            HStack {
+                Spacer(minLength: 0)
                 SpeakerButton(text: narrationText)
-                    .padding(8)
             }
 
             if currentScene.choices.isEmpty {
