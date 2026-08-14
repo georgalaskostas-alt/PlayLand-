@@ -270,7 +270,9 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         if other.name == "area_exit" {
             guard !isTransitioning else { return }
             if gameState.areaGoalComplete {
-                other.texture = SKTexture(imageNamed: "chest_open")
+                if let exitSprite = other as? SKSpriteNode {
+                    exitSprite.texture = SKTexture(imageNamed: "chest_open")
+                }
                 isTransitioning = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
                     self.gameState.advanceArea()
@@ -284,14 +286,21 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
 
         if other.name == "final_fox" {
             guard !gameState.questComplete else { return }
-            other.texture = SKTexture(imageNamed: "fox_friendly")
+            if let foxSprite = other as? SKSpriteNode {
+                foxSprite.texture = SKTexture(imageNamed: "fox_friendly")
+            }
             gameState.completeQuest()
             let feather = SKSpriteNode(imageNamed: "golden_feather")
             feather.size = CGSize(width: 70, height: 70)
-            feather.position = CGPoint(x: 0, y: 95)
-            feather.zPosition = 10
-            other.addChild(feather)
-            feather.run(.repeatForever(.sequence([.moveBy(x: 0, y: 10, duration: 0.8), .moveBy(x: 0, y: -10, duration: 0.8)])))
+            feather.position = CGPoint(x: other.position.x, y: other.position.y + 110)
+            feather.zPosition = 8
+            world.addChild(feather)
+            feather.run(.repeatForever(.sequence([.moveBy(x: 0, y: 12, duration: 0.8), .moveBy(x: 0, y: -12, duration: 0.8)])))
+            return
+        }
+
+        if other.name == "npc_kotsifi" {
+            gameState.setMessage(greek: "Το Κοτσύφι είναι μαζί σου. Συνέχισε την αποστολή!", english: "Kotsifi is with you. Keep going!")
         }
     }
 }
