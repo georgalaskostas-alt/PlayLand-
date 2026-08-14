@@ -28,7 +28,7 @@ struct InteractiveSceneView: View {
         scenes[min(currentIndex, scenes.count - 1)]
     }
 
-    private var narrationText: String { Loc.t(currentScene.narrationKey) }
+    private var narrationText: String { StoryText.t(currentScene.narrationKey) }
 
     /// A few key scenes become reasoning moments instead of simple "continue"
     /// taps. Wrong answers do not advance the story; they trigger a gentle,
@@ -52,8 +52,8 @@ struct InteractiveSceneView: View {
             ]
         case "story.babisKotsifi.scene12.narration":
             return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")
+                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 14, isCorrect: true, feedbackKey: nil),
+                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 14, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")
             ]
         default:
             return currentScene.choices.map {
@@ -109,15 +109,15 @@ struct InteractiveSceneView: View {
     // MARK: - Scene art
 
     private var installedIllustrationName: String? {
-        // New production artwork is numbered 01...15. Keep support for the
-        // older descriptive names so existing builds remain backward compatible.
-        let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
+        // Final production story artwork is numbered 00...15, matching the
+        // sixteen story beats exactly.
+        let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex)
         if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
            AppAssets.exists(productionName) {
             return productionName
         }
-        if let legacy = currentScene.illustration, AppAssets.exists(legacy) {
-            return legacy
+        if let fallback = currentScene.illustration, AppAssets.exists(fallback) {
+            return fallback
         }
         return nil
     }
