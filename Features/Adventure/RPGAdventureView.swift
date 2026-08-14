@@ -3,115 +3,85 @@ import SwiftUI
 struct RPGAdventureView: View {
     @EnvironmentObject var appSettings: AppSettings
 
-    enum RPGMode: String, CaseIterable {
-        case campaign, story, explore, minigames
-
-        var titleKey: String {
-            switch self {
-            case .campaign: return "adventure.mode.campaign.title"
-            case .story: return "adventure.mode.story.title"
-            case .explore: return "adventure.mode.explore.title"
-            case .minigames: return "adventure.mode.minigames.title"
-            }
-        }
-
-        var descriptionKey: String {
-            switch self {
-            case .campaign: return "adventure.mode.campaign.desc"
-            case .story: return "adventure.mode.story.desc"
-            case .explore: return "adventure.mode.explore.desc"
-            case .minigames: return "adventure.mode.minigames.desc"
-            }
-        }
-
-        var icon: String {
-            switch self {
-            case .campaign: return AppAssets.PlannedUI.scroll
-            case .story: return AppAssets.PlannedUI.book
-            case .explore: return AppAssets.PlannedUI.map
-            case .minigames: return AppAssets.PlannedUI.gamepad
-            }
-        }
-    }
+    private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                PlayLandBackground(imageName: AppAssets.Backgrounds.village, scrimOpacity: 0)
-                    .overlay(Color.white.opacity(0.55).ignoresSafeArea())
+                PlayLandBackground(imageName: "rpg_forest_ground_01", scrimOpacity: 0)
+                    .overlay(Color.black.opacity(0.18).ignoresSafeArea())
 
-                VStack(spacing: 20) {
-                    Text(Loc.t("adventure.title"))
-                        .font(PlayLandTypography.display)
-                        .multilineTextAlignment(.center)
+                ScrollView {
+                    VStack(spacing: 22) {
+                        Text(isGreek ? "Η Μεγάλη Περιπέτεια του Μπάμπη" : "Babis: The Great Adventure")
+                            .font(PlayLandTypography.display)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .shadow(radius: 4)
 
-                    HStack(spacing: 30) {
-                        VStack {
-                            AppAssets.image(AppAssets.Characters.babis)
+                        HStack(alignment: .bottom, spacing: 20) {
+                            AppAssets.image("babis_neutral")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 120, height: 120)
-                                .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
-                                .shadow(radius: 5)
-                            Text(Loc.t("adventure.babisName")).font(PlayLandTypography.heading)
-                        }
-
-                        VStack {
-                            AppAssets.image(AppAssets.Characters.kotsifi)
+                                .frame(width: 155, height: 155)
+                            AppAssets.image("kotsifi_idle")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 80, height: 80)
-                                .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
-                                .shadow(radius: 5)
-                            Text(Loc.t("adventure.kotsifiName")).font(PlayLandTypography.heading)
+                                .frame(width: 90, height: 90)
                         }
-                    }
-                    .padding()
 
-                    Text(Loc.t("adventure.chooseAdventure"))
-                        .font(PlayLandTypography.title)
-                        .multilineTextAlignment(.center)
-
-                    VStack(spacing: 15) {
-                        ForEach(RPGMode.allCases, id: \.self) { mode in
-                            NavigationLink(destination: rpgModeView(for: mode)) {
-                                PlayLandCard {
-                                    HStack {
-                                        IconTile(imageName: mode.icon, size: 50, background: PlayLandColors.sunOrange.opacity(0.15))
-
-                                        VStack(alignment: .leading) {
-                                            Text(Loc.t(mode.titleKey)).font(PlayLandTypography.heading)
-                                            Text(Loc.t(mode.descriptionKey))
-                                                .font(PlayLandTypography.body)
-                                                .foregroundColor(PlayLandColors.secondaryText)
-                                        }
-
-                                        Spacer()
-                                    }
-                                }
+                        PlayLandCard {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(isGreek ? "Πραγματικός κόσμος σε πραγματικό χρόνο" : "A real-time world")
+                                    .font(PlayLandTypography.title)
+                                Text(isGreek
+                                     ? "Κίνησε τον Μπάμπη μέσα στο δάσος, μάζεψε τρόφιμα, νερό και ξύλα, βρες το σεντούκι και ολοκλήρωσε αποστολές. Ο κόσμος θα μεγαλώνει με νέες περιοχές, NPC, γρίφους και quests."
+                                     : "Move Babis through the forest, collect food, water and wood, find the chest and complete quests. The world will expand with new areas, NPCs, puzzles and missions.")
+                                    .font(PlayLandTypography.body)
+                                    .foregroundColor(PlayLandColors.secondaryText)
                             }
                         }
+
+                        NavigationLink(destination: BabisRPGGameView()) {
+                            HStack {
+                                Image(systemName: "gamecontroller.fill")
+                                Text(isGreek ? "Ξεκίνα την Περιπέτεια" : "Start Adventure")
+                                    .font(.title3.weight(.bold))
+                            }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 18)
+                            .background(PlayLandColors.sunOrange)
+                            .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
+                            .shadow(color: .black.opacity(0.25), radius: 6, y: 4)
+                        }
+
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(isGreek ? "Τι έρχεται στον κόσμο" : "World roadmap")
+                                .font(PlayLandTypography.heading)
+                                .foregroundColor(.white)
+                            roadmapRow("🌲", isGreek ? "Δάσος — συλλογή και πρώτο σεντούκι" : "Forest — gathering and first chest")
+                            roadmapRow("🏘️", isGreek ? "Χωριό — NPC και αποστολές" : "Village — NPCs and quests")
+                            roadmapRow("💎", isGreek ? "Κρυστάλλινη Σπηλιά — γρίφοι" : "Crystal Cave — puzzles")
+                            roadmapRow("🌙", isGreek ? "Νυχτερινό Δάσος — εξερεύνηση" : "Night Forest — exploration")
+                            roadmapRow("🦊", isGreek ? "Περιοχή Αλεπούς — story quests" : "Fox Area — story quests")
+                        }
+                        .padding()
+                        .background(.ultraThinMaterial)
+                        .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
                     }
                     .padding()
-
-                    Spacer()
                 }
             }
-            .navigationTitle(Loc.t("adventure.title"))
+            .navigationTitle(isGreek ? "Περιπέτειες" : "Adventures")
         }
     }
 
-    @ViewBuilder
-    private func rpgModeView(for mode: RPGMode) -> some View {
-        switch mode {
-        case .campaign:
-            CampaignListView()
-        case .story:
-            StoryModeView()
-        case .explore:
-            ExploreModeView()
-        case .minigames:
-            MiniGamesModeView()
+    private func roadmapRow(_ icon: String, _ text: String) -> some View {
+        HStack(spacing: 10) {
+            Text(icon).font(.title2)
+            Text(text).font(PlayLandTypography.body).foregroundColor(.white)
+            Spacer()
         }
     }
 }
