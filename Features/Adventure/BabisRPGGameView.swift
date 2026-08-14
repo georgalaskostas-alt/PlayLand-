@@ -1,36 +1,109 @@
 import SwiftUI
 import SpriteKit
 
+enum RPGArea: Int, CaseIterable {
+    case forest, village, crystalCave, nightForest, foxArea
+
+    var groundAsset: String {
+        switch self {
+        case .forest: return "rpg_forest_ground_01"
+        case .village: return "rpg_village_ground"
+        case .crystalCave: return "rpg_crystal_cave_ground"
+        case .nightForest: return "rpg_night_forest_ground"
+        case .foxArea: return "rpg_fox_area_ground"
+        }
+    }
+}
+
 final class RPGGameState: ObservableObject {
+    @Published var area: RPGArea = .forest
     @Published var apples = 0
     @Published var wood = 0
     @Published var water = 0
+    @Published var berries = 0
+    @Published var carrots = 0
+    @Published var crystals = 0
+    @Published var keys = 0
+    @Published var fragments = 0
+    @Published var goldenFeathers = 0
     @Published var questComplete = false
     @Published var message = ""
 
-    var hasCompletedCollectionGoal: Bool { apples >= 3 && wood >= 2 && water >= 1 }
+    var isGreek: Bool { AppSettings.shared.resolvedLanguage == .greek }
+
+    var currentAreaTitle: String {
+        switch area {
+        case .forest: return isGreek ? "Δάσος" : "Forest"
+        case .village: return isGreek ? "Χωριό" : "Village"
+        case .crystalCave: return isGreek ? "Κρυστάλλινη Σπηλιά" : "Crystal Cave"
+        case .nightForest: return isGreek ? "Νυχτερινό Δάσος" : "Night Forest"
+        case .foxArea: return isGreek ? "Περιοχή της Αλεπούς" : "Fox Area"
+        }
+    }
+
+    var objectiveItems: [(String, Int, Int)] {
+        switch area {
+        case .forest: return [("🍎", apples, 3), ("🪵", wood, 2), ("💧", water, 1)]
+        case .village: return [("🫐", berries, 2), ("🥕", carrots, 1), ("🪵", wood, 3)]
+        case .crystalCave: return [("💎", crystals, 3), ("🗝️", keys, 1)]
+        case .nightForest: return [("🗺️", fragments, 2), ("⭐", goldenFeathers, 1)]
+        case .foxArea: return [("🦊", questComplete ? 1 : 0, 1)]
+        }
+    }
+
+    var areaGoalComplete: Bool {
+        switch area {
+        case .forest: return apples >= 3 && wood >= 2 && water >= 1
+        case .village: return berries >= 2 && carrots >= 1 && wood >= 3
+        case .crystalCave: return crystals >= 3 && keys >= 1
+        case .nightForest: return fragments >= 2 && goldenFeathers >= 1
+        case .foxArea: return questComplete
+        }
+    }
 
     func collect(kind: String) {
         switch kind {
         case "apple": apples += 1
         case "wood": wood += 1
         case "water": water += 1
+        case "berries": berries += 1
+        case "carrot": carrots += 1
+        case "crystal": crystals += 1
+        case "key": keys += 1
+        case "fragment": fragments += 1
+        case "feather": goldenFeathers += 1
         default: break
         }
         AudioManager.shared.play(.correct)
-        if hasCompletedCollectionGoal {
-            setMessage(greek: "Τα βρήκες όλα! Τώρα πήγαινε στο σεντούκι.", english: "You found everything! Now go to the chest.")
+        if areaGoalComplete && area != .foxArea {
+            setMessage(greek: "Ο στόχος της περιοχής ολοκληρώθηκε! Βρες το σεντούκι ή την έξοδο.", english: "Area objective complete! Find the chest or exit.")
         }
+    }
+
+    func advanceArea() {
+        guard area != .foxArea, let next = RPGArea(rawValue: area.rawValue + 1) else { return }
+        area = next
+        setMessageForCurrentArea()
     }
 
     func completeQuest() {
         questComplete = true
         AudioManager.shared.play(.storyNext)
-        setMessage(greek: "Αποστολή ολοκληρώθηκε! Βρήκες το Χρυσό Φτερό!", english: "Quest complete! You found the Golden Feather!")
+        setMessage(greek: "Μεγάλη αποστολή ολοκληρώθηκε! Ο Μπάμπης βοήθησε όλο το δάσος!", english: "Great quest complete! Babis helped the whole forest!")
+    }
+
+    func setMessageForCurrentArea() {
+        switch area {
+        case .forest: setMessage(greek: "Μάζεψε 3 μήλα, 2 ξύλα και 1 νερό.", english: "Collect 3 apples, 2 logs and 1 water.")
+        case .village: setMessage(greek: "Βοήθησε το χωριό: βρες 2 μούρα, 1 καρότο και ακόμη 1 ξύλο.", english: "Help the village: find 2 berries, 1 carrot and one more log.")
+        case .crystalCave: setMessage(greek: "Βρες 3 κρυστάλλους και το κλειδί της σπηλιάς.", english: "Find 3 crystals and the cave key.")
+        case .nightForest: setMessage(greek: "Βρες 2 κομμάτια χάρτη και το Χρυσό Φτερό.", english: "Find 2 map fragments and the Golden Feather.")
+        case .foxArea: setMessage(greek: "Βρες την αλεπού και ολοκλήρωσε την τελική αποστολή.", english: "Find the fox and complete the final mission.")
+        }
     }
 
     func setMessage(greek: String, english: String) {
-        message = AppSettings.shared.resolvedLanguage == .greek ? greek : english
+        message = isGreek ? greek : english
     }
 }
 
@@ -49,31 +122,33 @@ struct BabisRPGGameView: View {
                     Color.black.ignoresSafeArea()
                 }
 
-                VStack(spacing: 10) {
-                    HStack(spacing: 10) {
-                        objectiveChip(icon: "🍎", value: "\(gameState.apples)/3", complete: gameState.apples >= 3)
-                        objectiveChip(icon: "🪵", value: "\(gameState.wood)/2", complete: gameState.wood >= 2)
-                        objectiveChip(icon: "💧", value: "\(gameState.water)/1", complete: gameState.water >= 1)
+                VStack(spacing: 8) {
+                    HStack {
+                        Text(gameState.currentAreaTitle)
+                            .font(.headline.weight(.bold))
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 8)
+                            .background(.ultraThinMaterial)
+                            .clipShape(Capsule())
                         Spacer()
-                        if gameState.questComplete {
-                            Label(appSettings.resolvedLanguage == .greek ? "Αποστολή ✓" : "Quest ✓", systemImage: "star.fill")
-                                .font(.headline)
-                                .padding(.horizontal, 12)
-                                .padding(.vertical, 8)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Capsule())
+                    }
+
+                    HStack(spacing: 8) {
+                        ForEach(Array(gameState.objectiveItems.enumerated()), id: \.offset) { _, item in
+                            objectiveChip(icon: item.0, value: "\(min(item.1, item.2))/\(item.2)", complete: item.1 >= item.2)
                         }
+                        Spacer()
                     }
 
                     if !gameState.message.isEmpty {
                         Text(gameState.message)
-                            .font(.headline)
+                            .font(.subheadline.weight(.semibold))
                             .multilineTextAlignment(.center)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 9)
                             .background(.ultraThinMaterial)
-                            .clipShape(RoundedRectangle(cornerRadius: 16))
-                            .frame(maxWidth: 560)
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .frame(maxWidth: 620)
                     }
 
                     Spacer()
@@ -91,25 +166,24 @@ struct BabisRPGGameView: View {
             }
             .onAppear {
                 if scene == nil {
+                    gameState.setMessageForCurrentArea()
                     scene = BabisRPGScene(size: geometry.size, gameState: gameState)
                 }
             }
-            .onChange(of: geometry.size) { newSize in
-                scene?.size = newSize
-            }
+            .onChange(of: geometry.size) { newSize in scene?.size = newSize }
         }
         .navigationTitle(appSettings.resolvedLanguage == .greek ? "Η Περιπέτεια του Μπάμπη" : "Babis Adventure")
         .navigationBarTitleDisplayMode(.inline)
     }
 
     private func objectiveChip(icon: String, value: String, complete: Bool) -> some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 4) {
             Text(icon)
-            Text(value).font(.headline.monospacedDigit())
+            Text(value).font(.subheadline.weight(.bold).monospacedDigit())
             if complete { Image(systemName: "checkmark.circle.fill").foregroundColor(PlayLandColors.leafGreen) }
         }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 9)
+        .padding(.vertical, 7)
         .background(.ultraThinMaterial)
         .clipShape(Capsule())
     }
