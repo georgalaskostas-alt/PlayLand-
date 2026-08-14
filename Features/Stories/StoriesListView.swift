@@ -5,8 +5,8 @@ struct StoriesListView: View {
     @EnvironmentObject var appSettings: AppSettings
 
     private var stories: [StoryItem] {
-        StoryLibrary.stories.map {
-            StoryItem(id: $0.id, title: Loc.t($0.titleKey), description: Loc.t($0.descriptionKey), coverImageName: $0.coverImageName)
+        (StoryLibrary.stories + AdditionalStoryLibrary.stories).map {
+            StoryItem(id: $0.id, title: StoryText.t($0.titleKey), description: StoryText.t($0.descriptionKey), coverImageName: $0.coverImageName)
         }
     }
 
