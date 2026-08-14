@@ -67,9 +67,23 @@ struct InteractiveSceneView: View {
 
     // MARK: - Scene art
 
+    private var installedIllustrationName: String? {
+        // New production artwork is numbered 01...15. Keep support for the
+        // older descriptive names so existing builds remain backward compatible.
+        let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
+        if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
+           AppAssets.exists(productionName) {
+            return productionName
+        }
+        if let legacy = currentScene.illustration, AppAssets.exists(legacy) {
+            return legacy
+        }
+        return nil
+    }
+
     @ViewBuilder
     private func sceneArt(regionSize: CGSize) -> some View {
-        if let illustration = currentScene.illustration, AppAssets.exists(illustration) {
+        if let illustration = installedIllustrationName {
             AppAssets.image(illustration)
                 .resizable()
                 .scaledToFit()
