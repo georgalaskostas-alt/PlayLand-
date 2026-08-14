@@ -5,6 +5,7 @@ import Foundation
 /// beats that do not yet live in the main localization catalog.
 enum StoryText {
     private static let en: [String: String] = [
+        "story.babisKotsifi.scene2.combinedNarration": "‘No,’ said the blackbird. ‘You may look fierce and terrifying, but deep down I think you are kind.’ Babis had never heard anyone say that before. He thought for a moment and replied, ‘Then let’s make a deal. I’ll let you ride on my nose, and because you can see far from above, you’ll help me find food and water.’ The blackbird happily agreed, and from that day they became a team.",
         "story.babisKotsifi.scene10.treeNarration": "Without wasting a moment, the blackbird flew to the very top of the tallest tree. From there he could see the whole forest. He searched carefully for a clue that might reveal where the stolen food and firewood had gone.",
         "story.babisKotsifi.scene11.smokeNarration": "Then he noticed something strange. The only cave with smoke rising from it was the fox’s cave. ‘She must have taken our food and firewood!’ he thought. He hurried down and flew back to tell Babis.",
         "story.babisKotsifi.scene4.choice.left": "Go left — the blackbird saw water there",
@@ -22,6 +23,7 @@ enum StoryText {
     ]
 
     private static let el: [String: String] = [
+        "story.babisKotsifi.scene2.combinedNarration": "«Όχι», του είπε το κοτσύφι. «Μπορεί να μοιάζεις φοβερός και τρομερός, αλλά κατά βάθος πιστεύω πως είσαι καλός.» Κανείς δεν είχε ξαναμιλήσει έτσι στον Μπάμπη. Σκέφτηκε για λίγο και του είπε: «Τότε θα κάνουμε μια συμφωνία. Εγώ θα σε αφήνω να κάθεσαι πάνω στη μύτη μου κι εσύ, που βλέπεις μακριά και καλά από ψηλά, θα μου λες πού είναι το φαγητό και πού είναι το νερό.» Το κοτσύφι συμφώνησε χαρούμενο και από εκείνη τη μέρα έγιναν ομάδα.",
         "story.babisKotsifi.scene10.treeNarration": "Το κοτσύφι, χωρίς να χάσει καθόλου καιρό, πέταξε στην πιο ψηλή κορυφή του πιο ψηλού δέντρου. Από εκεί πάνω μπορούσε να δει ολόκληρο το δάσος. Κοίταξε προσεκτικά παντού, ψάχνοντας ένα στοιχείο που θα τους έδειχνε πού είχαν πάει τα κλεμμένα πράγματα.",
         "story.babisKotsifi.scene11.smokeNarration": "Ξαφνικά πρόσεξε κάτι παράξενο. Η μόνη σπηλιά απ’ όπου έβγαινε καπνός ήταν η σπηλιά της αλεπούς. «Αυτή πρέπει να πήρε τα ξύλα και τα φαγητά μας!» σκέφτηκε. Κατέβηκε γρήγορα από το δέντρο και πέταξε να το πει στον Μπάμπη.",
         "story.babisKotsifi.scene4.choice.left": "Πήγαινε αριστερά — εκεί είδε το νερό το κοτσύφι",
