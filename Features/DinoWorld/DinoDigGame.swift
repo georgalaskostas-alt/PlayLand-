@@ -11,60 +11,68 @@ struct DinoDigGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
-    private let totalBones = 5
-    private let gridSize = 9
-
+    @State private var level = 1
     @State private var tiles: [DigTile] = []
     @State private var bonesFound = 0
     @State private var taps = 0
+    @State private var totalTaps = 0
+    @State private var showLevelComplete = false
     @State private var isFinished = false
+
+    private let totalLevels = 5
+    private var gridSide: Int { level <= 2 ? 3 : 4 }
+    private var gridSize: Int { gridSide * gridSide }
+    private var totalBones: Int { min(gridSize - 2, 3 + level) }
 
     var body: some View {
         ZStack {
             ScrollView {
-            VStack(spacing: 20) {
-                GameHeader(title: Loc.t("dino.dig.title"), subtitle: Loc.t("dino.dig.instruction", totalBones))
-
-                HStack {
-                    Text("🦴 \(bonesFound)/\(totalBones)")
+                VStack(spacing: 20) {
+                    GameHeader(title: Loc.t("dino.dig.title"), subtitle: Loc.t("dino.dig.instruction", totalBones))
+                    Text(levelLabel)
                         .font(PlayLandTypography.heading)
                         .foregroundColor(PlayLandColors.sunOrange)
-                }
+                    Text("🦴 \(bonesFound)/\(totalBones)")
+                        .font(PlayLandTypography.heading)
 
-                LazyVGrid(columns: Array(repeating: GridItem(spacing: 12), count: 3), spacing: 12) {
-                    ForEach(tiles) { tile in
-                        Button(action: { dig(tile) }) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
-                                    .fill(tile.isRevealed
-                                          ? (tile.hasBone ? PlayLandColors.sunOrange.opacity(0.25) : Color.brown.opacity(0.15))
-                                          : Color.brown.opacity(0.55))
-
-                                Text(tile.isRevealed ? (tile.hasBone ? "🦴" : "🪨") : "⛏️")
-                                    .font(.system(size: 34))
+                    LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: gridSide), spacing: 10) {
+                        ForEach(tiles) { tile in
+                            Button(action: { dig(tile) }) {
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
+                                        .fill(tile.isRevealed ? (tile.hasBone ? PlayLandColors.sunOrange.opacity(0.25) : Color.brown.opacity(0.15)) : Color.brown.opacity(0.55))
+                                    Text(tile.isRevealed ? (tile.hasBone ? "🦴" : "🪨") : "⛏️")
+                                        .font(.system(size: 32))
+                                }
+                                .frame(height: gridSide == 3 ? 90 : 70)
                             }
-                            .frame(height: 90)
+                            .disabled(tile.isRevealed)
                         }
-                        .disabled(tile.isRevealed)
-                        .accessibilityLabel(Text(tile.isRevealed ? (tile.hasBone ? "🦴" : "🪨") : Loc.t("dino.dig.title")))
                     }
+                    .padding(.horizontal)
                 }
-                .padding(.horizontal)
-
-                Spacer()
+                .padding()
             }
-            .padding()
-            .onAppear(perform: setupTiles)
+            .onAppear(perform: setupLevel)
+
+            if showLevelComplete {
+                CompletionCelebrationView(
+                    title: levelCompleteTitle,
+                    message: levelCompleteMessage,
+                    stars: levelStars,
+                    buttonTitle: level < totalLevels ? nextLevelTitle : Loc.t("action.continue"),
+                    action: advanceLevel
+                )
             }
 
             if isFinished {
                 CompletionCelebrationView(
                     title: Loc.t("dino.dig.completeTitle"),
-                    message: Loc.t("dino.dig.completeMessage", taps),
-                    stars: stars,
+                    message: finalMessage,
+                    stars: finalStars,
                     buttonTitle: Loc.t("dino.dig.completeButton"),
                     action: {
-                        progressManager.completeGame("dino_dig", stars: stars)
+                        progressManager.completeGame("dino_dig", stars: finalStars)
                         dismiss()
                     }
                 )
@@ -72,33 +80,43 @@ struct DinoDigGame: View {
         }
     }
 
-    private var stars: Int {
-        if taps <= gridSize { return 3 }
-        if taps <= gridSize + 3 { return 2 }
-        return 1
-    }
+    private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
+    private var levelLabel: String { isGreek ? "Ανασκαφή \(level) από \(totalLevels)" : "Dig site \(level) of \(totalLevels)" }
+    private var levelCompleteTitle: String { isGreek ? "Βρήκες τα απολιθώματα!" : "Fossils found!" }
+    private var levelCompleteMessage: String { isGreek ? "Η επόμενη ανασκαφή είναι μεγαλύτερη." : "The next dig site is bigger." }
+    private var nextLevelTitle: String { isGreek ? "Επόμενη ανασκαφή" : "Next dig" }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τις 5 ανασκαφές!" : "You completed all 5 dig sites!" }
+    private var levelStars: Int { taps <= totalBones + 2 ? 3 : (taps <= totalBones + 5 ? 2 : 1) }
+    private var finalStars: Int { totalTaps <= 45 ? 3 : (totalTaps <= 60 ? 2 : 1) }
 
-    private func setupTiles() {
+    private func setupLevel() {
         var boneIndices = Set<Int>()
-        while boneIndices.count < totalBones {
-            boneIndices.insert(Int.random(in: 0..<gridSize))
-        }
+        while boneIndices.count < totalBones { boneIndices.insert(Int.random(in: 0..<gridSize)) }
         tiles = (0..<gridSize).map { DigTile(id: $0, hasBone: boneIndices.contains($0)) }
         bonesFound = 0
         taps = 0
-        isFinished = false
+        showLevelComplete = false
     }
 
     private func dig(_ tile: DigTile) {
         guard let index = tiles.firstIndex(where: { $0.id == tile.id }), !tiles[index].isRevealed else { return }
         tiles[index].isRevealed = true
         taps += 1
+        totalTaps += 1
         if tiles[index].hasBone {
             bonesFound += 1
             AudioManager.shared.play(.correct)
         }
-        if bonesFound == totalBones {
-            withAnimation { isFinished = true }
+        if bonesFound == totalBones { withAnimation { showLevelComplete = true } }
+    }
+
+    private func advanceLevel() {
+        if level >= totalLevels {
+            showLevelComplete = false
+            isFinished = true
+        } else {
+            level += 1
+            setupLevel()
         }
     }
 }
