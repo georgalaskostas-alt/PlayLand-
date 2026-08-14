@@ -42,6 +42,7 @@ enum StoryText {
 
     static func t(_ key: String) -> String {
         let language = AppSettings.shared.resolvedLanguage
+        if let additional = AdditionalStoryText.value(for: key, language: language) { return additional }
         if language == .greek, let value = el[key] { return value }
         if let value = en[key] { return value }
         return Loc.t(key)
