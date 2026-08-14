@@ -1,5 +1,6 @@
 import SwiftUI
 import SpriteKit
+import Combine
 
 enum RPGArea: Int, CaseIterable {
     case forest, village, crystalCave, nightForest, foxArea
