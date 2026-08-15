@@ -60,20 +60,23 @@ struct InteractiveSceneView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let panelHeight = min(max(geometry.size.height * 0.27, 205), 255)
+            let artHeight = max(geometry.size.height - panelHeight + 24, geometry.size.height * 0.76)
+
             ZStack(alignment: .bottom) {
-                sceneBackground(size: geometry.size)
+                sceneBackground(size: geometry.size, artHeight: artHeight)
 
                 LinearGradient(
-                    colors: [.clear, .clear, .black.opacity(0.10), .black.opacity(0.38)],
+                    colors: [.clear, .clear, .black.opacity(0.04), .black.opacity(0.26)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-                compactPanel(maxHeight: geometry.size.height * 0.34)
-                    .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
-                    .padding(.bottom, 12)
+                compactPanel(maxHeight: panelHeight)
+                    .padding(.horizontal, 10)
+                    .padding(.bottom, 8)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             .clipped()
@@ -108,32 +111,27 @@ struct InteractiveSceneView: View {
     }
 
     @ViewBuilder
-    private func sceneBackground(size: CGSize) -> some View {
+    private func sceneBackground(size: CGSize, artHeight: CGFloat) -> some View {
         if let illustration = installedIllustrationName {
-            ZStack {
-                // The same illustration fills the entire screen as a soft
-                // backdrop so there are no unrelated forest graphics behind it.
+            ZStack(alignment: .top) {
+                // A subtle fill from the same illustration avoids empty bands
+                // on tall devices without introducing unrelated artwork.
                 AppAssets.image(illustration)
                     .resizable()
                     .scaledToFill()
                     .frame(width: size.width, height: size.height)
                     .clipped()
-                    .blur(radius: 18)
-                    .scaleEffect(1.08)
-                    .overlay(Color.black.opacity(0.12))
+                    .blur(radius: 16)
+                    .scaleEffect(1.06)
+                    .overlay(Color.black.opacity(0.08))
 
-                // The complete illustration stays sharp and fully visible.
-                // This preserves the composition even on portrait devices.
+                // Give the illustration every available pixel above the compact
+                // narration controls. scaledToFit keeps the complete composition.
                 AppAssets.image(illustration)
                     .resizable()
                     .scaledToFit()
-                    .frame(
-                        width: size.width,
-                        height: size.height * 0.78,
-                        alignment: .top
-                    )
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .padding(.top, 4)
+                    .frame(width: size.width, height: artHeight, alignment: .top)
+                    .frame(width: size.width, height: size.height, alignment: .top)
                     .transition(.opacity.combined(with: .scale(scale: 0.995)))
                     .accessibilityHidden(true)
             }
@@ -189,30 +187,30 @@ struct InteractiveSceneView: View {
             .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
             .overlay {
                 RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge)
-                    .stroke(.white.opacity(0.18), lineWidth: 1)
+                    .stroke(.white.opacity(0.16), lineWidth: 1)
             }
-            .shadow(color: .black.opacity(0.22), radius: 12, y: 5)
+            .shadow(color: .black.opacity(0.20), radius: 10, y: 4)
     }
 
     private var panelContent: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 10) {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 8) {
                 ScrollView(.vertical, showsIndicators: false) {
                     CharacterDialogueBubble(text: narrationText)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 SpeakerButton(text: narrationText)
-                    .padding(.top, 2)
+                    .padding(.top, 1)
             }
-            .frame(maxHeight: 150)
+            .frame(maxHeight: 118)
 
             if let choiceFeedback {
                 Text(choiceFeedback)
                     .font(PlayLandTypography.body)
                     .foregroundColor(.white)
                     .fixedSize(horizontal: false, vertical: true)
-                    .padding(10)
+                    .padding(8)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .background(Color.black.opacity(0.30))
                     .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
@@ -223,7 +221,7 @@ struct InteractiveSceneView: View {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 7) {
+                VStack(spacing: 6) {
                     ForEach(presentedChoices) { choice in
                         Button(action: { choose(choice) }) {
                             Text(StoryText.t(choice.textKey))
@@ -233,7 +231,7 @@ struct InteractiveSceneView: View {
                 }
             }
         }
-        .padding(12)
+        .padding(10)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
