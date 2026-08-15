@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// Plays through a branching sequence of `StoryScene`s. A scene can use a
-/// dedicated storybook illustration; until that illustration is installed,
-/// the renderer gracefully falls back to the existing character composition.
+/// Plays through a branching sequence of `StoryScene`s. Production storybook
+/// illustrations fill the scene while narration and choices float over the
+/// lower edge, keeping the artwork immersive and the controls readable.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -10,7 +10,6 @@ struct InteractiveSceneView: View {
 
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 
     @State private var currentIndex = 0
     @State private var hasEnteredScene = false
@@ -30,9 +29,6 @@ struct InteractiveSceneView: View {
 
     private var narrationText: String { StoryText.t(currentScene.narrationKey) }
 
-    /// Key story beats become reasoning moments instead of simple "continue"
-    /// taps. Wrong answers do not advance the story; they trigger a gentle,
-    /// spoken educational hint and let the child try again.
     private var presentedChoices: [PresentedChoice] {
         switch currentScene.narrationKey {
         case "story.babisKotsifi.scene4.narration":
@@ -64,36 +60,27 @@ struct InteractiveSceneView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            ZStack {
-                PlayLandBackground(imageName: currentScene.background)
-                    .transition(.opacity)
-                    .id(currentScene.background)
+            ZStack(alignment: .bottom) {
+                sceneBackground(size: geometry.size)
 
-                if horizontalSizeClass == .regular {
-                    let regionHeight = geometry.size.height - 40
-                    let regionWidth = geometry.size.width * 0.48
+                // A subtle bottom fade preserves the full illustration while
+                // guaranteeing contrast behind the floating story controls.
+                LinearGradient(
+                    colors: [.clear, .black.opacity(0.08), .black.opacity(0.34)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+                .allowsHitTesting(false)
 
-                    HStack(alignment: .top, spacing: 20) {
-                        sceneArt(regionSize: CGSize(width: regionWidth, height: regionHeight))
-                            .frame(width: regionWidth, height: regionHeight)
-
-                        panel.frame(maxWidth: .infinity, alignment: .leading)
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack {
+                        Spacer(minLength: max(geometry.size.height * 0.50, 260))
+                        panel
+                            .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
+                            .padding(.bottom, 14)
                     }
-                    .padding(20)
-                } else {
-                    let artHeight = geometry.size.height * 0.46
-
-                    ScrollView {
-                        VStack(spacing: 12) {
-                            sceneArt(regionSize: CGSize(width: geometry.size.width, height: artHeight))
-                                .frame(width: geometry.size.width, height: artHeight)
-
-                            panel
-                                .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
-                                .padding(.bottom, 12)
-                        }
-                        .frame(width: geometry.size.width)
-                    }
+                    .frame(minHeight: geometry.size.height)
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
@@ -109,14 +96,6 @@ struct InteractiveSceneView: View {
     // MARK: - Scene art
 
     private var installedIllustrationName: String? {
-        // The final Babis + Kotsifi production set is numbered 01...15. Story
-        // index 0 maps to illustration 01, index 1 to 02, and so on.
-        //
-        // Once the base illustration is resolved, localization is automatic:
-        // Greek keeps the original image; every other language uses a
-        // `<base>_global` asset only when that specific global asset exists.
-        // This means scenes without text need no duplicate artwork and simply
-        // keep their original illustration in every language.
         let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
         if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
            AppAssets.exists(productionName) {
@@ -137,18 +116,21 @@ struct InteractiveSceneView: View {
     }
 
     @ViewBuilder
-    private func sceneArt(regionSize: CGSize) -> some View {
+    private func sceneBackground(size: CGSize) -> some View {
         if let illustration = installedIllustrationName {
             AppAssets.image(illustration)
                 .resizable()
-                .scaledToFit()
-                .frame(width: regionSize.width, height: regionSize.height)
-                .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
-                .shadow(color: .black.opacity(0.22), radius: 8, y: 4)
-                .transition(.opacity.combined(with: .scale(scale: 0.98)))
+                .scaledToFill()
+                .frame(width: size.width, height: size.height)
+                .clipped()
+                .transition(.opacity.combined(with: .scale(scale: 1.015)))
                 .accessibilityHidden(true)
         } else {
-            characterComposition(regionSize: regionSize)
+            ZStack {
+                PlayLandBackground(imageName: currentScene.background)
+                characterComposition(regionSize: size)
+            }
+            .transition(.opacity)
         }
     }
 
@@ -159,14 +141,14 @@ struct InteractiveSceneView: View {
                 let xFraction = CGFloat(index + 1) / CGFloat(count + 1)
                 let widthFraction = characterWidthFraction(index: index, count: count)
                 let charWidth = regionSize.width * widthFraction
-                let charHeight = regionSize.height * 0.88
+                let charHeight = regionSize.height * 0.72
 
                 AppAssets.image(character)
                     .resizable()
                     .scaledToFit()
                     .frame(width: charWidth, height: charHeight, alignment: .bottom)
                     .shadow(color: .black.opacity(0.35), radius: 6, y: 4)
-                    .position(x: regionSize.width * xFraction, y: regionSize.height - charHeight / 2 - regionSize.height * 0.04)
+                    .position(x: regionSize.width * xFraction, y: regionSize.height - charHeight / 2 - regionSize.height * 0.08)
                     .scaleEffect(hasEnteredScene ? 1.0 : 0.85)
                     .opacity(hasEnteredScene ? 1.0 : 0.0)
             }
@@ -189,16 +171,21 @@ struct InteractiveSceneView: View {
         panelContent
             .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
+            .overlay {
+                RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge)
+                    .stroke(.white.opacity(0.20), lineWidth: 1)
+            }
+            .shadow(color: .black.opacity(0.24), radius: 14, y: 6)
     }
 
     private var panelContent: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            CharacterDialogueBubble(text: narrationText)
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 12) {
+                CharacterDialogueBubble(text: narrationText)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack {
-                Spacer(minLength: 0)
                 SpeakerButton(text: narrationText)
+                    .padding(.top, 2)
             }
 
             if let choiceFeedback {
@@ -217,7 +204,7 @@ struct InteractiveSceneView: View {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 10) {
+                VStack(spacing: 8) {
                     ForEach(presentedChoices) { choice in
                         Button(action: { choose(choice) }) {
                             Text(StoryText.t(choice.textKey))
@@ -227,7 +214,7 @@ struct InteractiveSceneView: View {
                 }
             }
         }
-        .padding(16)
+        .padding(14)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
