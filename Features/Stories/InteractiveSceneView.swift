@@ -57,11 +57,16 @@ struct InteractiveSceneView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let panelHeight = min(max(geometry.size.height * 0.28, 220), 270)
+            // The source illustrations are landscape (roughly 4:3) while phones
+            // are portrait. A slightly taller narration region makes the art
+            // viewport less narrow, preserving substantially more of both edges
+            // without reintroducing letterboxing or blurred filler.
+            let panelHeight = min(max(geometry.size.height * 0.34, 285), 350)
+            let artHeight = max(0, geometry.size.height - panelHeight)
 
             VStack(spacing: 0) {
-                sceneArt(size: CGSize(width: geometry.size.width, height: max(0, geometry.size.height - panelHeight)))
-                    .frame(width: geometry.size.width, height: max(0, geometry.size.height - panelHeight))
+                sceneArt(size: CGSize(width: geometry.size.width, height: artHeight))
+                    .frame(width: geometry.size.width, height: artHeight)
 
                 compactPanel(maxHeight: panelHeight)
                     .frame(width: geometry.size.width, height: panelHeight)
@@ -96,9 +101,9 @@ struct InteractiveSceneView: View {
     @ViewBuilder
     private func sceneArt(size: CGSize) -> some View {
         if let illustration = installedIllustrationName {
-            // The illustration owns the complete visual region. There is no
-            // blurred duplicate underneath it. scaledToFill deliberately uses
-            // all available screen area; clipping is limited to the edges.
+            // Keep a full-bleed illustration, but use a viewport whose aspect
+            // ratio is closer to the original artwork so portrait phones crop
+            // much less from the left and right sides.
             AppAssets.image(illustration)
                 .resizable()
                 .scaledToFill()
@@ -159,7 +164,7 @@ struct InteractiveSceneView: View {
     }
 
     private var panelContent: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 10) {
                 ScrollView(.vertical, showsIndicators: false) {
                     CharacterDialogueBubble(text: narrationText)
@@ -169,7 +174,7 @@ struct InteractiveSceneView: View {
                 SpeakerButton(text: narrationText)
                     .padding(.top, 2)
             }
-            .frame(maxHeight: 128)
+            .frame(maxHeight: 145)
 
             if let choiceFeedback {
                 Text(choiceFeedback)
@@ -187,7 +192,7 @@ struct InteractiveSceneView: View {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 8) {
+                VStack(spacing: 10) {
                     ForEach(presentedChoices) { choice in
                         Button(action: { choose(choice) }) {
                             Text(StoryText.t(choice.textKey))
@@ -198,8 +203,8 @@ struct InteractiveSceneView: View {
             }
         }
         .padding(.horizontal, 18)
-        .padding(.top, 14)
-        .padding(.bottom, 16)
+        .padding(.top, 16)
+        .padding(.bottom, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
