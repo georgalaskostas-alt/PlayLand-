@@ -1,8 +1,8 @@
 import SwiftUI
+import UIKit
 
 /// Plays through a branching sequence of `StoryScene`s. Production storybook
-/// illustrations remain the visual focus while narration and choices stay
-/// compact at the bottom of the screen.
+/// illustrations remain fully visible while narration and choices stay below.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -57,12 +57,10 @@ struct InteractiveSceneView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            // The source illustrations are landscape (roughly 4:3) while phones
-            // are portrait. A slightly taller narration region makes the art
-            // viewport less narrow, preserving substantially more of both edges
-            // without reintroducing letterboxing or blurred filler.
-            let panelHeight = min(max(geometry.size.height * 0.34, 285), 350)
-            let artHeight = max(0, geometry.size.height - panelHeight)
+            let imageHeight = fittedIllustrationHeight(for: geometry.size.width)
+            let maxImageHeight = geometry.size.height * 0.58
+            let artHeight = min(imageHeight, maxImageHeight)
+            let panelHeight = max(geometry.size.height - artHeight, 0)
 
             VStack(spacing: 0) {
                 sceneArt(size: CGSize(width: geometry.size.width, height: artHeight))
@@ -98,19 +96,32 @@ struct InteractiveSceneView: View {
         return nil
     }
 
+    private func fittedIllustrationHeight(for availableWidth: CGFloat) -> CGFloat {
+        guard let name = installedIllustrationName,
+              let uiImage = UIImage(named: name),
+              uiImage.size.width > 0 else {
+            return availableWidth * 0.75
+        }
+
+        return availableWidth * (uiImage.size.height / uiImage.size.width)
+    }
+
     @ViewBuilder
     private func sceneArt(size: CGSize) -> some View {
         if let illustration = installedIllustrationName {
-            // Keep a full-bleed illustration, but use a viewport whose aspect
-            // ratio is closer to the original artwork so portrait phones crop
-            // much less from the left and right sides.
-            AppAssets.image(illustration)
-                .resizable()
-                .scaledToFill()
-                .frame(width: size.width, height: size.height)
-                .clipped()
-                .transition(.opacity.combined(with: .scale(scale: 0.995)))
-                .accessibilityHidden(true)
+            ZStack {
+                Color.black
+
+                // No crop: the complete illustration is always visible.
+                AppAssets.image(illustration)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size.width, height: size.height)
+                    .transition(.opacity.combined(with: .scale(scale: 0.995)))
+                    .accessibilityHidden(true)
+            }
+            .frame(width: size.width, height: size.height)
+            .clipped()
         } else {
             ZStack {
                 PlayLandBackground(imageName: currentScene.background)
@@ -187,6 +198,8 @@ struct InteractiveSceneView: View {
                     .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
+
+            Spacer(minLength: 8)
 
             if presentedChoices.isEmpty {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
