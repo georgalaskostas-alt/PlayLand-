@@ -162,6 +162,20 @@ enum AppAssets {
         #endif
     }
 
+    /// Resolves the correct story illustration for the active app language.
+    /// Greek always uses the original asset. Every other language uses the
+    /// matching `_global` asset only when that asset actually exists; scenes
+    /// without a global version automatically keep their original artwork.
+    ///
+    /// Example:
+    /// `story_babis_kotsifi_05` -> `story_babis_kotsifi_05_global`
+    /// for non-Greek languages, but only if the global asset is installed.
+    static func storyIllustration(_ baseName: String, language: AppLanguage) -> String {
+        guard language != .greek else { return baseName }
+        let globalName = "\(baseName)_global"
+        return exists(globalName) ? globalName : baseName
+    }
+
     /// Returns `Image(name)` when the asset exists in the catalog, or a
     /// neutral system placeholder otherwise. Never crashes on a missing name.
     static func image(_ name: String) -> Image {
