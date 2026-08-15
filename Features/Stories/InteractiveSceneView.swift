@@ -1,8 +1,8 @@
 import SwiftUI
 
 /// Plays through a branching sequence of `StoryScene`s. Production storybook
-/// illustrations fill the scene while narration and choices float over the
-/// lower edge, keeping the artwork immersive and the controls readable.
+/// illustrations are shown in full over an immersive scene background while
+/// narration and choices float over the lower edge.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -63,10 +63,8 @@ struct InteractiveSceneView: View {
             ZStack(alignment: .bottom) {
                 sceneBackground(size: geometry.size)
 
-                // A subtle bottom fade preserves the full illustration while
-                // guaranteeing contrast behind the floating story controls.
                 LinearGradient(
-                    colors: [.clear, .black.opacity(0.08), .black.opacity(0.34)],
+                    colors: [.clear, .clear, .black.opacity(0.18), .black.opacity(0.42)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -75,7 +73,7 @@ struct InteractiveSceneView: View {
 
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack {
-                        Spacer(minLength: max(geometry.size.height * 0.50, 260))
+                        Spacer(minLength: max(geometry.size.height * 0.58, 310))
                         panel
                             .padding(.horizontal, PlayLandMetrics.contentHorizontalMargin)
                             .padding(.bottom, 14)
@@ -117,21 +115,39 @@ struct InteractiveSceneView: View {
 
     @ViewBuilder
     private func sceneBackground(size: CGSize) -> some View {
-        if let illustration = installedIllustrationName {
-            AppAssets.image(illustration)
-                .resizable()
-                .scaledToFill()
-                .frame(width: size.width, height: size.height)
-                .clipped()
-                .transition(.opacity.combined(with: .scale(scale: 1.015)))
-                .accessibilityHidden(true)
-        } else {
-            ZStack {
-                PlayLandBackground(imageName: currentScene.background)
+        ZStack(alignment: .top) {
+            // The environmental artwork always fills the whole screen.
+            PlayLandBackground(imageName: currentScene.background)
+                .transition(.opacity)
+                .id(currentScene.background)
+
+            if let illustration = installedIllustrationName {
+                // Never crop story illustrations. They sit over the full-screen
+                // environment and preserve their complete composition.
+                AppAssets.image(illustration)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(
+                        maxWidth: size.width - 16,
+                        maxHeight: size.height * 0.68,
+                        alignment: .top
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge)
+                            .stroke(.white.opacity(0.16), lineWidth: 1)
+                    }
+                    .shadow(color: .black.opacity(0.30), radius: 12, y: 6)
+                    .padding(.horizontal, 8)
+                    .padding(.top, 8)
+                    .transition(.opacity.combined(with: .scale(scale: 0.99)))
+                    .accessibilityHidden(true)
+            } else {
                 characterComposition(regionSize: size)
             }
-            .transition(.opacity)
         }
+        .frame(width: size.width, height: size.height)
+        .clipped()
     }
 
     private func characterComposition(regionSize: CGSize) -> some View {
