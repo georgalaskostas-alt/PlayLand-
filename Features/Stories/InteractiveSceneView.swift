@@ -23,10 +23,7 @@ struct InteractiveSceneView: View {
         let feedbackKey: String?
     }
 
-    private var currentScene: StoryScene {
-        scenes[min(currentIndex, scenes.count - 1)]
-    }
-
+    private var currentScene: StoryScene { scenes[min(currentIndex, scenes.count - 1)] }
     private var narrationText: String { StoryText.t(currentScene.narrationKey) }
 
     private var presentedChoices: [PresentedChoice] {
@@ -60,25 +57,17 @@ struct InteractiveSceneView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let panelHeight = min(max(geometry.size.height * 0.27, 205), 255)
-            let artHeight = max(geometry.size.height - panelHeight + 24, geometry.size.height * 0.76)
+            let panelHeight = min(max(geometry.size.height * 0.28, 220), 270)
 
-            ZStack(alignment: .bottom) {
-                sceneBackground(size: geometry.size, artHeight: artHeight)
-
-                LinearGradient(
-                    colors: [.clear, .clear, .black.opacity(0.04), .black.opacity(0.26)],
-                    startPoint: .top,
-                    endPoint: .bottom
-                )
-                .ignoresSafeArea()
-                .allowsHitTesting(false)
+            VStack(spacing: 0) {
+                sceneArt(size: CGSize(width: geometry.size.width, height: max(0, geometry.size.height - panelHeight)))
+                    .frame(width: geometry.size.width, height: max(0, geometry.size.height - panelHeight))
 
                 compactPanel(maxHeight: panelHeight)
-                    .padding(.horizontal, 10)
-                    .padding(.bottom, 8)
+                    .frame(width: geometry.size.width, height: panelHeight)
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            .background(Color.black)
             .clipped()
         }
         .animation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.3)), value: currentIndex)
@@ -94,49 +83,29 @@ struct InteractiveSceneView: View {
         let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
         if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
            AppAssets.exists(productionName) {
-            return AppAssets.storyIllustration(
-                productionName,
-                language: appSettings.resolvedLanguage
-            )
+            return AppAssets.storyIllustration(productionName, language: appSettings.resolvedLanguage)
         }
 
         if let fallback = currentScene.illustration, AppAssets.exists(fallback) {
-            return AppAssets.storyIllustration(
-                fallback,
-                language: appSettings.resolvedLanguage
-            )
+            return AppAssets.storyIllustration(fallback, language: appSettings.resolvedLanguage)
         }
 
         return nil
     }
 
     @ViewBuilder
-    private func sceneBackground(size: CGSize, artHeight: CGFloat) -> some View {
+    private func sceneArt(size: CGSize) -> some View {
         if let illustration = installedIllustrationName {
-            ZStack(alignment: .top) {
-                // A subtle fill from the same illustration avoids empty bands
-                // on tall devices without introducing unrelated artwork.
-                AppAssets.image(illustration)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: size.width, height: size.height)
-                    .clipped()
-                    .blur(radius: 16)
-                    .scaleEffect(1.06)
-                    .overlay(Color.black.opacity(0.08))
-
-                // Give the illustration every available pixel above the compact
-                // narration controls. scaledToFit keeps the complete composition.
-                AppAssets.image(illustration)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: size.width, height: artHeight, alignment: .top)
-                    .frame(width: size.width, height: size.height, alignment: .top)
-                    .transition(.opacity.combined(with: .scale(scale: 0.995)))
-                    .accessibilityHidden(true)
-            }
-            .frame(width: size.width, height: size.height)
-            .clipped()
+            // The illustration owns the complete visual region. There is no
+            // blurred duplicate underneath it. scaledToFill deliberately uses
+            // all available screen area; clipping is limited to the edges.
+            AppAssets.image(illustration)
+                .resizable()
+                .scaledToFill()
+                .frame(width: size.width, height: size.height)
+                .clipped()
+                .transition(.opacity.combined(with: .scale(scale: 0.995)))
+                .accessibilityHidden(true)
         } else {
             ZStack {
                 PlayLandBackground(imageName: currentScene.background)
@@ -144,6 +113,8 @@ struct InteractiveSceneView: View {
                     .id(currentScene.background)
                 characterComposition(regionSize: size)
             }
+            .frame(width: size.width, height: size.height)
+            .clipped()
         }
     }
 
@@ -182,28 +153,23 @@ struct InteractiveSceneView: View {
 
     private func compactPanel(maxHeight: CGFloat) -> some View {
         panelContent
-            .frame(maxHeight: maxHeight)
+            .frame(maxWidth: .infinity, maxHeight: maxHeight)
             .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
-            .overlay {
-                RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge)
-                    .stroke(.white.opacity(0.16), lineWidth: 1)
-            }
-            .shadow(color: .black.opacity(0.20), radius: 10, y: 4)
+            .overlay(alignment: .top) { Rectangle().fill(.white.opacity(0.12)).frame(height: 1) }
     }
 
     private var panelContent: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .top, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .top, spacing: 10) {
                 ScrollView(.vertical, showsIndicators: false) {
                     CharacterDialogueBubble(text: narrationText)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
 
                 SpeakerButton(text: narrationText)
-                    .padding(.top, 1)
+                    .padding(.top, 2)
             }
-            .frame(maxHeight: 118)
+            .frame(maxHeight: 128)
 
             if let choiceFeedback {
                 Text(choiceFeedback)
@@ -221,7 +187,7 @@ struct InteractiveSceneView: View {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 6) {
+                VStack(spacing: 8) {
                     ForEach(presentedChoices) { choice in
                         Button(action: { choose(choice) }) {
                             Text(StoryText.t(choice.textKey))
@@ -231,8 +197,10 @@ struct InteractiveSceneView: View {
                 }
             }
         }
-        .padding(10)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 18)
+        .padding(.top, 14)
+        .padding(.bottom, 16)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private func choose(_ choice: PresentedChoice) {
