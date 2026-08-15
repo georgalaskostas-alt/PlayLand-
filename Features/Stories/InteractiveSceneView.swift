@@ -109,16 +109,30 @@ struct InteractiveSceneView: View {
     // MARK: - Scene art
 
     private var installedIllustrationName: String? {
-        // The final production set is numbered 01...15. Story index 0 maps to
-        // illustration 01, index 1 to 02, and so on.
+        // The final Babis + Kotsifi production set is numbered 01...15. Story
+        // index 0 maps to illustration 01, index 1 to 02, and so on.
+        //
+        // Once the base illustration is resolved, localization is automatic:
+        // Greek keeps the original image; every other language uses a
+        // `<base>_global` asset only when that specific global asset exists.
+        // This means scenes without text need no duplicate artwork and simply
+        // keep their original illustration in every language.
         let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
         if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
            AppAssets.exists(productionName) {
-            return productionName
+            return AppAssets.storyIllustration(
+                productionName,
+                language: appSettings.resolvedLanguage
+            )
         }
+
         if let fallback = currentScene.illustration, AppAssets.exists(fallback) {
-            return fallback
+            return AppAssets.storyIllustration(
+                fallback,
+                language: appSettings.resolvedLanguage
+            )
         }
+
         return nil
     }
 
