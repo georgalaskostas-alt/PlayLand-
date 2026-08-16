@@ -1,8 +1,8 @@
 import SwiftUI
-import UIKit
 
-/// Plays through a branching sequence of `StoryScene`s. Production storybook
-/// illustrations remain fully visible while narration and choices stay below.
+/// Plays through a branching sequence of `StoryScene`s. Portrait storybook
+/// illustrations fill most of the screen while narration and choices remain
+/// compact and readable below.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -57,10 +57,8 @@ struct InteractiveSceneView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let imageHeight = fittedIllustrationHeight(for: geometry.size.width)
-            let maxImageHeight = geometry.size.height * 0.58
-            let artHeight = min(imageHeight, maxImageHeight)
-            let panelHeight = max(geometry.size.height - artHeight, 0)
+            let panelHeight = min(max(geometry.size.height * 0.24, 190), 235)
+            let artHeight = max(0, geometry.size.height - panelHeight)
 
             VStack(spacing: 0) {
                 sceneArt(size: CGSize(width: geometry.size.width, height: artHeight))
@@ -96,23 +94,15 @@ struct InteractiveSceneView: View {
         return nil
     }
 
-    private func fittedIllustrationHeight(for availableWidth: CGFloat) -> CGFloat {
-        guard let name = installedIllustrationName,
-              let uiImage = UIImage(named: name),
-              uiImage.size.width > 0 else {
-            return availableWidth * 0.75
-        }
-
-        return availableWidth * (uiImage.size.height / uiImage.size.width)
-    }
-
     @ViewBuilder
     private func sceneArt(size: CGSize) -> some View {
         if let illustration = installedIllustrationName {
             ZStack {
                 Color.black
 
-                // No crop: the complete illustration is always visible.
+                // The production artwork is now portrait-oriented. scaledToFit
+                // guarantees that the complete illustration remains visible;
+                // the compact panel leaves the maximum practical height for art.
                 AppAssets.image(illustration)
                     .resizable()
                     .scaledToFit()
@@ -171,11 +161,13 @@ struct InteractiveSceneView: View {
         panelContent
             .frame(maxWidth: .infinity, maxHeight: maxHeight)
             .background(.ultraThinMaterial)
-            .overlay(alignment: .top) { Rectangle().fill(.white.opacity(0.12)).frame(height: 1) }
+            .overlay(alignment: .top) {
+                Rectangle().fill(.white.opacity(0.12)).frame(height: 1)
+            }
     }
 
     private var panelContent: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 10) {
             HStack(alignment: .top, spacing: 10) {
                 ScrollView(.vertical, showsIndicators: false) {
                     CharacterDialogueBubble(text: narrationText)
@@ -185,7 +177,7 @@ struct InteractiveSceneView: View {
                 SpeakerButton(text: narrationText)
                     .padding(.top, 2)
             }
-            .frame(maxHeight: 145)
+            .frame(maxHeight: 112)
 
             if let choiceFeedback {
                 Text(choiceFeedback)
@@ -199,13 +191,11 @@ struct InteractiveSceneView: View {
                     .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            Spacer(minLength: 8)
-
             if presentedChoices.isEmpty {
                 PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
                     .frame(maxWidth: .infinity)
             } else {
-                VStack(spacing: 10) {
+                VStack(spacing: 7) {
                     ForEach(presentedChoices) { choice in
                         Button(action: { choose(choice) }) {
                             Text(StoryText.t(choice.textKey))
@@ -215,9 +205,9 @@ struct InteractiveSceneView: View {
                 }
             }
         }
-        .padding(.horizontal, 18)
-        .padding(.top, 16)
-        .padding(.bottom, 18)
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
+        .padding(.bottom, 14)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
