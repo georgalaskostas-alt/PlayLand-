@@ -19,7 +19,7 @@ struct WordScrambleGame: View {
     @State private var showLevelComplete = false
     @State private var isFinished = false
 
-    private let totalLevels = 5
+    private let totalLevels = 6
 
     private var currentWord: ScrambleWord? {
         words.indices.contains(currentIndex) ? words[currentIndex] : nil
@@ -30,9 +30,16 @@ struct WordScrambleGame: View {
             ScrollView {
                 VStack(spacing: 24) {
                     GameHeader(title: Loc.t("game.wordScramble.title"), subtitle: Loc.t("game.wordScramble.instruction"))
-                    Text(levelLabel)
-                        .font(PlayLandTypography.heading)
-                        .foregroundColor(PlayLandColors.sunOrange)
+
+                    HStack {
+                        Text(levelLabel)
+                            .font(PlayLandTypography.heading)
+                            .foregroundColor(PlayLandColors.sunOrange)
+                        Spacer()
+                        Text(progressLabel)
+                            .font(PlayLandTypography.caption)
+                            .foregroundColor(PlayLandColors.secondaryText)
+                    }
 
                     if let currentWord {
                         HStack(spacing: 10) {
@@ -40,22 +47,22 @@ struct WordScrambleGame: View {
                             SpeakerButton(text: currentWord.answer)
                         }
 
-                        HStack(spacing: 8) {
+                        FlowLayout(spacing: 8) {
                             ForEach(0..<currentWord.answer.count, id: \.self) { slot in
                                 Text(slot < placedIndices.count ? String(scrambledLetters[placedIndices[slot]]) : "_")
-                                    .font(.title.weight(.bold))
+                                    .font(.title2.weight(.bold))
                                     .frame(width: 40, height: 50)
                                     .background(showWrong ? Color.red.opacity(0.3) : PlayLandColors.leafGreen.opacity(0.15))
                                     .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusSmall))
                             }
                         }
 
-                        HStack(spacing: 10) {
+                        FlowLayout(spacing: 8) {
                             ForEach(Array(scrambledLetters.enumerated()), id: \.offset) { index, letter in
                                 Button(action: { placeLetter(at: index) }) {
                                     Text(String(letter))
-                                        .font(.title.weight(.bold))
-                                        .frame(width: 44, height: 54)
+                                        .font(.title2.weight(.bold))
+                                        .frame(width: 44, height: 52)
                                         .background(PlayLandColors.sunOrange.opacity(0.25))
                                         .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusSmall))
                                 }
@@ -98,14 +105,16 @@ struct WordScrambleGame: View {
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
     private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels)" : "Level \(level) of \(totalLevels)" }
+    private var progressLabel: String { isGreek ? "Λέξη \(min(currentIndex + 1, words.count))/\(words.count)" : "Word \(min(currentIndex + 1, words.count))/\(words.count)" }
     private var levelCompleteTitle: String { isGreek ? "Επίπεδο ολοκληρώθηκε!" : "Level complete!" }
-    private var levelCompleteMessage: String { isGreek ? "Μπράβο! Πάμε σε πιο δύσκολες λέξεις." : "Great job! Let’s try harder words." }
+    private var levelCompleteMessage: String { isGreek ? "Μπράβο! Το επόμενο επίπεδο έχει περισσότερες και δυσκολότερες λέξεις." : "Great job! The next level has more and harder words." }
     private var continueTitle: String { isGreek ? "Επόμενο επίπεδο" : "Next level" }
     private var finalMessage: String { isGreek ? "Ολοκλήρωσες όλα τα επίπεδα με \(totalMistakes) λάθη." : "You completed every level with \(totalMistakes) mistakes." }
 
-    private var wordsPerLevel: Int { min(5, 2 + level) }
+    // 4, 5, 6, 7, 7, 7 words per level instead of very short rounds.
+    private var wordsPerLevel: Int { min(7, 3 + level) }
     private var levelStars: Int { mistakes == 0 ? 3 : (mistakes <= 2 ? 2 : 1) }
-    private var finalStars: Int { totalMistakes <= 2 ? 3 : (totalMistakes <= 6 ? 2 : 1) }
+    private var finalStars: Int { totalMistakes <= 3 ? 3 : (totalMistakes <= 8 ? 2 : 1) }
 
     private func placeLetter(at index: Int) {
         guard let currentWord else { return }
