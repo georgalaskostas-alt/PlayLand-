@@ -15,7 +15,7 @@ struct MemoryGame: View {
     var onChallengeComplete: ((Int) -> Void)?
 
     private let symbolPool = ["🦖", "🦕", "🥚", "🌿", "🍃", "🦴", "🍎", "💧", "🪵", "💎", "🦊", "🐦"]
-    private let totalLevels = 5
+    private let totalLevels = 6
 
     @State private var level = 1
     @State private var cards: [MemoryCard] = []
@@ -25,23 +25,30 @@ struct MemoryGame: View {
     @State private var showLevelComplete = false
     @State private var showGameComplete = false
 
-    private var pairCount: Int { min(3 + level, 8) }
+    // 5, 6, 7, 8, 9 and finally 10 pairs (10–20 cards).
+    private var pairCount: Int { min(10, 4 + level) }
+    private var columnCount: Int { pairCount >= 7 ? 4 : 3 }
+    private var cardHeight: CGFloat { pairCount >= 9 ? 62 : 70 }
 
     private var levelStars: Int {
         let ideal = pairCount
-        if moves <= ideal + 2 { return 3 }
-        if moves <= ideal + 6 { return 2 }
+        if moves <= ideal + 3 { return 3 }
+        if moves <= ideal + 8 { return 2 }
         return 1
     }
 
     private var overallStars: Int {
-        if totalMoves <= 45 { return 3 }
-        if totalMoves <= 65 { return 2 }
+        if totalMoves <= 75 { return 3 }
+        if totalMoves <= 105 { return 2 }
         return 1
     }
 
     private var levelLabel: String {
         appSettings.resolvedLanguage == .greek ? "Επίπεδο \(level) από \(totalLevels)" : "Level \(level) of \(totalLevels)"
+    }
+
+    private var pairLabel: String {
+        appSettings.resolvedLanguage == .greek ? "Ζευγάρια: \(pairCount)" : "Pairs: \(pairCount)"
     }
 
     var body: some View {
@@ -51,16 +58,21 @@ struct MemoryGame: View {
                     GameHeader(title: Loc.t("game.memoryGame.title"), subtitle: Loc.t("game.memoryGame.instruction"))
 
                     HStack {
-                        Text(levelLabel)
-                            .font(PlayLandTypography.heading)
-                            .foregroundColor(PlayLandColors.sunOrange)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(levelLabel)
+                                .font(PlayLandTypography.heading)
+                                .foregroundColor(PlayLandColors.sunOrange)
+                            Text(pairLabel)
+                                .font(PlayLandTypography.caption)
+                                .foregroundColor(PlayLandColors.secondaryText)
+                        }
                         Spacer()
                         Text(appSettings.resolvedLanguage == .greek ? "Κινήσεις: \(moves)" : "Moves: \(moves)")
                             .font(PlayLandTypography.caption)
                             .foregroundColor(PlayLandColors.secondaryText)
                     }
 
-                    LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: level >= 4 ? 4 : 3), spacing: 10) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: columnCount), spacing: 8) {
                         ForEach(cards) { card in
                             Button(action: { flip(card) }) {
                                 ZStack {
@@ -68,14 +80,14 @@ struct MemoryGame: View {
                                         .fill(card.isMatched ? PlayLandColors.leafGreen.opacity(0.25) : PlayLandColors.skyBlue.opacity(0.15))
 
                                     Text(card.isFaceUp || card.isMatched ? card.symbol : "❔")
-                                        .font(.system(size: 30))
+                                        .font(.system(size: pairCount >= 9 ? 26 : 30))
                                 }
-                                .frame(height: 72)
+                                .frame(height: cardHeight)
                             }
                             .disabled(card.isFaceUp || card.isMatched || faceUpIndices.count >= 2)
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 4)
                 }
                 .padding()
             }
@@ -84,7 +96,7 @@ struct MemoryGame: View {
             if showLevelComplete {
                 CompletionCelebrationView(
                     title: appSettings.resolvedLanguage == .greek ? "Επίπεδο ολοκληρώθηκε!" : "Level complete!",
-                    message: appSettings.resolvedLanguage == .greek ? "Βρήκες όλα τα ζευγάρια. Η επόμενη πίστα είναι δυσκολότερη!" : "You found every pair. The next level is harder!",
+                    message: appSettings.resolvedLanguage == .greek ? "Βρήκες όλα τα ζευγάρια. Η επόμενη πίστα έχει περισσότερες κάρτες!" : "You found every pair. The next level has more cards!",
                     stars: levelStars,
                     buttonTitle: Loc.t("action.continue"),
                     action: nextLevel
@@ -104,7 +116,7 @@ struct MemoryGame: View {
     }
 
     private func setupCards() {
-        let selectedSymbols = Array(symbolPool.prefix(pairCount))
+        let selectedSymbols = Array(symbolPool.shuffled().prefix(pairCount))
         let deck = (selectedSymbols + selectedSymbols).shuffled()
         cards = deck.enumerated().map { MemoryCard(id: $0.offset, symbol: $0.element) }
         faceUpIndices = []
