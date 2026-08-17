@@ -25,10 +25,10 @@ struct MemoryGame: View {
     @State private var showLevelComplete = false
     @State private var showGameComplete = false
 
-    // 5, 6, 7, 8, 9 and finally 10 pairs (10–20 cards).
-    private var pairCount: Int { min(10, 4 + level) }
-    private var columnCount: Int { pairCount >= 7 ? 4 : 3 }
-    private var cardHeight: CGFloat { pairCount >= 9 ? 62 : 70 }
+    // Exactly 12 cards on every board: 6 matching pairs.
+    private let pairCount = 6
+    private let columnCount = 3
+    private let cardHeight: CGFloat = 82
 
     private var levelStars: Int {
         let ideal = pairCount
@@ -38,8 +38,8 @@ struct MemoryGame: View {
     }
 
     private var overallStars: Int {
-        if totalMoves <= 75 { return 3 }
-        if totalMoves <= 105 { return 2 }
+        if totalMoves <= 52 { return 3 }
+        if totalMoves <= 72 { return 2 }
         return 1
     }
 
@@ -48,7 +48,7 @@ struct MemoryGame: View {
     }
 
     private var pairLabel: String {
-        appSettings.resolvedLanguage == .greek ? "Ζευγάρια: \(pairCount)" : "Pairs: \(pairCount)"
+        appSettings.resolvedLanguage == .greek ? "12 κάρτες · 6 ζευγάρια" : "12 cards · 6 pairs"
     }
 
     var body: some View {
@@ -72,7 +72,7 @@ struct MemoryGame: View {
                             .foregroundColor(PlayLandColors.secondaryText)
                     }
 
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: columnCount), spacing: 8) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: columnCount), spacing: 10) {
                         ForEach(cards) { card in
                             Button(action: { flip(card) }) {
                                 ZStack {
@@ -80,7 +80,7 @@ struct MemoryGame: View {
                                         .fill(card.isMatched ? PlayLandColors.leafGreen.opacity(0.25) : PlayLandColors.skyBlue.opacity(0.15))
 
                                     Text(card.isFaceUp || card.isMatched ? card.symbol : "❔")
-                                        .font(.system(size: pairCount >= 9 ? 26 : 30))
+                                        .font(.system(size: 32))
                                 }
                                 .frame(height: cardHeight)
                             }
@@ -96,7 +96,7 @@ struct MemoryGame: View {
             if showLevelComplete {
                 CompletionCelebrationView(
                     title: appSettings.resolvedLanguage == .greek ? "Επίπεδο ολοκληρώθηκε!" : "Level complete!",
-                    message: appSettings.resolvedLanguage == .greek ? "Βρήκες όλα τα ζευγάρια. Η επόμενη πίστα έχει περισσότερες κάρτες!" : "You found every pair. The next level has more cards!",
+                    message: appSettings.resolvedLanguage == .greek ? "Βρήκες και τα 6 ζευγάρια. Η επόμενη πίστα έχει νέο ανακάτεμα και νέα σύμβολα!" : "You found all 6 pairs. The next board has a new shuffle and new symbols!",
                     stars: levelStars,
                     buttonTitle: Loc.t("action.continue"),
                     action: nextLevel
