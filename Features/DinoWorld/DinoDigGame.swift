@@ -19,10 +19,20 @@ struct DinoDigGame: View {
     @State private var showLevelComplete = false
     @State private var isFinished = false
 
-    private let totalLevels = 5
-    private var gridSide: Int { level <= 2 ? 3 : 4 }
+    private let totalLevels = 6
+
+    /// The dig now starts at 16 tiles and grows to 25 tiles, so each site feels
+    /// like a real excavation instead of a quick 3x3 tap board.
+    private var gridSide: Int {
+        switch level {
+        case 1...2: return 4
+        default: return 5
+        }
+    }
+
     private var gridSize: Int { gridSide * gridSide }
-    private var totalBones: Int { min(gridSize - 2, 3 + level) }
+    private var totalBones: Int { min(gridSize - 5, 4 + level) }
+    private var tileHeight: CGFloat { gridSide == 4 ? 72 : 58 }
 
     var body: some View {
         ZStack {
@@ -35,21 +45,25 @@ struct DinoDigGame: View {
                     Text("🦴 \(bonesFound)/\(totalBones)")
                         .font(PlayLandTypography.heading)
 
-                    LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: gridSide), spacing: 10) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: gridSide), spacing: 8) {
                         ForEach(tiles) { tile in
                             Button(action: { dig(tile) }) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
                                         .fill(tile.isRevealed ? (tile.hasBone ? PlayLandColors.sunOrange.opacity(0.25) : Color.brown.opacity(0.15)) : Color.brown.opacity(0.55))
                                     Text(tile.isRevealed ? (tile.hasBone ? "🦴" : "🪨") : "⛏️")
-                                        .font(.system(size: 32))
+                                        .font(.system(size: gridSide == 4 ? 30 : 25))
                                 }
-                                .frame(height: gridSide == 3 ? 90 : 70)
+                                .frame(height: tileHeight)
                             }
                             .disabled(tile.isRevealed)
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 8)
+
+                    Text(siteSizeLabel)
+                        .font(PlayLandTypography.caption)
+                        .foregroundColor(PlayLandColors.secondaryText)
                 }
                 .padding()
             }
@@ -82,12 +96,13 @@ struct DinoDigGame: View {
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
     private var levelLabel: String { isGreek ? "Ανασκαφή \(level) από \(totalLevels)" : "Dig site \(level) of \(totalLevels)" }
+    private var siteSizeLabel: String { isGreek ? "Πεδίο \(gridSize) θέσεων" : "\(gridSize)-tile excavation" }
     private var levelCompleteTitle: String { isGreek ? "Βρήκες τα απολιθώματα!" : "Fossils found!" }
-    private var levelCompleteMessage: String { isGreek ? "Η επόμενη ανασκαφή είναι μεγαλύτερη." : "The next dig site is bigger." }
+    private var levelCompleteMessage: String { isGreek ? "Η επόμενη ανασκαφή είναι μεγαλύτερη και πιο δύσκολη." : "The next dig site is larger and more challenging." }
     private var nextLevelTitle: String { isGreek ? "Επόμενη ανασκαφή" : "Next dig" }
-    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τις 5 ανασκαφές!" : "You completed all 5 dig sites!" }
-    private var levelStars: Int { taps <= totalBones + 2 ? 3 : (taps <= totalBones + 5 ? 2 : 1) }
-    private var finalStars: Int { totalTaps <= 45 ? 3 : (totalTaps <= 60 ? 2 : 1) }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τις \(totalLevels) μεγάλες ανασκαφές!" : "You completed all \(totalLevels) large dig sites!" }
+    private var levelStars: Int { taps <= totalBones + 3 ? 3 : (taps <= totalBones + 7 ? 2 : 1) }
+    private var finalStars: Int { totalTaps <= 80 ? 3 : (totalTaps <= 110 ? 2 : 1) }
 
     private func setupLevel() {
         var boneIndices = Set<Int>()
