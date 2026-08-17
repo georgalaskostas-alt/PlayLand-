@@ -10,8 +10,7 @@ struct WordSearchGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
-    private let gridSize = 6
-    private let totalLevels = 5
+    private let totalLevels = 6
 
     @State private var level = 1
     @State private var targetWords: [String] = []
@@ -25,14 +24,24 @@ struct WordSearchGame: View {
     @State private var showLevelComplete = false
     @State private var isFinished = false
 
+    private var gridSize: Int { level <= 3 ? 7 : 8 }
+    private var wordCount: Int { min(7, 2 + level) }
+
     var body: some View {
         ZStack {
             ScrollView {
                 VStack(spacing: 18) {
                     GameHeader(title: Loc.t("game.wordSearch.title"), subtitle: Loc.t("game.wordSearch.instruction"))
-                    Text(levelLabel)
-                        .font(PlayLandTypography.heading)
-                        .foregroundColor(PlayLandColors.sunOrange)
+
+                    HStack {
+                        Text(levelLabel)
+                            .font(PlayLandTypography.heading)
+                            .foregroundColor(PlayLandColors.sunOrange)
+                        Spacer()
+                        Text(boardLabel)
+                            .font(PlayLandTypography.caption)
+                            .foregroundColor(PlayLandColors.secondaryText)
+                    }
 
                     FlowLayout(spacing: 8) {
                         ForEach(targetWords, id: \.self) { word in
@@ -51,12 +60,12 @@ struct WordSearchGame: View {
                         }
                     }
 
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: gridSize), spacing: 6) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: gridSize), spacing: 4) {
                         ForEach(0..<(gridSize * gridSize), id: \.self) { flat in
                             letterCell(row: flat / gridSize, col: flat % gridSize)
                         }
                     }
-                    .padding(.horizontal, 8)
+                    .padding(.horizontal, 2)
 
                     HStack(spacing: 16) {
                         PlayLandSecondaryButton(title: Loc.t("action.clear")) { selection = [] }
@@ -95,13 +104,13 @@ struct WordSearchGame: View {
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
     private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels)" : "Level \(level) of \(totalLevels)" }
+    private var boardLabel: String { isGreek ? "\(gridSize)×\(gridSize) · \(targetWords.count) λέξεις" : "\(gridSize)×\(gridSize) · \(targetWords.count) words" }
     private var levelCompleteTitle: String { isGreek ? "Βρήκες όλες τις λέξεις!" : "You found every word!" }
-    private var levelCompleteMessage: String { isGreek ? "Η επόμενη πίστα έχει περισσότερες λέξεις." : "The next board has more words." }
+    private var levelCompleteMessage: String { isGreek ? "Η επόμενη πίστα έχει μεγαλύτερο πλέγμα και περισσότερες λέξεις." : "The next board has a larger grid and more words." }
     private var nextLevelTitle: String { isGreek ? "Επόμενη πίστα" : "Next level" }
-    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τις 5 πίστες με \(totalMistakes) λάθη." : "You completed all 5 boards with \(totalMistakes) mistakes." }
-    private var wordCount: Int { min(5, level + 1) }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τις \(totalLevels) πίστες με \(totalMistakes) λάθη." : "You completed all \(totalLevels) boards with \(totalMistakes) mistakes." }
     private var levelStars: Int { mistakes == 0 ? 3 : (mistakes <= 2 ? 2 : 1) }
-    private var finalStars: Int { totalMistakes <= 2 ? 3 : (totalMistakes <= 6 ? 2 : 1) }
+    private var finalStars: Int { totalMistakes <= 3 ? 3 : (totalMistakes <= 8 ? 2 : 1) }
 
     private func letterCell(row: Int, col: Int) -> some View {
         let pos = CellPos(row: row, col: col)
@@ -110,7 +119,7 @@ struct WordSearchGame: View {
 
         return Button(action: { tap(pos) }) {
             Text(grid.isEmpty ? "" : String(grid[row][col]))
-                .font(.title3.weight(.bold))
+                .font((gridSize >= 8 ? Font.body : Font.title3).weight(.bold))
                 .frame(maxWidth: .infinity)
                 .aspectRatio(1, contentMode: .fit)
                 .background(isFound ? PlayLandColors.leafGreen.opacity(0.35) : (isSelected ? (showWrong ? Color.red.opacity(0.4) : PlayLandColors.sunOrange.opacity(0.4)) : PlayLandColors.skyBlue.opacity(0.1)))
@@ -156,12 +165,16 @@ struct WordSearchGame: View {
 
     private func setupLevel() {
         let all = LearningContentProvider.searchWords(for: appSettings.resolvedLanguage).filter { $0.count <= gridSize }
-        targetWords = Array(all.shuffled().prefix(wordCount))
+        targetWords = Array(all.shuffled().prefix(min(wordCount, all.count)))
         let alphabet = appSettings.resolvedLanguage == .greek ? "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ" : "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
         var newGrid: [[Character]] = (0..<gridSize).map { _ in (0..<gridSize).map { _ in alphabet.randomElement()! } }
         for (index, word) in targetWords.enumerated() where index < gridSize {
-            for (col, letter) in word.enumerated() where col < gridSize { newGrid[index][col] = letter }
+            let reversed = level >= 4 && index.isMultiple(of: 2)
+            let letters = Array(reversed ? String(word.reversed()) : word)
+            for (col, letter) in letters.enumerated() where col < gridSize {
+                newGrid[index][col] = letter
+            }
         }
         grid = newGrid
         selection = []
