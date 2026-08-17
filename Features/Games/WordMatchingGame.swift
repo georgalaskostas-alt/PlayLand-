@@ -18,19 +18,26 @@ struct WordMatchingGame: View {
     @State private var showLevelComplete = false
     @State private var isFinished = false
 
-    private let totalLevels = 5
+    private let totalLevels = 6
 
     var body: some View {
         ZStack {
             ScrollView {
                 VStack(spacing: 20) {
                     GameHeader(title: Loc.t("game.wordMatching.title"), subtitle: Loc.t("game.wordMatching.instruction"))
-                    Text(levelLabel)
-                        .font(PlayLandTypography.heading)
-                        .foregroundColor(PlayLandColors.sunOrange)
 
-                    HStack(alignment: .top, spacing: 24) {
-                        VStack(spacing: 12) {
+                    HStack {
+                        Text(levelLabel)
+                            .font(PlayLandTypography.heading)
+                            .foregroundColor(PlayLandColors.sunOrange)
+                        Spacer()
+                        Text(pairCountLabel)
+                            .font(PlayLandTypography.caption)
+                            .foregroundColor(PlayLandColors.secondaryText)
+                    }
+
+                    HStack(alignment: .top, spacing: 16) {
+                        VStack(spacing: 9) {
                             ForEach(pairs, id: \.emoji) { pair in
                                 tile(text: pair.emoji, isSelected: selectedEmoji == pair.emoji, isMatched: matched.contains(pair.emoji)) {
                                     selectedEmoji = pair.emoji
@@ -39,7 +46,7 @@ struct WordMatchingGame: View {
                                 }
                             }
                         }
-                        VStack(spacing: 12) {
+                        VStack(spacing: 9) {
                             ForEach(words, id: \.self) { word in
                                 tile(text: word, isSelected: selectedWord == word, isMatched: matched.contains(word)) {
                                     selectedWord = word
@@ -49,7 +56,7 @@ struct WordMatchingGame: View {
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 4)
                 }
                 .padding()
             }
@@ -79,8 +86,9 @@ struct WordMatchingGame: View {
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
     private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels)" : "Level \(level) of \(totalLevels)" }
+    private var pairCountLabel: String { isGreek ? "\(pairs.count) ζευγάρια" : "\(pairs.count) pairs" }
     private var levelCompleteTitle: String { isGreek ? "Επίπεδο ολοκληρώθηκε!" : "Level complete!" }
-    private var levelCompleteMessage: String { isGreek ? "Συνέχισε στο επόμενο επίπεδο." : "Keep going to the next level." }
+    private var levelCompleteMessage: String { isGreek ? "Η επόμενη πίστα έχει περισσότερα ζευγάρια." : "The next level has more pairs." }
     private var continueTitle: String { isGreek ? "Επόμενο επίπεδο" : "Next level" }
 
     private var levelStars: Int {
@@ -90,14 +98,16 @@ struct WordMatchingGame: View {
     }
 
     private var finalStars: Int {
-        if totalMistakes <= 2 { return 3 }
-        if totalMistakes <= 6 { return 2 }
+        if totalMistakes <= 3 { return 3 }
+        if totalMistakes <= 8 { return 2 }
         return 1
     }
 
     private func setupLevel() {
         let all = LearningContentProvider.matchWordPairs(for: appSettings.resolvedLanguage)
-        let desiredCount = min(all.count, max(2, 2 + level))
+        // Progresses from 4 pairs to as many as 8, while respecting the
+        // available localized content bank.
+        let desiredCount = min(all.count, min(8, 3 + level))
         pairs = Array(all.shuffled().prefix(desiredCount))
         words = pairs.map(\.word).shuffled()
         matched = []
@@ -110,9 +120,12 @@ struct WordMatchingGame: View {
     private func tile(text: String, isSelected: Bool, isMatched: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(text)
-                .font(.title2.weight(.semibold))
+                .font(pairs.count >= 7 ? .headline.weight(.semibold) : .title3.weight(.semibold))
+                .lineLimit(2)
+                .minimumScaleFactor(0.75)
                 .frame(maxWidth: .infinity)
-                .padding()
+                .padding(.horizontal, 8)
+                .padding(.vertical, 10)
                 .frame(minHeight: PlayLandMetrics.minTouchTarget)
                 .background(isMatched ? PlayLandColors.leafGreen.opacity(0.3) : (isSelected ? PlayLandColors.sunOrange.opacity(0.3) : PlayLandColors.skyBlue.opacity(0.12)))
                 .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
