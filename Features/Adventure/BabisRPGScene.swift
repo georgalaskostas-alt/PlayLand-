@@ -20,7 +20,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
     private var runFrame = 0
     private let runTextures = (1...4).map { SKTexture(imageNamed: String(format: "babis_run_%02d", $0)) }
     private let idleTexture = SKTexture(imageNamed: "babis_neutral")
-    private var interactionNode: SKSpriteNode?
+    private weak var nearbyInteractionNode: SKSpriteNode?
     private var isTransitioning = false
 
     init(size: CGSize, gameState: RPGGameState) {
@@ -49,7 +49,8 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         moveTarget = nil
         player.physicsBody?.velocity = .zero
         world.removeAllChildren()
-        interactionNode = nil
+        nearbyInteractionNode = nil
+        gameState.nearbyAction = nil
 
         let background = SKSpriteNode(imageNamed: area.groundAsset)
         background.size = worldSize
@@ -79,7 +80,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addCollectible(asset: "log", kind: "wood", at: CGPoint(x: 540, y: 300), size: 78)
         addCollectible(asset: "log", kind: "wood", at: CGPoint(x: 1170, y: 1010), size: 78)
         addCollectible(asset: "water_item", kind: "water", at: CGPoint(x: 910, y: 350), size: 66)
-        addNPC(asset: "kotsifi_idle", name: "npc_kotsifi", at: CGPoint(x: 300, y: 210), size: 90)
+        addNPC(asset: "kotsifi_idle", name: "npc_kotsifi", at: CGPoint(x: 300, y: 210), size: 90, interactive: true)
         addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 1450, y: 1040), size: CGSize(width: 110, height: 95))
     }
 
@@ -91,7 +92,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addCollectible(asset: "berries_item", kind: "berries", at: CGPoint(x: 1080, y: 780), size: 66)
         addCollectible(asset: "carrot_item", kind: "carrot", at: CGPoint(x: 860, y: 330), size: 66)
         addCollectible(asset: "log", kind: "wood", at: CGPoint(x: 1320, y: 430), size: 76)
-        addNPC(asset: "kotsifi_happy", name: "npc_kotsifi", at: CGPoint(x: 310, y: 260), size: 90)
+        addNPC(asset: "kotsifi_happy", name: "npc_kotsifi", at: CGPoint(x: 310, y: 260), size: 90, interactive: true)
         addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 1430, y: 1030), size: CGSize(width: 108, height: 92))
     }
 
@@ -111,7 +112,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addCollectible(asset: "map_fragment", kind: "fragment", at: CGPoint(x: 510, y: 860), size: 72)
         addCollectible(asset: "map_fragment", kind: "fragment", at: CGPoint(x: 1120, y: 460), size: 72)
         addCollectible(asset: "golden_feather", kind: "feather", at: CGPoint(x: 1230, y: 930), size: 70)
-        addNPC(asset: "kotsifi_fly_01", name: "npc_kotsifi", at: CGPoint(x: 320, y: 220), size: 90)
+        addNPC(asset: "kotsifi_fly_01", name: "npc_kotsifi", at: CGPoint(x: 320, y: 220), size: 90, interactive: true)
         addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 1440, y: 1020), size: CGSize(width: 112, height: 96))
     }
 
@@ -120,7 +121,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addObstacle(asset: "tree_03", at: CGPoint(x: 1180, y: 850), size: CGSize(width: 145, height: 185))
         addObstacle(asset: "rock_02", at: CGPoint(x: 780, y: 520), size: CGSize(width: 120, height: 95))
         addNPC(asset: "fox_worried", name: "final_fox", at: CGPoint(x: 1320, y: 850), size: 130, interactive: true)
-        addNPC(asset: "kotsifi_idle", name: "npc_kotsifi", at: CGPoint(x: 430, y: 320), size: 90)
+        addNPC(asset: "kotsifi_idle", name: "npc_kotsifi", at: CGPoint(x: 430, y: 320), size: 90, interactive: true)
     }
 
     private func addCommonForestObstacles() {
@@ -184,12 +185,11 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         node.position = position
         node.zPosition = 5
         if interactive {
-            node.physicsBody = SKPhysicsBody(circleOfRadius: size * 0.32)
+            node.physicsBody = SKPhysicsBody(circleOfRadius: size * 0.42)
             node.physicsBody?.isDynamic = false
             node.physicsBody?.categoryBitMask = Category.interaction
             node.physicsBody?.collisionBitMask = Category.player
             node.physicsBody?.contactTestBitMask = Category.player
-            interactionNode = node
         }
         world.addChild(node)
     }
@@ -200,13 +200,12 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         node.size = size
         node.position = position
         node.zPosition = 4
-        node.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width * 0.75, height: size.height * 0.7))
+        node.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width * 0.9, height: size.height * 0.85))
         node.physicsBody?.isDynamic = false
         node.physicsBody?.categoryBitMask = Category.interaction
         node.physicsBody?.collisionBitMask = Category.player
         node.physicsBody?.contactTestBitMask = Category.player
         world.addChild(node)
-        interactionNode = node
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -227,6 +226,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
             player.texture = idleTexture
             return
         }
+
         let dx = target.x - player.position.x
         let dy = target.y - player.position.y
         let distance = hypot(dx, dy)
@@ -236,6 +236,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
             player.texture = idleTexture
             return
         }
+
         let speed: CGFloat = 260
         player.physicsBody?.velocity = CGVector(dx: dx / distance * speed, dy: dy / distance * speed)
         player.xScale = dx < 0 ? -abs(player.xScale) : abs(player.xScale)
@@ -256,6 +257,73 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         )
     }
 
+    func performInteraction() {
+        guard !isTransitioning, let node = nearbyInteractionNode, let name = node.name else { return }
+        moveTarget = nil
+        player.physicsBody?.velocity = .zero
+
+        switch name {
+        case "npc_kotsifi":
+            gameState.setMessage(
+                greek: kotsifiGreekMessage,
+                english: kotsifiEnglishMessage
+            )
+            AudioManager.shared.play(.storyNext)
+
+        case "area_exit":
+            if gameState.areaGoalComplete {
+                node.texture = SKTexture(imageNamed: "chest_open")
+                gameState.setMessage(greek: "Το σεντούκι άνοιξε! Περνάς στην επόμενη περιοχή.", english: "The chest opened! Moving to the next area.")
+                isTransitioning = true
+                gameState.nearbyAction = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                    self.gameState.advanceArea()
+                    self.loadArea(self.gameState.area)
+                }
+            } else {
+                AudioManager.shared.play(.wrong)
+                gameState.setMessage(greek: "Το σεντούκι είναι κλειδωμένο. Ολοκλήρωσε πρώτα την αποστολή της περιοχής.", english: "The chest is locked. Complete the area quest first.")
+            }
+
+        case "final_fox":
+            guard !gameState.questComplete else {
+                gameState.setMessage(greek: "Η Αλεπού είναι πια φίλη σας.", english: "The Fox is your friend now.")
+                return
+            }
+            node.texture = SKTexture(imageNamed: "fox_friendly")
+            gameState.completeQuest()
+            let feather = SKSpriteNode(imageNamed: "golden_feather")
+            feather.size = CGSize(width: 70, height: 70)
+            feather.position = CGPoint(x: node.position.x, y: node.position.y + 110)
+            feather.zPosition = 8
+            world.addChild(feather)
+            feather.run(.repeatForever(.sequence([.moveBy(x: 0, y: 12, duration: 0.8), .moveBy(x: 0, y: -12, duration: 0.8)])))
+
+        default:
+            break
+        }
+    }
+
+    private var kotsifiGreekMessage: String {
+        switch gameState.area {
+        case .forest: return "Κοτσύφι: Μπάμπη, ξεκίνα από τα μήλα και το νερό. Το σεντούκι βρίσκεται βαθιά στο δάσος!"
+        case .village: return "Κοτσύφι: Οι κάτοικοι χρειάζονται προμήθειες. Ψάξε κοντά στα δέντρα και στα μονοπάτια."
+        case .crystalCave: return "Κοτσύφι: Πρόσεχε τους βράχους. Το κλειδί κρύβεται χαμηλά στη σπηλιά."
+        case .nightForest: return "Κοτσύφι: Τα κομμάτια του χάρτη θα μας οδηγήσουν στην Αλεπού. Μην ξεχάσεις το Χρυσό Φτερό!"
+        case .foxArea: return "Κοτσύφι: Τη βρήκαμε. Πλησίασε την Αλεπού και μίλησέ της."
+        }
+    }
+
+    private var kotsifiEnglishMessage: String {
+        switch gameState.area {
+        case .forest: return "Kotsifi: Babis, start with the apples and water. The chest is deep in the forest!"
+        case .village: return "Kotsifi: The villagers need supplies. Search near the trees and paths."
+        case .crystalCave: return "Kotsifi: Watch the rocks. The key is hidden in the lower cave."
+        case .nightForest: return "Kotsifi: The map pieces will lead us to the Fox. Don't forget the Golden Feather!"
+        case .foxArea: return "Kotsifi: We found her. Walk up to the Fox and talk to her."
+        }
+    }
+
     func didBegin(_ contact: SKPhysicsContact) {
         let nodes = [contact.bodyA.node, contact.bodyB.node].compactMap { $0 }
         guard let other = nodes.first(where: { $0 !== player }) else { return }
@@ -267,40 +335,28 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
             return
         }
 
-        if other.name == "area_exit" {
-            guard !isTransitioning else { return }
-            if gameState.areaGoalComplete {
-                if let exitSprite = other as? SKSpriteNode {
-                    exitSprite.texture = SKTexture(imageNamed: "chest_open")
-                }
-                isTransitioning = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
-                    self.gameState.advanceArea()
-                    self.loadArea(self.gameState.area)
-                }
-            } else {
-                gameState.setMessage(greek: "Η έξοδος είναι κλειδωμένη. Ολοκλήρωσε πρώτα τον στόχο της περιοχής.", english: "The exit is locked. Complete the area objective first.")
-            }
-            return
+        guard let sprite = other as? SKSpriteNode, let name = sprite.name else { return }
+        switch name {
+        case "area_exit":
+            nearbyInteractionNode = sprite
+            gameState.nearbyAction = .exit
+        case "final_fox":
+            nearbyInteractionNode = sprite
+            gameState.nearbyAction = .fox
+        case "npc_kotsifi":
+            nearbyInteractionNode = sprite
+            gameState.nearbyAction = .kotsifi
+        default:
+            break
         }
+    }
 
-        if other.name == "final_fox" {
-            guard !gameState.questComplete else { return }
-            if let foxSprite = other as? SKSpriteNode {
-                foxSprite.texture = SKTexture(imageNamed: "fox_friendly")
-            }
-            gameState.completeQuest()
-            let feather = SKSpriteNode(imageNamed: "golden_feather")
-            feather.size = CGSize(width: 70, height: 70)
-            feather.position = CGPoint(x: other.position.x, y: other.position.y + 110)
-            feather.zPosition = 8
-            world.addChild(feather)
-            feather.run(.repeatForever(.sequence([.moveBy(x: 0, y: 12, duration: 0.8), .moveBy(x: 0, y: -12, duration: 0.8)])))
-            return
-        }
+    func didEnd(_ contact: SKPhysicsContact) {
+        let nodes = [contact.bodyA.node, contact.bodyB.node].compactMap { $0 }
+        guard let current = nearbyInteractionNode,
+              nodes.contains(where: { $0 === current }) else { return }
 
-        if other.name == "npc_kotsifi" {
-            gameState.setMessage(greek: "Το Κοτσύφι είναι μαζί σου. Συνέχισε την αποστολή!", english: "Kotsifi is with you. Keep going!")
-        }
+        nearbyInteractionNode = nil
+        gameState.nearbyAction = nil
     }
 }
