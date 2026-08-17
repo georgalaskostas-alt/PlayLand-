@@ -23,33 +23,41 @@ struct DinoSortGame: View {
     @State private var showLevelComplete = false
     @State private var isFinished = false
 
-    private let totalLevels = 5
+    private let totalLevels = 6
 
     var body: some View {
         ZStack {
             ScrollView {
                 VStack(spacing: 20) {
                     GameHeader(title: Loc.t("dino.sort.title"), subtitle: Loc.t("dino.sort.instruction"))
-                    Text(levelLabel)
-                        .font(PlayLandTypography.heading)
-                        .foregroundColor(PlayLandColors.sunOrange)
 
-                    LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: min(5, creatures.count)), spacing: 10) {
+                    HStack {
+                        Text(levelLabel)
+                            .font(PlayLandTypography.heading)
+                            .foregroundColor(PlayLandColors.sunOrange)
+                        Spacer()
+                        Text(creatureCountLabel)
+                            .font(PlayLandTypography.caption)
+                            .foregroundColor(PlayLandColors.secondaryText)
+                    }
+
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: min(4, max(2, creatures.count))), spacing: 8) {
                         ForEach(creatures) { creature in
                             if !creature.sorted {
                                 Button(action: { selectedId = creature.id }) {
                                     AppAssets.image(creature.imageName)
                                         .resizable()
                                         .scaledToFit()
-                                        .frame(height: 70)
+                                        .frame(height: 68)
                                         .padding(6)
-                                        .background(selectedId == creature.id ? PlayLandColors.sunOrange.opacity(0.3) : Color.clear)
+                                        .frame(maxWidth: .infinity)
+                                        .background(selectedId == creature.id ? PlayLandColors.sunOrange.opacity(0.3) : PlayLandColors.skyBlue.opacity(0.08))
                                         .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
                                 }
                             }
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 4)
 
                     HStack(spacing: 20) {
                         sortBin(title: Loc.t("dino.sort.small"), emoji: "🐦", isBig: false)
@@ -92,12 +100,13 @@ struct DinoSortGame: View {
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
     private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels)" : "Level \(level) of \(totalLevels)" }
+    private var creatureCountLabel: String { isGreek ? "\(creatures.count) χαρακτήρες" : "\(creatures.count) characters" }
     private var levelCompleteTitle: String { isGreek ? "Σωστή ταξινόμηση!" : "Great sorting!" }
     private var levelCompleteMessage: String { isGreek ? "Στην επόμενη πίστα θα έχεις περισσότερους χαρακτήρες." : "The next level has more characters." }
     private var nextLevelTitle: String { isGreek ? "Επόμενη πίστα" : "Next level" }
-    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τα 5 επίπεδα ταξινόμησης." : "You completed all 5 sorting levels." }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τα \(totalLevels) επίπεδα ταξινόμησης." : "You completed all \(totalLevels) sorting levels." }
     private var levelStars: Int { mistakes == 0 ? 3 : (mistakes <= 2 ? 2 : 1) }
-    private var finalStars: Int { totalMistakes <= 2 ? 3 : (totalMistakes <= 6 ? 2 : 1) }
+    private var finalStars: Int { totalMistakes <= 3 ? 3 : (totalMistakes <= 8 ? 2 : 1) }
 
     private func pool() -> [SortCreature] {
         [
@@ -114,7 +123,8 @@ struct DinoSortGame: View {
     }
 
     private func setupLevel() {
-        let count = min(pool().count, 4 + level)
+        // 6 creatures on the first level, growing to the full available pool.
+        let count = min(pool().count, 5 + level)
         creatures = Array(pool().shuffled().prefix(count)).enumerated().map { offset, value in
             SortCreature(id: offset, imageName: value.imageName, name: value.name, isBig: value.isBig)
         }
