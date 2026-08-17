@@ -22,7 +22,7 @@ struct DinoMatchGame: View {
         "kotsifi_surprised",
         "fox_friendly"
     ]
-    private let totalLevels = 5
+    private let totalLevels = 6
 
     @State private var level = 1
     @State private var cards: [MatchCard] = []
@@ -32,8 +32,10 @@ struct DinoMatchGame: View {
     @State private var showLevelComplete = false
     @State private var isFinished = false
 
-    private var pairCount: Int { min(imagePool.count, 2 + level) }
+    // Starts at 4 pairs / 8 cards and grows to all 8 pairs / 16 cards.
+    private var pairCount: Int { min(imagePool.count, 3 + level) }
     private var columns: Int { pairCount <= 4 ? 3 : 4 }
+    private var cardHeight: CGFloat { pairCount >= 7 ? 76 : (columns == 3 ? 96 : 84) }
 
     var body: some View {
         ZStack {
@@ -44,7 +46,7 @@ struct DinoMatchGame: View {
                         .font(PlayLandTypography.heading)
                         .foregroundColor(PlayLandColors.sunOrange)
 
-                    LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: columns), spacing: 10) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: columns), spacing: 8) {
                         ForEach(cards) { card in
                             Button(action: { flip(card) }) {
                                 ZStack {
@@ -54,17 +56,17 @@ struct DinoMatchGame: View {
                                         AppAssets.image(card.imageName)
                                             .resizable()
                                             .scaledToFit()
-                                            .padding(7)
+                                            .padding(6)
                                     } else {
-                                        Text("❓").font(.system(size: 30))
+                                        Text("❓").font(.system(size: 28))
                                     }
                                 }
-                                .frame(height: columns == 3 ? 100 : 82)
+                                .frame(height: cardHeight)
                             }
-                            .disabled(card.isFaceUp || card.isMatched)
+                            .disabled(card.isFaceUp || card.isMatched || faceUpIndices.count >= 2)
                         }
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, 6)
 
                     Text(isGreek ? "Κινήσεις: \(moves)" : "Moves: \(moves)")
                         .font(PlayLandTypography.body)
@@ -103,12 +105,12 @@ struct DinoMatchGame: View {
     private var levelCompleteTitle: String { isGreek ? "Τα βρήκες όλα!" : "All pairs found!" }
     private var levelCompleteMessage: String { isGreek ? "Στην επόμενη πίστα υπάρχουν περισσότερες κάρτες." : "The next board has more cards." }
     private var nextLevelTitle: String { isGreek ? "Επόμενη πίστα" : "Next level" }
-    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τα 5 επίπεδα μνήμης." : "You completed all 5 memory levels." }
-    private var levelStars: Int { moves <= pairCount + 2 ? 3 : (moves <= pairCount * 2 ? 2 : 1) }
-    private var finalStars: Int { totalMoves <= 45 ? 3 : (totalMoves <= 65 ? 2 : 1) }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τα \(totalLevels) επίπεδα μνήμης." : "You completed all \(totalLevels) memory levels." }
+    private var levelStars: Int { moves <= pairCount + 3 ? 3 : (moves <= pairCount * 2 + 2 ? 2 : 1) }
+    private var finalStars: Int { totalMoves <= 70 ? 3 : (totalMoves <= 100 ? 2 : 1) }
 
     private func setupLevel() {
-        let chosen = Array(imagePool.prefix(pairCount))
+        let chosen = Array(imagePool.shuffled().prefix(pairCount))
         let deck = (chosen + chosen).shuffled()
         cards = deck.enumerated().map { MatchCard(id: $0.offset, imageName: $0.element) }
         faceUpIndices = []
@@ -136,6 +138,7 @@ struct DinoMatchGame: View {
             } else {
                 AudioManager.shared.play(.wrong)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+                    guard cards.indices.contains(first), cards.indices.contains(second) else { return }
                     cards[first].isFaceUp = false
                     cards[second].isFaceUp = false
                     faceUpIndices = []
