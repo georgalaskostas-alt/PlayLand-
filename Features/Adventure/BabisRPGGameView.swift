@@ -31,6 +31,12 @@ enum RPGNearbyAction: Equatable {
     case kotsifi
     case exit
     case fox
+    case memoryChest
+    case animalRescue
+}
+
+enum RPGChallenge: Equatable {
+    case memoryChest
 }
 
 final class RPGGameState: ObservableObject {
@@ -44,9 +50,12 @@ final class RPGGameState: ObservableObject {
     @Published var keys = 0
     @Published var fragments = 0
     @Published var goldenFeathers = 0
+    @Published var rescuedAnimals = 0
+    @Published var memoryPuzzlesSolved = 0
     @Published var questComplete = false
     @Published var message = ""
     @Published var nearbyAction: RPGNearbyAction?
+    @Published var pendingChallenge: RPGChallenge?
 
     private weak var progress: ProgressViewModel?
     var isGreek: Bool { AppSettings.shared.resolvedLanguage == .greek }
@@ -83,11 +92,16 @@ final class RPGGameState: ObservableObject {
 
     var objectiveItems: [(String, Int, Int)] {
         switch area {
-        case .forest: return [("🍎", apples, 3), ("🪵", wood, 2), ("💧", water, 1)]
-        case .village: return [("🫐", berries, 2), ("🥕", carrots, 1), ("🪵", wood, 3)]
-        case .crystalCave: return [("💎", crystals, 3), ("🗝️", keys, 1)]
-        case .nightForest: return [("🗺️", fragments, 2), ("⭐", goldenFeathers, 1)]
-        case .foxArea: return [("🦊", questComplete ? 1 : 0, 1)]
+        case .forest:
+            return [("🍎", apples, 5), ("🪵", wood, 3), ("💧", water, 2), ("🐾", rescuedAnimals, 1), ("🧠", memoryPuzzlesSolved, 1)]
+        case .village:
+            return [("🫐", berries, 4), ("🥕", carrots, 3), ("🪵", wood, 4)]
+        case .crystalCave:
+            return [("💎", crystals, 5), ("🗝️", keys, 2)]
+        case .nightForest:
+            return [("🗺️", fragments, 4), ("⭐", goldenFeathers, 2)]
+        case .foxArea:
+            return [("🦊", questComplete ? 1 : 0, 1)]
         }
     }
 
@@ -107,11 +121,16 @@ final class RPGGameState: ObservableObject {
 
     var areaGoalComplete: Bool {
         switch area {
-        case .forest: return apples >= 3 && wood >= 2 && water >= 1
-        case .village: return berries >= 2 && carrots >= 1 && wood >= 3
-        case .crystalCave: return crystals >= 3 && keys >= 1
-        case .nightForest: return fragments >= 2 && goldenFeathers >= 1
-        case .foxArea: return questComplete
+        case .forest:
+            return apples >= 5 && wood >= 3 && water >= 2 && rescuedAnimals >= 1 && memoryPuzzlesSolved >= 1
+        case .village:
+            return berries >= 4 && carrots >= 3 && wood >= 4
+        case .crystalCave:
+            return crystals >= 5 && keys >= 2
+        case .nightForest:
+            return fragments >= 4 && goldenFeathers >= 2
+        case .foxArea:
+            return questComplete
         }
     }
 
@@ -120,6 +139,8 @@ final class RPGGameState: ObservableObject {
         case .kotsifi: return isGreek ? "Μίλα" : "Talk"
         case .exit: return areaGoalComplete ? (isGreek ? "Άνοιξε" : "Open") : (isGreek ? "Έλεγξε" : "Check")
         case .fox: return isGreek ? "Μίλα στην Αλεπού" : "Talk to Fox"
+        case .memoryChest: return isGreek ? "Λύσε τον γρίφο" : "Solve puzzle"
+        case .animalRescue: return isGreek ? "Βοήθησέ το" : "Help animal"
         case .none: return ""
         }
     }
@@ -129,6 +150,8 @@ final class RPGGameState: ObservableObject {
         case .kotsifi: return "bubble.left.fill"
         case .exit: return "lock.open.fill"
         case .fox: return "bubble.left.and.bubble.right.fill"
+        case .memoryChest: return "brain.head.profile"
+        case .animalRescue: return "pawprint.fill"
         case .none: return "hand.tap.fill"
         }
     }
@@ -153,15 +176,38 @@ final class RPGGameState: ObservableObject {
 
         if areaGoalComplete && area != .foxArea {
             setMessage(
-                greek: "Ο στόχος της περιοχής ολοκληρώθηκε! Βρες το σεντούκι και άνοιξέ το.",
-                english: "Area objective complete! Find the chest and open it."
+                greek: "Τα κατάφερες! Όλοι οι στόχοι ολοκληρώθηκαν. Βρες το μεγάλο σεντούκι της περιοχής.",
+                english: "You did it! Every objective is complete. Find the area's big chest."
             )
         }
     }
 
+    func requestMemoryChallenge() {
+        pendingChallenge = .memoryChest
+    }
+
+    func completeMemoryChallenge() {
+        pendingChallenge = nil
+        memoryPuzzlesSolved = max(memoryPuzzlesSolved, 1)
+        setMessage(
+            greek: "Μπράβο! Έλυσες το παιχνίδι μνήμης και ξεκλείδωσες το σεντούκι του γρίφου.",
+            english: "Great job! You solved the memory game and unlocked the puzzle chest."
+        )
+        AudioManager.shared.play(.starReward)
+    }
+
+    func rescueAnimal() {
+        rescuedAnimals = max(rescuedAnimals, 1)
+        setMessage(
+            greek: "Το μικρό ζωάκι είναι ασφαλές! Σε ευχαριστεί και σου δείχνει το μονοπάτι προς τον θησαυρό.",
+            english: "The little animal is safe! It thanks you and shows the path toward the treasure."
+        )
+        AudioManager.shared.play(.starReward)
+    }
+
     func advanceArea() {
         guard area != .foxArea, let next = RPGArea(rawValue: area.rawValue + 1) else { return }
-        progress?.completeChallenge(area.completionId, rewardStars: 2)
+        progress?.completeChallenge(area.completionId, rewardStars: 3)
         nearbyAction = nil
         area = next
         setMessageForCurrentArea()
@@ -171,25 +217,29 @@ final class RPGGameState: ObservableObject {
         questComplete = true
         nearbyAction = nil
         progress?.completeChallenge(RPGArea.foxArea.completionId, rewardStars: 5)
-        AudioManager.shared.play(.storyNext)
+        AudioManager.shared.play(.gameCompletion)
         setMessage(
-            greek: "Μεγάλη αποστολή ολοκληρώθηκε! Ο Μπάμπης βοήθησε όλο το δάσος!",
-            english: "Great quest complete! Babis helped the whole forest!"
+            greek: "Μεγάλη αποστολή ολοκληρώθηκε! Ο Μπάμπης και το Κοτσύφι έσωσαν το δάσος!",
+            english: "Great quest complete! Babis and Kotsifi saved the forest!"
         )
     }
 
     func setMessageForCurrentArea() {
         switch area {
         case .forest:
-            setMessage(greek: "Αποστολή: μάζεψε 3 μήλα, 2 ξύλα και 1 νερό.", english: "Quest: collect 3 apples, 2 logs and 1 water.")
+            setMessage(
+                greek: "Μεγάλη αποστολή: βρες 5 μήλα, 3 ξύλα και 2 νερά, βοήθησε το χαμένο ζωάκι και λύσε τον γρίφο του σεντουκιού.",
+                english: "Big quest: find 5 apples, 3 logs and 2 waters, help the lost animal and solve the chest puzzle."
+            )
         case .village:
-            setMessage(greek: "Αποστολή: βοήθησε το χωριό — βρες 2 μούρα, 1 καρότο και ακόμη 1 ξύλο.", english: "Quest: help the village — find 2 berries, 1 carrot and one more log.")
+            setMessage(greek: "Βοήθησε το χωριό: βρες 4 μούρα, 3 καρότα και συνολικά 4 ξύλα.", english: "Help the village: find 4 berries, 3 carrots and 4 logs in total.")
         case .crystalCave:
-            setMessage(greek: "Αποστολή: βρες 3 κρυστάλλους και το κλειδί της σπηλιάς.", english: "Quest: find 3 crystals and the cave key.")
+            setMessage(greek: "Εξερεύνησε τη σπηλιά: βρες 5 κρυστάλλους και 2 κλειδιά.", english: "Explore the cave: find 5 crystals and 2 keys.")
         case .nightForest:
-            setMessage(greek: "Αποστολή: βρες 2 κομμάτια χάρτη και το Χρυσό Φτερό.", english: "Quest: find 2 map fragments and the Golden Feather.")
+            setMessage(greek: "Ακολούθησε τα ίχνη: βρες 4 κομμάτια χάρτη και 2 Χρυσά Φτερά.", english: "Follow the clues: find 4 map fragments and 2 Golden Feathers.")
         case .foxArea:
-            setMessage(greek: "Τελική αποστολή: βρες την αλεπού και μίλησέ της.", english: "Final quest: find the fox and talk to her.")
+            setMessage(greek: "Τελική αποστολή: βρες την Αλεπού, άκου την ιστορία της και βοήθησέ την.", english: "Final quest: find the Fox, hear her story and help her."
+            )
         }
     }
 
@@ -205,6 +255,7 @@ struct BabisRPGGameView: View {
     @StateObject private var gameState = RPGGameState()
     @State private var scene: BabisRPGScene?
     @State private var showInventory = false
+    @State private var showMemoryChallenge = false
 
     var body: some View {
         GeometryReader { geometry in
@@ -227,7 +278,6 @@ struct BabisRPGGameView: View {
             .background(Color.black)
             .onAppear {
                 RPGOrientation.request(.landscape)
-
                 if scene == nil {
                     gameState.attach(progress: progressManager)
                     gameState.setMessageForCurrentArea()
@@ -236,146 +286,140 @@ struct BabisRPGGameView: View {
             }
             .onDisappear {
                 scene?.stopMovement()
+                SpeechManager.shared.stop()
                 RPGOrientation.request(.portrait)
             }
             .onChange(of: geometry.size) { newSize in
                 scene?.size = newSize
             }
+            .onChange(of: gameState.pendingChallenge) { challenge in
+                if challenge == .memoryChest {
+                    scene?.stopMovement()
+                    showMemoryChallenge = true
+                }
+            }
         }
         .ignoresSafeArea()
         .toolbar(.hidden, for: .navigationBar)
         .statusBarHidden(true)
-    }
-
-    private var premiumHUD: some View {
-        ZStack {
-            VStack(spacing: 0) {
-                HStack(alignment: .top, spacing: 12) {
-                    playerCard
-                    objectivePanel
-
-                    Spacer(minLength: 10)
-
-                    if !gameState.message.isEmpty {
-                        Text(gameState.message)
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                            .multilineTextAlignment(.center)
-                            .lineLimit(3)
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 10)
-                            .frame(maxWidth: 430)
-                            .background(.black.opacity(0.54))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 18)
-                                    .stroke(.white.opacity(0.18), lineWidth: 1)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 18))
-                    }
-
-                    Spacer(minLength: 10)
-
-                    companionButton
-                    miniMap
-                    inventoryButton
+        .fullScreenCover(isPresented: $showMemoryChallenge) {
+            NavigationStack {
+                MemoryGame { _ in
+                    gameState.completeMemoryChallenge()
+                    scene?.completeMemoryChallenge()
+                    showMemoryChallenge = false
+                    RPGOrientation.request(.landscape)
+                    SpeechManager.shared.speak(text: gameState.message)
                 }
-                .padding(.horizontal, 18)
-                .padding(.top, 12)
-
-                Spacer()
-
-                HStack(alignment: .bottom) {
-                    RPGJoystick { vector in
-                        scene?.setMovementVector(vector)
-                    }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 10) {
-                        Text(appSettings.resolvedLanguage == .greek ? "Κίνηση" : "Move")
-                            .font(.caption2.weight(.black))
-                            .foregroundStyle(.white.opacity(0.85))
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 5)
-                            .background(.black.opacity(0.42))
-                            .clipShape(Capsule())
-
-                        if gameState.nearbyAction != nil {
-                            interactionButton
-                                .transition(.scale.combined(with: .opacity))
+                .environmentObject(progressManager)
+                .environmentObject(appSettings)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            gameState.pendingChallenge = nil
+                            showMemoryChallenge = false
+                            RPGOrientation.request(.landscape)
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
                         }
                     }
                 }
-                .padding(.horizontal, 24)
-                .padding(.bottom, 18)
             }
         }
+    }
+
+    private var premiumHUD: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .top, spacing: 10) {
+                playerCard
+                objectivePanel
+                Spacer(minLength: 8)
+
+                if !gameState.message.isEmpty {
+                    Text(gameState.message)
+                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.center)
+                        .lineLimit(3)
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 9)
+                        .frame(maxWidth: 400)
+                        .background(.black.opacity(0.54))
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+
+                Spacer(minLength: 8)
+                companionButton
+                miniMap
+                inventoryButton
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 10)
+
+            Spacer()
+
+            HStack(alignment: .bottom) {
+                RPGJoystick { vector in
+                    scene?.setMovementVector(vector)
+                }
+
+                Spacer()
+
+                if gameState.nearbyAction != nil {
+                    interactionButton
+                        .transition(.scale.combined(with: .opacity))
+                }
+            }
+            .padding(.horizontal, 22)
+            .padding(.bottom, 16)
+        }
         .animation(.spring(response: 0.28, dampingFraction: 0.75), value: gameState.nearbyAction)
-        .allowsHitTesting(true)
     }
 
     private var playerCard: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: 9) {
             Image(uiImage: UIImage(named: "babis_rpg_idle") ?? UIImage(named: "babis_neutral") ?? UIImage())
                 .resizable()
                 .scaledToFit()
-                .frame(width: 62, height: 62)
+                .frame(width: 58, height: 58)
                 .padding(3)
-                .background(
-                    Circle()
-                        .fill(.black.opacity(0.48))
-                        .overlay(Circle().stroke(PlayLandColors.sunOrange, lineWidth: 2))
-                )
+                .background(Circle().fill(.black.opacity(0.48)))
+                .overlay(Circle().stroke(PlayLandColors.sunOrange, lineWidth: 2))
 
             VStack(alignment: .leading, spacing: 3) {
                 Text("Babis")
                     .font(.system(size: 18, weight: .black, design: .rounded))
                     .foregroundStyle(.white)
-
                 Text(gameState.currentAreaTitle)
                     .font(.caption.weight(.bold))
                     .foregroundStyle(.white.opacity(0.82))
-
-                HStack(spacing: 5) {
-                    Image(systemName: gameState.areaGoalComplete ? "checkmark.circle.fill" : "sparkles")
-                        .foregroundStyle(gameState.areaGoalComplete ? PlayLandColors.leafGreen : PlayLandColors.sunOrange)
-                    Text(gameState.areaGoalComplete
-                         ? (gameState.isGreek ? "Στόχος έτοιμος" : "Goal ready")
-                         : (gameState.isGreek ? "Σε αποστολή" : "On quest"))
-                        .font(.caption2.weight(.bold))
-                        .foregroundStyle(.white)
-                }
+                Text(gameState.areaGoalComplete ? (gameState.isGreek ? "Στόχος έτοιμος" : "Goal ready") : (gameState.isGreek ? "Σε αποστολή" : "On quest"))
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.white)
             }
         }
-        .padding(.horizontal, 11)
-        .padding(.vertical, 8)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 7)
         .background(.black.opacity(0.55))
-        .overlay(
-            RoundedRectangle(cornerRadius: 20)
-                .stroke(.white.opacity(0.16), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
     private var objectivePanel: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 5) {
             Text(gameState.isGreek ? "ΑΠΟΣΤΟΛΗ" : "QUEST")
                 .font(.caption2.weight(.black))
                 .foregroundStyle(.white.opacity(0.78))
 
-            HStack(spacing: 6) {
+            HStack(spacing: 5) {
                 ForEach(Array(gameState.objectiveItems.enumerated()), id: \.offset) { _, item in
-                    objectiveChip(
-                        icon: item.0,
-                        value: "\(min(item.1, item.2))/\(item.2)",
-                        complete: item.1 >= item.2
-                    )
+                    objectiveChip(icon: item.0, value: "\(min(item.1, item.2))/\(item.2)", complete: item.1 >= item.2)
                 }
             }
         }
-        .padding(10)
+        .padding(9)
         .background(.black.opacity(0.48))
-        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
 
     private var miniMap: some View {
@@ -383,19 +427,14 @@ struct BabisRPGGameView: View {
             Image(gameState.area.groundAsset)
                 .resizable()
                 .scaledToFill()
-                .frame(width: 82, height: 82)
+                .frame(width: 78, height: 78)
                 .clipShape(Circle())
-
-            Circle()
-                .stroke(PlayLandColors.sunOrange, lineWidth: 3)
-                .frame(width: 82, height: 82)
-
+            Circle().stroke(PlayLandColors.sunOrange, lineWidth: 3).frame(width: 78, height: 78)
             Image(systemName: "location.north.fill")
                 .font(.title3.weight(.black))
                 .foregroundStyle(.white)
                 .shadow(color: .black, radius: 3)
         }
-        .accessibilityLabel(gameState.isGreek ? "Μίνι χάρτης" : "Mini map")
     }
 
     private var companionButton: some View {
@@ -405,14 +444,12 @@ struct BabisRPGGameView: View {
             Image(uiImage: UIImage(named: "kotsifi_rpg_idle") ?? UIImage(named: "kotsifi_idle") ?? UIImage())
                 .resizable()
                 .scaledToFit()
-                .frame(width: 50, height: 50)
+                .frame(width: 48, height: 48)
                 .padding(6)
                 .background(.black.opacity(0.5))
                 .clipShape(Circle())
-                .overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(gameState.isGreek ? "Μίλα στο Κοτσύφι" : "Talk to Kotsifi")
     }
 
     private var inventoryButton: some View {
@@ -422,13 +459,11 @@ struct BabisRPGGameView: View {
             Image(systemName: "backpack.fill")
                 .font(.title3.weight(.black))
                 .foregroundStyle(.white)
-                .frame(width: 52, height: 52)
+                .frame(width: 50, height: 50)
                 .background(.black.opacity(0.52))
                 .clipShape(Circle())
-                .overlay(Circle().stroke(.white.opacity(0.18), lineWidth: 1))
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(gameState.isGreek ? "Σακίδιο" : "Inventory")
     }
 
     private var interactionButton: some View {
@@ -437,18 +472,15 @@ struct BabisRPGGameView: View {
         } label: {
             VStack(spacing: 5) {
                 Image(systemName: gameState.interactionIcon)
-                    .font(.system(size: 27, weight: .black))
+                    .font(.system(size: 26, weight: .black))
                 Text(gameState.interactionTitle)
                     .font(.caption.weight(.black))
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
             }
             .foregroundStyle(.white)
-            .frame(width: 96, height: 96)
-            .background(
-                Circle()
-                    .fill(PlayLandColors.sunOrange.opacity(0.94))
-                    .shadow(color: .black.opacity(0.35), radius: 8, y: 4)
-            )
+            .frame(width: 100, height: 100)
+            .background(Circle().fill(PlayLandColors.sunOrange.opacity(0.95)).shadow(color: .black.opacity(0.35), radius: 8, y: 4))
             .overlay(Circle().stroke(.white.opacity(0.65), lineWidth: 2))
         }
         .buttonStyle(.plain)
@@ -465,32 +497,20 @@ struct BabisRPGGameView: View {
                     Label(gameState.isGreek ? "Σακίδιο" : "Inventory", systemImage: "backpack.fill")
                         .font(.title2.weight(.black))
                     Spacer()
-                    Button {
-                        withAnimation { showInventory = false }
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.title2)
+                    Button { withAnimation { showInventory = false } } label: {
+                        Image(systemName: "xmark.circle.fill").font(.title2)
                     }
                 }
 
-                LazyVGrid(
-                    columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())],
-                    spacing: 10
-                ) {
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible()), GridItem(.flexible())], spacing: 10) {
                     ForEach(Array(gameState.inventoryItems.enumerated()), id: \.offset) { _, item in
                         VStack(spacing: 4) {
                             AppAssets.image(item.0)
                                 .resizable()
                                 .scaledToFit()
                                 .frame(height: 42)
-
-                            Text("×\(item.2)")
-                                .font(.headline.monospacedDigit())
-
-                            Text(item.1)
-                                .font(.caption2)
-                                .multilineTextAlignment(.center)
-                                .lineLimit(2)
+                            Text("×\(item.2)").font(.headline.monospacedDigit())
+                            Text(item.1).font(.caption2).multilineTextAlignment(.center).lineLimit(2)
                         }
                         .frame(maxWidth: .infinity, minHeight: 90)
                         .padding(7)
@@ -504,27 +524,25 @@ struct BabisRPGGameView: View {
             .frame(maxHeight: .infinity)
             .background(.ultraThickMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 24))
-            .shadow(color: .black.opacity(0.35), radius: 18, x: -4)
             .padding(.vertical, 14)
             .padding(.trailing, 14)
         }
     }
 
     private func objectiveChip(icon: String, value: String, complete: Bool) -> some View {
-        HStack(spacing: 3) {
+        HStack(spacing: 2) {
             Text(icon)
             Text(value)
-                .font(.caption.weight(.black).monospacedDigit())
+                .font(.caption2.weight(.black).monospacedDigit())
                 .foregroundStyle(.white)
-
             if complete {
                 Image(systemName: "checkmark.circle.fill")
-                    .font(.caption)
+                    .font(.caption2)
                     .foregroundStyle(PlayLandColors.leafGreen)
             }
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 6)
+        .padding(.horizontal, 7)
+        .padding(.vertical, 5)
         .background(.white.opacity(0.12))
         .clipShape(Capsule())
     }
@@ -532,7 +550,6 @@ struct BabisRPGGameView: View {
 
 private struct RPGJoystick: View {
     let onVectorChanged: (CGVector) -> Void
-
     @State private var knobOffset: CGSize = .zero
 
     private let diameter: CGFloat = 120
@@ -540,10 +557,7 @@ private struct RPGJoystick: View {
 
     var body: some View {
         ZStack {
-            Circle()
-                .fill(.black.opacity(0.42))
-                .overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 2))
-
+            Circle().fill(.black.opacity(0.42)).overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 2))
             Circle()
                 .fill(.white.opacity(0.23))
                 .frame(width: knobDiameter, height: knobDiameter)
@@ -563,18 +577,14 @@ private struct RPGJoystick: View {
                     let scale: CGFloat = distance > radius && distance > 0 ? radius / distance : 1
                     let x = rawX * scale
                     let y = rawY * scale
-
                     knobOffset = CGSize(width: x, height: y)
                     onVectorChanged(CGVector(dx: x / radius, dy: -y / radius))
                 }
                 .onEnded { _ in
-                    withAnimation(.spring(response: 0.2, dampingFraction: 0.72)) {
-                        knobOffset = .zero
-                    }
+                    withAnimation(.spring(response: 0.2, dampingFraction: 0.72)) { knobOffset = .zero }
                     onVectorChanged(.zero)
                 }
         )
-        .accessibilityLabel("Movement joystick")
     }
 }
 
