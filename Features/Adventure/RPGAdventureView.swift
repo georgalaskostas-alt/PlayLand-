@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RPGAdventureView: View {
     @EnvironmentObject var appSettings: AppSettings
+    @EnvironmentObject var progressManager: ProgressViewModel
     @State private var showGame = false
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
@@ -30,6 +31,7 @@ struct RPGAdventureView: View {
             ZStack(alignment: .topTrailing) {
                 BabisRPGGameView()
                     .environmentObject(appSettings)
+                    .environmentObject(progressManager)
 
                 Button {
                     showGame = false
