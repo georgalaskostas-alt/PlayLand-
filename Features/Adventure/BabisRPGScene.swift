@@ -20,9 +20,6 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
     private let companion = SKSpriteNode()
     private let world = SKNode()
     private let cameraNode = SKCameraNode()
-
-    /// The gameplay world is deliberately larger than the visible landscape viewport.
-    /// SpriteKit's camera follows Babis through this space rather than moving a flat screen-sized image.
     private let worldSize = CGSize(width: 2400, height: 1600)
 
     private var moveTarget: CGPoint?
@@ -35,7 +32,11 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
     private var companionFrame = 0
     private var movementState: MovementState = .idle
     private weak var nearbyInteractionNode: SKSpriteNode?
+    private weak var pinchGesture: UIPinchGestureRecognizer?
     private var isTransitioning = false
+
+    private let minCameraScale: CGFloat = 0.72
+    private let maxCameraScale: CGFloat = 1.55
 
     private lazy var idleTexture = texture(named: "babis_rpg_idle", fallback: "babis_neutral")
     private lazy var walkTextures: [SKTexture] = (1...4).map {
@@ -71,15 +72,29 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addChild(cameraNode)
         cameraNode.setScale(1.06)
 
+        let pinch = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        pinch.cancelsTouchesInView = false
+        view.addGestureRecognizer(pinch)
+        pinchGesture = pinch
+
         physicsBody = SKPhysicsBody(edgeLoopFrom: CGRect(origin: .zero, size: worldSize))
         physicsBody?.categoryBitMask = Category.obstacle
+        physicsBody?.collisionBitMask = Category.player
+
+        AudioManager.shared.playLoop(named: "rpg_adventure_theme", volume: 0.24)
         loadArea(gameState.area)
+    }
+
+    override func willMove(from view: SKView) {
+        if let pinchGesture {
+            view.removeGestureRecognizer(pinchGesture)
+        }
+        AudioManager.shared.stopMusic()
+        SpeechManager.shared.stop()
     }
 
     // MARK: - Public controls
 
-    /// Receives a normalized vector from the SwiftUI virtual joystick.
-    /// The SpriteKit scene owns movement/physics; SwiftUI only owns the HUD/control surface.
     func setMovementVector(_ vector: CGVector) {
         let magnitude = min(1, hypot(vector.dx, vector.dy))
         joystickMagnitude = magnitude
@@ -103,7 +118,10 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
 
     func talkToCompanion() {
         guard !isTransitioning else { return }
-        gameState.setMessage(greek: kotsifiGreekMessage, english: kotsifiEnglishMessage)
+        let greek = kotsifiGreekMessage
+        let english = kotsifiEnglishMessage
+        gameState.setMessage(greek: greek, english: english)
+        SpeechManager.shared.speak(text: gameState.isGreek ? greek : english)
         AudioManager.shared.play(.storyNext)
     }
 
@@ -119,9 +137,10 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
                     greek: "Το σεντούκι άνοιξε! Περνάς στην επόμενη περιοχή.",
                     english: "The chest opened! Moving to the next area."
                 )
+                SpeechManager.shared.speak(text: gameState.message)
                 isTransitioning = true
                 gameState.nearbyAction = nil
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
                     self.gameState.advanceArea()
                     self.loadArea(self.gameState.area)
                 }
@@ -131,16 +150,19 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
                     greek: "Το σεντούκι είναι κλειδωμένο. Ολοκλήρωσε πρώτα την αποστολή της περιοχής.",
                     english: "The chest is locked. Complete the area quest first."
                 )
+                SpeechManager.shared.speak(text: gameState.message)
             }
 
         case "final_fox":
             guard !gameState.questComplete else {
                 gameState.setMessage(greek: "Η Αλεπού είναι πια φίλη σας.", english: "The Fox is your friend now.")
+                SpeechManager.shared.speak(text: gameState.message)
                 return
             }
 
             node.texture = SKTexture(imageNamed: "fox_friendly")
             gameState.completeQuest()
+            SpeechManager.shared.speak(text: gameState.message)
 
             let feather = SKSpriteNode(imageNamed: "golden_feather")
             feather.size = CGSize(width: 70, height: 70)
@@ -157,6 +179,18 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         }
     }
 
+    // MARK: - Zoom
+
+    @objc private func handlePinch(_ gesture: UIPinchGestureRecognizer) {
+        guard !isTransitioning else { return }
+        if gesture.state == .began || gesture.state == .changed {
+            let proposed = cameraNode.xScale / gesture.scale
+            let clamped = min(maxCameraScale, max(minCameraScale, proposed))
+            cameraNode.setScale(clamped)
+            gesture.scale = 1
+        }
+    }
+
     // MARK: - World loading
 
     private func loadArea(_ area: RPGArea) {
@@ -169,7 +203,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         let background = SKSpriteNode(imageNamed: area.groundAsset)
         background.size = worldSize
         background.position = CGPoint(x: worldSize.width / 2, y: worldSize.height / 2)
-        background.zPosition = -100
+        background.zPosition = -1000
         world.addChild(background)
 
         switch area {
@@ -185,10 +219,16 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         cameraNode.position = player.position
         gameState.setMessageForCurrentArea()
         isTransitioning = false
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) { [weak self] in
+            guard let self, !self.isTransitioning else { return }
+            SpeechManager.shared.speak(text: self.gameState.message)
+        }
     }
 
     private func buildForest() {
         addCommonForestObstacles()
+        addForestNoWalkZones()
 
         addCollectible(asset: "apple_item", kind: "apple", at: CGPoint(x: 520, y: 1060), size: 72)
         addCollectible(asset: "apple_item", kind: "apple", at: CGPoint(x: 1260, y: 1230), size: 72)
@@ -197,12 +237,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addCollectible(asset: "log", kind: "wood", at: CGPoint(x: 1720, y: 1310), size: 86)
         addCollectible(asset: "water_item", kind: "water", at: CGPoint(x: 1370, y: 460), size: 74)
 
-        addExit(
-            asset: "chest_closed",
-            name: "area_exit",
-            at: CGPoint(x: 2160, y: 1390),
-            size: CGSize(width: 124, height: 108)
-        )
+        addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 2160, y: 1390), size: CGSize(width: 124, height: 108))
     }
 
     private func buildVillage() {
@@ -210,18 +245,15 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addObstacle(asset: "tree_02", at: CGPoint(x: 1920, y: 1160), size: CGSize(width: 170, height: 220))
         addObstacle(asset: "wood_sign", at: CGPoint(x: 1110, y: 780), size: CGSize(width: 125, height: 110))
         addObstacle(asset: "tree_03", at: CGPoint(x: 2050, y: 510), size: CGSize(width: 170, height: 220))
+        addNoWalkZone(center: CGPoint(x: 180, y: 980), size: CGSize(width: 260, height: 780))
+        addNoWalkZone(center: CGPoint(x: 2230, y: 950), size: CGSize(width: 250, height: 760))
 
         addCollectible(asset: "berries_item", kind: "berries", at: CGPoint(x: 690, y: 930), size: 74)
         addCollectible(asset: "berries_item", kind: "berries", at: CGPoint(x: 1580, y: 1030), size: 74)
         addCollectible(asset: "carrot_item", kind: "carrot", at: CGPoint(x: 1220, y: 430), size: 74)
         addCollectible(asset: "log", kind: "wood", at: CGPoint(x: 1860, y: 600), size: 86)
 
-        addExit(
-            asset: "chest_closed",
-            name: "area_exit",
-            at: CGPoint(x: 2150, y: 1390),
-            size: CGSize(width: 124, height: 108)
-        )
+        addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 2150, y: 1390), size: CGSize(width: 124, height: 108))
     }
 
     private func buildCrystalCave() {
@@ -229,33 +261,26 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addObstacle(asset: "rock_02", at: CGPoint(x: 1210, y: 930), size: CGSize(width: 150, height: 122))
         addObstacle(asset: "rock_01", at: CGPoint(x: 1870, y: 560), size: CGSize(width: 150, height: 122))
         addObstacle(asset: "rock_02", at: CGPoint(x: 760, y: 470), size: CGSize(width: 140, height: 116))
+        addNoWalkZone(center: CGPoint(x: 160, y: 900), size: CGSize(width: 220, height: 900))
+        addNoWalkZone(center: CGPoint(x: 2240, y: 900), size: CGSize(width: 220, height: 900))
 
         addCollectible(asset: "crystal_item", kind: "crystal", at: CGPoint(x: 660, y: 1260), size: 78)
         addCollectible(asset: "crystal_item", kind: "crystal", at: CGPoint(x: 1450, y: 1240), size: 78)
         addCollectible(asset: "crystal_item", kind: "crystal", at: CGPoint(x: 1900, y: 1040), size: 78)
         addCollectible(asset: "key_item", kind: "key", at: CGPoint(x: 1220, y: 390), size: 76)
 
-        addExit(
-            asset: "chest_closed",
-            name: "area_exit",
-            at: CGPoint(x: 2160, y: 1390),
-            size: CGSize(width: 128, height: 110)
-        )
+        addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 2160, y: 1390), size: CGSize(width: 128, height: 110))
     }
 
     private func buildNightForest() {
         addCommonForestObstacles()
+        addForestNoWalkZones()
 
         addCollectible(asset: "map_fragment", kind: "fragment", at: CGPoint(x: 720, y: 1150), size: 82)
         addCollectible(asset: "map_fragment", kind: "fragment", at: CGPoint(x: 1660, y: 650), size: 82)
         addCollectible(asset: "golden_feather", kind: "feather", at: CGPoint(x: 1840, y: 1260), size: 80)
 
-        addExit(
-            asset: "chest_closed",
-            name: "area_exit",
-            at: CGPoint(x: 2160, y: 1380),
-            size: CGSize(width: 128, height: 110)
-        )
+        addExit(asset: "chest_closed", name: "area_exit", at: CGPoint(x: 2160, y: 1380), size: CGSize(width: 128, height: 110))
     }
 
     private func buildFoxArea() {
@@ -263,14 +288,10 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addObstacle(asset: "tree_03", at: CGPoint(x: 1780, y: 1140), size: CGSize(width: 175, height: 225))
         addObstacle(asset: "rock_02", at: CGPoint(x: 1120, y: 700), size: CGSize(width: 145, height: 115))
         addObstacle(asset: "bush_01", at: CGPoint(x: 760, y: 480), size: CGSize(width: 145, height: 110))
+        addNoWalkZone(center: CGPoint(x: 170, y: 920), size: CGSize(width: 230, height: 850))
+        addNoWalkZone(center: CGPoint(x: 2250, y: 920), size: CGSize(width: 210, height: 850))
 
-        addNPC(
-            asset: "fox_worried",
-            name: "final_fox",
-            at: CGPoint(x: 1940, y: 1160),
-            size: 145,
-            interactive: true
-        )
+        addNPC(asset: "fox_worried", name: "final_fox", at: CGPoint(x: 1940, y: 1160), size: 145, interactive: true)
     }
 
     private func addCommonForestObstacles() {
@@ -284,13 +305,34 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         addObstacle(asset: "bush_02", at: CGPoint(x: 1640, y: 430), size: CGSize(width: 145, height: 110))
     }
 
+    /// Broad invisible collision regions keep the player inside the navigable forest
+    /// rather than allowing movement across the baked-in dense foliage at the edges.
+    private func addForestNoWalkZones() {
+        addNoWalkZone(center: CGPoint(x: 135, y: 930), size: CGSize(width: 190, height: 900))
+        addNoWalkZone(center: CGPoint(x: 2265, y: 930), size: CGSize(width: 190, height: 900))
+        addNoWalkZone(center: CGPoint(x: 1180, y: 1535), size: CGSize(width: 1120, height: 110))
+        addNoWalkZone(center: CGPoint(x: 300, y: 730), size: CGSize(width: 210, height: 330))
+        addNoWalkZone(center: CGPoint(x: 2050, y: 920), size: CGSize(width: 230, height: 300))
+    }
+
+    private func addNoWalkZone(center: CGPoint, size: CGSize) {
+        let node = SKNode()
+        node.position = center
+        node.name = "no_walk"
+        node.physicsBody = SKPhysicsBody(rectangleOf: size)
+        node.physicsBody?.isDynamic = false
+        node.physicsBody?.categoryBitMask = Category.obstacle
+        node.physicsBody?.collisionBitMask = Category.player
+        node.physicsBody?.contactTestBitMask = 0
+        world.addChild(node)
+    }
+
     // MARK: - Characters
 
     private func setupPlayer(at position: CGPoint) {
         player.removeFromParent()
         player.name = "player"
         player.position = position
-        player.zPosition = 12
         player.anchorPoint = CGPoint(x: 0.5, y: 0.22)
         applyPlayerTexture(idleTexture)
 
@@ -302,6 +344,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         player.physicsBody?.collisionBitMask = Category.obstacle | Category.interaction
         player.physicsBody?.contactTestBitMask = Category.collectible | Category.interaction
         world.addChild(player)
+        updateDepthOrdering()
     }
 
     private func setupCompanion() {
@@ -309,10 +352,10 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         companion.name = "companion_kotsifi"
         companion.texture = companionIdleTexture
         companion.anchorPoint = CGPoint(x: 0.5, y: 0.2)
-        companion.zPosition = 13
         companion.position = CGPoint(x: player.position.x - 105, y: player.position.y + 95)
         applyCompanionTexture(companionIdleTexture)
         world.addChild(companion)
+        updateDepthOrdering()
     }
 
     // MARK: - World objects
@@ -321,10 +364,10 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         let node = SKSpriteNode(imageNamed: asset)
         node.size = size
         node.position = position
-        node.zPosition = 2
+        node.zPosition = depth(forY: position.y)
         node.physicsBody = SKPhysicsBody(
-            rectangleOf: CGSize(width: size.width * 0.62, height: size.height * 0.42),
-            center: CGPoint(x: 0, y: -size.height * 0.2)
+            rectangleOf: CGSize(width: size.width * 0.62, height: size.height * 0.38),
+            center: CGPoint(x: 0, y: -size.height * 0.25)
         )
         node.physicsBody?.isDynamic = false
         node.physicsBody?.categoryBitMask = Category.obstacle
@@ -337,7 +380,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         node.name = "collectible_\(kind)"
         node.size = CGSize(width: size, height: size)
         node.position = position
-        node.zPosition = 6
+        node.zPosition = depth(forY: position.y) + 3
         node.physicsBody = SKPhysicsBody(circleOfRadius: size * 0.34)
         node.physicsBody?.isDynamic = false
         node.physicsBody?.categoryBitMask = Category.collectible
@@ -355,7 +398,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         node.name = name
         node.size = CGSize(width: size, height: size)
         node.position = position
-        node.zPosition = 8
+        node.zPosition = depth(forY: position.y) + 2
 
         if interactive {
             node.physicsBody = SKPhysicsBody(circleOfRadius: size * 0.42)
@@ -373,7 +416,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         node.name = name
         node.size = size
         node.position = position
-        node.zPosition = 7
+        node.zPosition = depth(forY: position.y) + 2
         node.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: size.width * 0.9, height: size.height * 0.85))
         node.physicsBody?.isDynamic = false
         node.physicsBody?.categoryBitMask = Category.interaction
@@ -385,7 +428,10 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
     // MARK: - Input and game loop
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        guard let touch = touches.first, !isTransitioning, joystickMagnitude < 0.04 else { return }
+        guard let touch = touches.first,
+              !isTransitioning,
+              joystickMagnitude < 0.04,
+              touch.view?.gestureRecognizers?.contains(where: { $0.state == .changed && $0.numberOfTouches > 1 }) != true else { return }
         moveTarget = touch.location(in: world)
     }
 
@@ -396,6 +442,7 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         updateMovement(deltaTime: dt)
         updateCompanion(deltaTime: dt)
         updateCamera(deltaTime: dt)
+        updateDepthOrdering()
     }
 
     private func updateMovement(deltaTime: TimeInterval) {
@@ -499,8 +546,8 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
 
     private func updateCamera(deltaTime: TimeInterval) {
         let cameraScale = cameraNode.xScale
-        let halfW = size.width * cameraScale / 2
-        let halfH = size.height * cameraScale / 2
+        let halfW = min(worldSize.width / 2, size.width * cameraScale / 2)
+        let halfH = min(worldSize.height / 2, size.height * cameraScale / 2)
 
         let desired = CGPoint(
             x: min(max(player.position.x, halfW), worldSize.width - halfW),
@@ -512,16 +559,23 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
         cameraNode.position.y += (desired.y - cameraNode.position.y) * factor
     }
 
-    // MARK: - Contacts
+    private func updateDepthOrdering() {
+        player.zPosition = depth(forY: player.position.y) + 5
+        companion.zPosition = depth(forY: companion.position.y) + 7
+    }
+
+    private func depth(forY y: CGFloat) -> CGFloat {
+        500 - (y / 4)
+    }
+
+    // MARK: - Contacts and collection feedback
 
     func didBegin(_ contact: SKPhysicsContact) {
         let nodes = [contact.bodyA.node, contact.bodyB.node].compactMap { $0 }
         guard let other = nodes.first(where: { $0 !== player }) else { return }
 
         if let name = other.name, name.hasPrefix("collectible_") {
-            let kind = String(name.dropFirst("collectible_".count))
-            other.removeFromParent()
-            gameState.collect(kind: kind)
+            collect(node: other, name: name)
             return
         }
 
@@ -545,6 +599,54 @@ final class BabisRPGScene: SKScene, SKPhysicsContactDelegate {
 
         nearbyInteractionNode = nil
         gameState.nearbyAction = nil
+    }
+
+    private func collect(node: SKNode, name: String) {
+        guard let sprite = node as? SKSpriteNode, sprite.action(forKey: "collecting") == nil else { return }
+
+        let kind = String(name.dropFirst("collectible_".count))
+        sprite.name = nil
+        sprite.physicsBody = nil
+        sprite.removeAllActions()
+        sprite.zPosition = 2000
+
+        let cameraScale = cameraNode.xScale
+        let inventoryTarget = CGPoint(
+            x: cameraNode.position.x + size.width * cameraScale * 0.41,
+            y: cameraNode.position.y + size.height * cameraScale * 0.34
+        )
+
+        let sparkle = SKShapeNode(circleOfRadius: max(sprite.size.width, sprite.size.height) * 0.72)
+        sparkle.strokeColor = .white
+        sparkle.lineWidth = 4
+        sparkle.alpha = 0.8
+        sparkle.position = sprite.position
+        sparkle.zPosition = 1999
+        world.addChild(sparkle)
+        sparkle.run(.sequence([
+            .group([.scale(to: 1.8, duration: 0.28), .fadeOut(withDuration: 0.28)]),
+            .removeFromParent()
+        ]))
+
+        let flight = SKAction.group([
+            .move(to: inventoryTarget, duration: 0.48),
+            .scale(to: 0.32, duration: 0.48),
+            .sequence([.wait(forDuration: 0.28), .fadeOut(withDuration: 0.20)])
+        ])
+        flight.timingMode = .easeInEaseOut
+
+        sprite.run(.sequence([
+            flight,
+            .run { [weak self, weak sprite] in
+                guard let self else { return }
+                sprite?.removeFromParent()
+                self.gameState.collect(kind: kind)
+
+                if self.gameState.areaGoalComplete && self.gameState.area != .foxArea {
+                    SpeechManager.shared.speak(text: self.gameState.message)
+                }
+            }
+        ]), withKey: "collecting")
     }
 
     // MARK: - Character presentation
