@@ -13,38 +13,96 @@ enum SoundEffect: String {
     case gameCompletion = "game_completion"
 }
 
-/// A minimal, crash-safe sound effect player. This is foundation only:
-/// individual screens are not yet wired to call every case, but any screen
-/// can safely call `AudioManager.shared.play(_:)` at any time.
+/// Central crash-safe audio service for short sound effects and looping game music.
 final class AudioManager {
     static let shared = AudioManager()
 
-    private var player: AVAudioPlayer?
+    private var effectPlayer: AVAudioPlayer?
+    private var musicPlayer: AVAudioPlayer?
     private var isMuted = false
+    private var musicVolume: Float = 0.28
 
     private init() {}
 
     func setMuted(_ muted: Bool) {
         isMuted = muted
+        musicPlayer?.volume = muted ? 0 : musicVolume
+    }
+
+    func setMusicVolume(_ volume: Float) {
+        musicVolume = min(1, max(0, volume))
+        if !isMuted {
+            musicPlayer?.volume = musicVolume
+        }
     }
 
     /// Plays a sound effect if its audio file exists in the bundle.
-    /// Does nothing (no crash, no warning) if the file hasn't been added yet.
     func play(_ effect: SoundEffect) {
         guard !isMuted else { return }
-
-        let candidateExtensions = ["caf", "wav", "mp3", "m4a"]
-        guard let url = candidateExtensions.lazy
-            .compactMap({ Bundle.main.url(forResource: effect.rawValue, withExtension: $0) })
-            .first else { return }
+        guard let url = bundledAudioURL(named: effect.rawValue) else { return }
 
         do {
             let player = try AVAudioPlayer(contentsOf: url)
             player.prepareToPlay()
             player.play()
-            self.player = player
+            effectPlayer = player
         } catch {
-            // Playback failure is non-fatal; the app continues silently.
+            // Playback failure is non-fatal.
         }
+    }
+
+    /// Starts a seamless looping music track if it exists in the bundle.
+    /// Calling this repeatedly with the same track is cheap and does not restart it.
+    func playLoop(named resourceName: String, volume: Float = 0.28) {
+        setMusicVolume(volume)
+
+        if let current = musicPlayer,
+           current.isPlaying,
+           current.url?.deletingPathExtension().lastPathComponent == resourceName {
+            return
+        }
+
+        guard let url = bundledAudioURL(named: resourceName) else { return }
+
+        do {
+            let player = try AVAudioPlayer(contentsOf: url)
+            player.numberOfLoops = -1
+            player.volume = isMuted ? 0 : musicVolume
+            player.prepareToPlay()
+            player.play()
+            musicPlayer = player
+        } catch {
+            // Missing/invalid music never blocks gameplay.
+        }
+    }
+
+    func stopMusic(fadeDuration: TimeInterval = 0.25) {
+        guard let player = musicPlayer else { return }
+        guard fadeDuration > 0, player.isPlaying else {
+            player.stop()
+            musicPlayer = nil
+            return
+        }
+
+        let steps = 8
+        let startVolume = player.volume
+        for step in 1...steps {
+            DispatchQueue.main.asyncAfter(deadline: .now() + fadeDuration * Double(step) / Double(steps)) { [weak self, weak player] in
+                guard let self, let player else { return }
+                player.volume = startVolume * Float(steps - step) / Float(steps)
+                if step == steps {
+                    player.stop()
+                    if self.musicPlayer === player {
+                        self.musicPlayer = nil
+                    }
+                }
+            }
+        }
+    }
+
+    private func bundledAudioURL(named resourceName: String) -> URL? {
+        ["caf", "wav", "mp3", "m4a"].lazy
+            .compactMap { Bundle.main.url(forResource: resourceName, withExtension: $0) }
+            .first
     }
 }
