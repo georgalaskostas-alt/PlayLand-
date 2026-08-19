@@ -17,7 +17,7 @@ struct LocationExploreView: View {
     /// chain "approach dialogue closes → challenge launches" for chests
     /// without the dialogue engine needing to know chests exist.
     @State private var pendingAfterDialogue: (() -> Void)?
-    @State private var activeChallenge: RPGChallenge?
+    @State private var activeChallenge: RPGEducationalChallenge?
     @State private var chestPendingChallenge: ChestDefinition?
     @State private var chestReward: ChestRewardPresentation?
     @State private var collectedObjectIds: Set<String> = []
@@ -136,10 +136,6 @@ struct LocationExploreView: View {
         }
     }
 
-    /// The world-tile art for `object`, if any exists: its own `assetName`
-    /// (scenery like a tree or rock), or — for a collectible — the same
-    /// art `ItemLibrary` already uses for that item everywhere else, so
-    /// item art has exactly one source of truth.
     private func worldTileAsset(for object: WorldObject) -> String? {
         if let assetName = object.assetName { return assetName }
         if let itemId = object.collectibleItemId { return ItemLibrary.item(withId: itemId)?.assetName }
@@ -161,21 +157,10 @@ struct LocationExploreView: View {
                     .font(.system(size: 50))
             }
         }
-        // The tappable region stays a fixed, forgiving logical size no
-        // matter how big the art renders or how much transparent padding
-        // its source PNG has — production scenery reads at landscape scale
-        // visually without ever changing what's actually tappable.
         .frame(width: PlayLandMetrics.primaryTouchTarget, height: PlayLandMetrics.primaryTouchTarget)
         .contentShape(Rectangle())
     }
 
-    /// Cycles through `frames` (filtered to ones that actually exist) on a
-    /// fixed interval while `isAnimating` is true. Built on `TimelineView`,
-    /// which pauses itself whenever it isn't being drawn — there's no
-    /// `Timer` to invalidate and nothing that can keep running off-screen.
-    /// Falls back to a single static image when animation shouldn't run:
-    /// Reduce Motion is on, nothing is actually moving, or none of
-    /// `frames` resolve yet (today's case — a zero-regression no-op).
     @ViewBuilder
     private func animatedCharacter(frames: [String], interval: Double, isAnimating: Bool, fallback: Image, size: CGFloat) -> some View {
         let existingFrames = frames.filter(AppAssets.exists)
@@ -238,9 +223,6 @@ struct LocationExploreView: View {
             x: min(0.95, playerPosition.x + 0.09) * geometry.size.width,
             y: max(0.05, playerPosition.y - 0.07) * geometry.size.height
         )
-        // A longer, separate animation than the player's own movement is
-        // what makes Kotsifi read as "trailing behind" rather than
-        // rigidly glued to Babis's exact coordinate every frame.
         .animation(PlayLandAnimation.respecting(reduceMotion, .easeOut(duration: 0.45)), value: playerPosition)
         .accessibilityHidden(true)
     }
@@ -324,10 +306,6 @@ struct LocationExploreView: View {
             playerPosition.x = min(0.95, max(0.05, playerPosition.x + dx))
             playerPosition.y = min(0.92, max(0.15, playerPosition.y + dy))
         }
-        // A D-pad tap is a single instantaneous move, not a continuous
-        // gesture with its own onEnded — clear the run/fly animation after
-        // it's had a couple of frames to play, the same one-shot
-        // `asyncAfter` pattern already used for `unlockToast` below.
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
             isMoving = false
         }
@@ -356,19 +334,12 @@ struct LocationExploreView: View {
             progressManager.progressQuest(questId)
             if let itemId = object.collectibleItemId {
                 progressManager.collectItem(itemId, count: object.collectibleItemCount)
-                // Only one-off collectibles (a stone, an item) disappear once
-                // picked up; NPCs and landmarks stay put for repeat visits.
                 collectedObjectIds.insert(object.id)
             }
             announceNewlyUnlockedLocations(previouslyUnlocked: previouslyUnlocked)
         }
     }
 
-    /// Tap → approach dialogue → challenge → reward, per the chest state:
-    /// locked shows a "not yet" hint, challenge-available plays the approach
-    /// dialogue then launches the mini-game, opened just shows flavor text.
-    /// Walking away or losing the mini-game leaves the chest exactly as it
-    /// was — there's no penalty and no lockout on retrying.
     private func interactWithChest(_ chest: ChestDefinition, object: WorldObject) {
         switch chestState(for: chest, requirement: object.unlockRequirement) {
         case .locked:
@@ -432,8 +403,6 @@ struct LocationExploreView: View {
     }
 }
 
-/// Wraps a won chest's data with its per-attempt star rating so
-/// `.fullScreenCover(item:)` can present the reward celebration.
 private struct ChestRewardPresentation: Identifiable {
     let id: String
     let chest: ChestDefinition
