@@ -11,7 +11,7 @@ import SwiftUI
 /// launched this stays exactly as it was (a chest stays closed), so the
 /// child can simply try again later. There's no penalty for walking away.
 struct ChallengeLauncherView: View {
-    let challenge: RPGChallenge
+    let challenge: RPGEducationalChallenge
     let onOutcome: (ChallengeOutcome) -> Void
 
     @EnvironmentObject var appSettings: AppSettings
