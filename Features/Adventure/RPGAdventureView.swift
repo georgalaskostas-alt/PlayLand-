@@ -10,7 +10,7 @@ struct RPGAdventureView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                PlayLandBackground(imageName: "rpg_forest_ground_01", scrimOpacity: 0)
+                PlayLandBackground(imageName: "rpg_forest_ground_v2", scrimOpacity: 0)
                     .overlay(Color.black.opacity(0.22).ignoresSafeArea())
 
                 if geometry.size.width > geometry.size.height {
@@ -72,10 +72,11 @@ struct RPGAdventureView: View {
 
                 introCard
                 startButton
+                campaignCard
 
                 Text(isGreek
-                     ? "Μόλις ξεκινήσει το παιχνίδι, γύρισε το κινητό οριζόντια για τον πλήρη κόσμο RPG."
-                     : "When the game starts, rotate the phone to landscape for the full RPG world.")
+                     ? "Το παιχνίδι γυρίζει αυτόματα σε οριζόντια προβολή για μεγαλύτερο κόσμο, καλύτερο χειρισμό και zoom."
+                     : "The game automatically switches to landscape for a larger world, better controls and zoom.")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.88))
                     .multilineTextAlignment(.center)
@@ -106,9 +107,9 @@ struct RPGAdventureView: View {
             VStack(spacing: 18) {
                 introCard
                 startButton
-                roadmapCard
+                campaignCard
             }
-            .frame(maxWidth: 640)
+            .frame(maxWidth: 670)
         }
     }
 
@@ -128,34 +129,29 @@ struct RPGAdventureView: View {
 
     private var introCard: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Label(isGreek ? "Ένας πραγματικός κόσμος σε πραγματικό χρόνο" : "A real-time world", systemImage: "sparkles")
+            Label(isGreek ? "Ένας μεγάλος κόσμος RPG σε πραγματικό χρόνο" : "A large real-time RPG world", systemImage: "sparkles")
                 .font(.headline.weight(.black))
                 .foregroundStyle(.white)
 
             Text(isGreek
-                 ? "Εξερεύνησε το δάσος, μάζεψε αντικείμενα, βρες σεντούκια, άκου το Κοτσύφι και ολοκλήρωσε αποστολές."
-                 : "Explore the forest, collect items, find chests, listen to Kotsifi and complete quests.")
+                 ? "10 μεγάλα κεφάλαια με εξερεύνηση, ζώα που χρειάζονται βοήθεια, σεντούκια, θησαυρούς, γρίφους μνήμης/αριθμών/σχημάτων/λέξεων, Κρυστάλλινη Σπηλιά, μονόκερο και τελική αποστολή στην Αλεπού."
+                 : "10 large chapters with exploration, animal rescues, chests, treasure, memory/number/shape/word puzzles, Crystal Cave, a unicorn quest and the final Fox mission.")
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.86))
+                .foregroundStyle(.white.opacity(0.88))
                 .fixedSize(horizontal: false, vertical: true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(.black.opacity(0.58))
-        .overlay(
-            RoundedRectangle(cornerRadius: 22)
-                .stroke(.white.opacity(0.16), lineWidth: 1)
-        )
+        .overlay(RoundedRectangle(cornerRadius: 22).stroke(.white.opacity(0.16), lineWidth: 1))
         .clipShape(RoundedRectangle(cornerRadius: 22))
     }
 
     private var startButton: some View {
-        Button {
-            showGame = true
-        } label: {
+        Button { showGame = true } label: {
             HStack(spacing: 10) {
                 Image(systemName: "gamecontroller.fill")
-                Text(isGreek ? "Ξεκίνα την Περιπέτεια" : "Start Adventure")
+                Text(isGreek ? "Ξεκίνα τη Μεγάλη Περιπέτεια" : "Start Great Adventure")
             }
             .font(.title3.weight(.black))
             .foregroundStyle(.white)
@@ -167,25 +163,48 @@ struct RPGAdventureView: View {
         }
     }
 
-    private var roadmapCard: some View {
+    private var campaignCard: some View {
         VStack(alignment: .leading, spacing: 7) {
-            roadmapRow("🌲", isGreek ? "Δάσος — συλλογή και πρώτο σεντούκι" : "Forest — gathering and first chest")
-            roadmapRow("🏘️", isGreek ? "Χωριό — NPC και αποστολές" : "Village — NPCs and quests")
-            roadmapRow("💎", isGreek ? "Κρυστάλλινη Σπηλιά — γρίφοι" : "Crystal Cave — puzzles")
+            Text(isGreek ? "10 ΚΕΦΑΛΑΙΑ" : "10 CHAPTERS")
+                .font(.caption.weight(.black))
+                .foregroundStyle(.white.opacity(0.72))
+
+            HStack(spacing: 10) {
+                campaignColumn([
+                    ("🌲", isGreek ? "Μεγάλο Δάσος" : "Great Forest"),
+                    ("🐾", isGreek ? "Ξέφωτο Διάσωσης" : "Rescue Clearing"),
+                    ("🏘️", isGreek ? "Χωριό" : "Village"),
+                    ("🌉", isGreek ? "Ποτάμι" : "River Crossing"),
+                    ("🧩", isGreek ? "Ξέφωτο Γρίφων" : "Puzzle Clearing")
+                ])
+                campaignColumn([
+                    ("💎", isGreek ? "Κρυστάλλινη Σπηλιά" : "Crystal Cave"),
+                    ("🌙", isGreek ? "Νυχτερινό Δάσος" : "Night Forest"),
+                    ("🦄", isGreek ? "Άλσος Μονόκερου" : "Unicorn Grove"),
+                    ("🏆", isGreek ? "Μεγάλος Θησαυρός" : "Treasure Hunt"),
+                    ("🦊", isGreek ? "Φωλιά Αλεπούς" : "Fox Den")
+                ])
+            }
         }
         .padding(14)
-        .background(.black.opacity(0.42))
+        .background(.black.opacity(0.44))
         .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
-    private func roadmapRow(_ icon: String, _ text: String) -> some View {
-        HStack(spacing: 9) {
-            Text(icon)
-            Text(text)
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.white)
-            Spacer()
+    private func campaignColumn(_ rows: [(String, String)]) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: 7) {
+                    Text(row.0)
+                    Text(row.1)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(1)
+                    Spacer(minLength: 0)
+                }
+            }
         }
+        .frame(maxWidth: .infinity)
     }
 }
 
