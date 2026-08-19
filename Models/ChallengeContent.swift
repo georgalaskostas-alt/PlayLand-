@@ -18,18 +18,16 @@ enum ChallengeDifficulty {
     case hard
 }
 
-/// A single educational-challenge gate: an obstacle in the world (a chest,
-/// a broken bridge, an ancient symbol) that's resolved by winning an
-/// existing mini-game. `id` must be unique per world-object instance so
-/// completion can be persisted per-chest/per-bridge, not just per quest.
-struct RPGChallenge: Identifiable {
+/// A single educational-challenge gate used by the legacy challenge launcher.
+/// Named RPGEducationalChallenge to avoid colliding with the campaign's
+/// lightweight RPGChallenge enum (memory/numbers/shapes/words).
+struct RPGEducationalChallenge: Identifiable {
     let id: String
     let gameType: RPGMiniGameType
     let difficulty: ChallengeDifficulty
     let rewardItemId: String?
     let rewardItemCount: Int
     let rewardStars: Int
-    /// The quest this challenge's success should progress, if any.
     let questIdToProgress: String?
 
     init(
