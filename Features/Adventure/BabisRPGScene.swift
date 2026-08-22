@@ -3,6 +3,7 @@ import UIKit
 
 final class BabisRPGScene: SKScene {
     private enum MovementState { case idle, walking, running }
+    private enum FacingDirection { case front, back, left, right }
 
     private let gameState: RPGGameState
     private let player = SKSpriteNode()
@@ -11,7 +12,7 @@ final class BabisRPGScene: SKScene {
     private let cameraNode = SKCameraNode()
 
     private let worldSize = CGSize(width: 4200, height: 2800)
-    private let pathHalfWidth: CGFloat = 135
+    private let playerCollisionRadius: CGFloat = 38
 
     private var joystickVector = CGVector.zero
     private var joystickMagnitude: CGFloat = 0
@@ -21,34 +22,34 @@ final class BabisRPGScene: SKScene {
     private var animationFrame = 0
     private var companionFrame = 0
     private var movementState: MovementState = .idle
-    private var facingAway = false
+    private var facingDirection: FacingDirection = .front
     private var pathQueue: [CGPoint] = []
     private var interactionNodes: [SKSpriteNode] = []
     private var collectibleNodes: [SKSpriteNode] = []
+    private var obstacleRects: [CGRect] = []
     private weak var nearbyInteractionNode: SKSpriteNode?
     private weak var activeChallengeNode: SKSpriteNode?
     private weak var pinchGesture: UIPinchGestureRecognizer?
     private var isTransitioning = false
 
     private let minCameraScale: CGFloat = 0.42
-    private let maxCameraScale: CGFloat = 1.35
+    private let maxCameraScale: CGFloat = 2.20
 
     private lazy var idleTexture = texture(named: "babis_rpg_idle", fallback: "babis_rpg_master")
     private lazy var backIdleTexture = texture(named: "babis_rpg_back_idle", fallback: "babis_rpg_idle")
     private lazy var walkTextures: [SKTexture] = (1...4).map { texture(named: String(format: "babis_rpg_walk_%02d", $0), fallback: "babis_rpg_idle") }
     private lazy var runTextures: [SKTexture] = (1...4).map { texture(named: String(format: "babis_rpg_run_%02d", $0), fallback: "babis_rpg_idle") }
-    private lazy var backWalkTextures: [SKTexture] = (1...4).map { texture(named: String(format: "babis_rpg_back_walk_%02d", $0), fallback: "babis_rpg_walk_01") }
-    private lazy var backRunTextures: [SKTexture] = (1...4).map { texture(named: String(format: "babis_rpg_back_run_%02d", $0), fallback: "babis_rpg_run_01") }
+    private lazy var backWalkTextures: [SKTexture] = (1...4).map { texture(named: String(format: "babis_rpg_back_walk_%02d", $0), fallback: "babis_rpg_back_idle") }
+    private lazy var backRunTextures: [SKTexture] = (1...4).map { texture(named: String(format: "babis_rpg_back_run_%02d", $0), fallback: "babis_rpg_back_idle") }
 
     private lazy var companionIdleTexture = texture(named: "kotsifi_rpg_idle", fallback: "kotsifi_rpg_master")
     private lazy var companionBackIdleTexture = texture(named: "kotsifi_rpg_back_idle", fallback: "kotsifi_rpg_idle")
     private lazy var companionFlyTextures: [SKTexture] = (1...4).map { texture(named: String(format: "kotsifi_rpg_fly_%02d", $0), fallback: "kotsifi_rpg_idle") }
     private lazy var companionBackFlyTextures: [SKTexture] = (1...4).map { texture(named: String(format: "kotsifi_rpg_back_fly_%02d", $0), fallback: "kotsifi_rpg_fly_01") }
 
-    // One continuous, hand-authored route through each large map. Every interactive
-    // element is placed on or beside this route, and player movement is constrained
-    // to its corridor. This prevents walking through trees, bushes and scenery.
-    private let routePoints: [CGPoint] = [
+    // These points are now used only to distribute content around the map.
+    // They no longer constrain movement and no visible path is rendered.
+    private let contentPoints: [CGPoint] = [
         .init(x: 520, y: 430), .init(x: 820, y: 520), .init(x: 1110, y: 690), .init(x: 1390, y: 560),
         .init(x: 1670, y: 760), .init(x: 1940, y: 960), .init(x: 2240, y: 800), .init(x: 2530, y: 1010),
         .init(x: 2820, y: 1240), .init(x: 3130, y: 1090), .init(x: 3420, y: 1320), .init(x: 3710, y: 1540),
@@ -113,16 +114,19 @@ final class BabisRPGScene: SKScene {
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard !isTransitioning, joystickMagnitude < 0.04, let touch = touches.first else { return }
         let tapped = touch.location(in: world)
-        let target = nearestPointOnRoute(to: tapped)
-        buildRoute(from: player.position, to: target)
+        let target = CGPoint(
+            x: min(max(tapped.x, 90), worldSize.width - 90),
+            y: min(max(tapped.y, 90), worldSize.height - 90)
+        )
+        pathQueue = [target]
     }
 
     func talkToCompanion() {
         guard !isTransitioning else { return }
         let messages: [(String, String)] = [
-            ("Ακολούθησε το μονοπάτι. Αν πατήσεις πιο μακριά, θα σε οδηγήσω από τον ασφαλή δρόμο.", "Follow the path. If you tap farther away, I will guide you along the safe route."),
-            ("Ψάξε και τις στροφές του δρόμου. Οι φίλοι και τα αντικείμενα βρίσκονται κοντά στα μονοπάτια.", "Check the bends in the road too. Friends and items are placed near the paths."),
-            ("Μην προσπαθείς να περάσεις μέσα από δέντρα και θάμνους — το μονοπάτι είναι πάντα η σωστή διαδρομή.", "Do not try to walk through trees and bushes — the path is always the safe route.")
+            ("Εξερεύνησε ελεύθερα την περιοχή. Μπορείς να πατήσεις οπουδήποτε για να κινηθείς προς τα εκεί.", "Explore freely. Tap anywhere to move there."),
+            ("Ψάξε πίσω από δέντρα, κοντά στους βράχους και στις άκρες της περιοχής.", "Look behind trees, near rocks and around the edges of the area."),
+            ("Μπορείς να πας όπου θέλεις, αλλά τα δέντρα, οι θάμνοι και οι βράχοι είναι πραγματικά εμπόδια.", "You can go wherever you want, but trees, bushes and rocks are real obstacles.")
         ]
         let pair = messages[gameState.area.rawValue % messages.count]
         gameState.setMessage(greek: pair.0, english: pair.1)
@@ -154,7 +158,7 @@ final class BabisRPGScene: SKScene {
             SpeechManager.shared.speak(text: gameState.message)
         case "unicorn:happy":
             node.texture = SKTexture(imageNamed: "unicorn_rpg_talking")
-            gameState.setMessage(greek: "Σε ευχαριστώ! Η μαγεία μου επέστρεψε. Συνέχισε από το μονοπάτι!", english: "Thank you! My magic is back. Keep following the path!")
+            gameState.setMessage(greek: "Σε ευχαριστώ! Η μαγεία μου επέστρεψε. Συνέχισε την εξερεύνηση!", english: "Thank you! My magic is back. Keep exploring!")
             SpeechManager.shared.speak(text: gameState.message)
             returnTexture(node, asset: "unicorn_rpg_happy")
         case "fox":
@@ -164,7 +168,7 @@ final class BabisRPGScene: SKScene {
         case "area_exit":
             guard gameState.areaGoalComplete else {
                 AudioManager.shared.play(.wrong)
-                gameState.setMessage(greek: "Υπάρχουν ακόμη στόχοι στην περιοχή. Ακολούθησε όλο το μονοπάτι και έλεγξε τις διακλαδώσεις.", english: "There are still objectives here. Follow the whole path and check every branch.")
+                gameState.setMessage(greek: "Υπάρχουν ακόμη στόχοι στην περιοχή. Εξερεύνησε όλο τον χάρτη και έλεγξε κάθε γωνιά.", english: "There are still objectives here. Explore the whole map and check every corner.")
                 SpeechManager.shared.speak(text: gameState.message)
                 return
             }
@@ -222,6 +226,7 @@ final class BabisRPGScene: SKScene {
         world.removeAllChildren()
         interactionNodes.removeAll()
         collectibleNodes.removeAll()
+        obstacleRects.removeAll()
         nearbyInteractionNode = nil
         activeChallengeNode = nil
         gameState.nearbyAction = nil
@@ -232,13 +237,13 @@ final class BabisRPGScene: SKScene {
         background.zPosition = -3000
         world.addChild(background)
 
-        addRenderedPath()
         addEnvironment(for: area)
         buildArea(area)
 
-        setupPlayer(at: routePoints[0])
+        let spawn = safeSpawnPoint()
+        setupPlayer(at: spawn)
         setupCompanion()
-        cameraNode.setScale(0.88)
+        cameraNode.setScale(1.05)
         cameraNode.position = player.position
         clampCameraToWorld()
         gameState.setMessageForCurrentArea()
@@ -263,36 +268,6 @@ final class BabisRPGScene: SKScene {
         }
     }
 
-    private func addRenderedPath() {
-        for index in 0..<(routePoints.count - 1) {
-            let a = routePoints[index]
-            let b = routePoints[index + 1]
-            let dx = b.x - a.x
-            let dy = b.y - a.y
-            let distance = hypot(dx, dy)
-            let angle = atan2(dy, dx)
-            let steps = max(1, Int(distance / 150))
-            for step in 0...steps {
-                let t = CGFloat(step) / CGFloat(steps)
-                let point = CGPoint(x: a.x + dx * t, y: a.y + dy * t)
-                let path = SKSpriteNode(imageNamed: "rpg_path_straight")
-                path.size = CGSize(width: 190, height: 125)
-                path.position = point
-                path.zRotation = angle
-                path.zPosition = -1800
-                path.alpha = 0.96
-                world.addChild(path)
-            }
-        }
-        for index in stride(from: 4, to: routePoints.count, by: 5) {
-            let junction = SKSpriteNode(imageNamed: "rpg_path_junction")
-            junction.size = CGSize(width: 210, height: 180)
-            junction.position = routePoints[index]
-            junction.zPosition = -1750
-            world.addChild(junction)
-        }
-    }
-
     private func addEnvironment(for area: RPGArea) {
         let treeAssets = ["rpg_tree_large_01", "rpg_tree_large_02", "rpg_tree_large_03"]
         let candidates: [CGPoint] = [
@@ -301,7 +276,7 @@ final class BabisRPGScene: SKScene {
             .init(x: 3820, y: 2120), .init(x: 3410, y: 2440), .init(x: 2780, y: 2580), .init(x: 2150, y: 2580),
             .init(x: 1580, y: 2590), .init(x: 990, y: 2620), .init(x: 360, y: 2460), .init(x: 330, y: 1640)
         ]
-        for (i, p) in candidates.enumerated() where distanceToRoute(p) > 260 {
+        for (i, p) in candidates.enumerated() {
             addScenery(asset: treeAssets[i % treeAssets.count], at: p, size: CGSize(width: 330, height: 420))
         }
 
@@ -309,8 +284,16 @@ final class BabisRPGScene: SKScene {
             .init(x: 1150, y: 1110), .init(x: 1530, y: 1260), .init(x: 2550, y: 620), .init(x: 3290, y: 760),
             .init(x: 3740, y: 2370), .init(x: 3150, y: 2570), .init(x: 1940, y: 2570), .init(x: 720, y: 2570)
         ]
-        for (i, p) in bushCandidates.enumerated() where distanceToRoute(p) > 220 {
+        for (i, p) in bushCandidates.enumerated() {
             addScenery(asset: i.isMultiple(of: 2) ? "rpg_bush_tall_01" : "rpg_bush_tall_02", at: p, size: CGSize(width: 220, height: 190))
+        }
+
+        let rockCandidates: [CGPoint] = [
+            .init(x: 760, y: 820), .init(x: 1720, y: 520), .init(x: 2360, y: 1320),
+            .init(x: 3020, y: 1720), .init(x: 3650, y: 1050), .init(x: 1260, y: 2140)
+        ]
+        for (i, p) in rockCandidates.enumerated() {
+            addScenery(asset: i.isMultiple(of: 2) ? "rpg_rock_large" : "rpg_rock_small", at: p, size: CGSize(width: 190, height: 160))
         }
 
         if area == .village {
@@ -318,11 +301,7 @@ final class BabisRPGScene: SKScene {
             addScenery(asset: "rpg_village_house_02", at: CGPoint(x: 3350, y: 730), size: CGSize(width: 650, height: 570))
         }
         if area == .riverCrossing {
-            let bridge = SKSpriteNode(imageNamed: "rpg_bridge_wood")
-            bridge.position = routePoints[16]
-            bridge.size = CGSize(width: 520, height: 260)
-            bridge.zPosition = -1650
-            world.addChild(bridge)
+            addScenery(asset: "rpg_bridge_wood", at: CGPoint(x: 2200, y: 1540), size: CGSize(width: 520, height: 260))
         }
     }
 
@@ -332,6 +311,42 @@ final class BabisRPGScene: SKScene {
         node.position = position
         node.zPosition = depth(forY: position.y)
         world.addChild(node)
+
+        let lower = asset.lowercased()
+        let widthFactor: CGFloat
+        let heightFactor: CGFloat
+        let verticalOffset: CGFloat
+
+        if lower.contains("tree") {
+            widthFactor = 0.28
+            heightFactor = 0.18
+            verticalOffset = -0.30
+        } else if lower.contains("bush") {
+            widthFactor = 0.72
+            heightFactor = 0.42
+            verticalOffset = -0.16
+        } else if lower.contains("rock") {
+            widthFactor = 0.76
+            heightFactor = 0.58
+            verticalOffset = -0.10
+        } else if lower.contains("house") {
+            widthFactor = 0.72
+            heightFactor = 0.44
+            verticalOffset = -0.16
+        } else {
+            widthFactor = 0.60
+            heightFactor = 0.36
+            verticalOffset = -0.14
+        }
+
+        let collisionSize = CGSize(width: size.width * widthFactor, height: size.height * heightFactor)
+        let center = CGPoint(x: position.x, y: position.y + size.height * verticalOffset)
+        obstacleRects.append(CGRect(
+            x: center.x - collisionSize.width / 2,
+            y: center.y - collisionSize.height / 2,
+            width: collisionSize.width,
+            height: collisionSize.height
+        ))
     }
 
     private func buildArea(_ area: RPGArea) {
@@ -417,19 +432,18 @@ final class BabisRPGScene: SKScene {
     // MARK: - Placement helpers
 
     private func routePoint(_ index: Int, sideOffset: CGFloat = 0) -> CGPoint {
-        let i = ((index % routePoints.count) + routePoints.count) % routePoints.count
-        let p = routePoints[i]
-        guard sideOffset != 0 else { return p }
-        let next = routePoints[min(i + 1, routePoints.count - 1)]
-        let dx = next.x - p.x
-        let dy = next.y - p.y
-        let length = max(1, hypot(dx, dy))
-        return CGPoint(x: p.x - dy / length * sideOffset, y: p.y + dx / length * sideOffset)
+        let i = ((index % contentPoints.count) + contentPoints.count) % contentPoints.count
+        var p = contentPoints[i]
+        p.x += sideOffset
+        return CGPoint(
+            x: min(max(p.x, 180), worldSize.width - 180),
+            y: min(max(p.y, 180), worldSize.height - 180)
+        )
     }
 
     private func addCollectibles(kind: String, asset: String, count: Int, start: Int, step: Int, size: CGFloat) {
         for n in 0..<count {
-            let index = (start + n * step) % routePoints.count
+            let index = (start + n * step) % contentPoints.count
             let offset: CGFloat = n.isMultiple(of: 2) ? 58 : -58
             let node = SKSpriteNode(imageNamed: asset)
             node.size = CGSize(width: size, height: size)
@@ -490,6 +504,8 @@ final class BabisRPGScene: SKScene {
         player.position = position
         player.anchorPoint = CGPoint(x: 0.5, y: 0.18)
         player.zPosition = depth(forY: position.y) + 10
+        player.xScale = 1
+        facingDirection = .front
         world.addChild(player)
     }
 
@@ -499,67 +515,20 @@ final class BabisRPGScene: SKScene {
         companion.size = CGSize(width: 92, height: 108)
         companion.position = CGPoint(x: player.position.x - 100, y: player.position.y + 110)
         companion.zPosition = depth(forY: companion.position.y) + 14
+        companion.xScale = 1
         world.addChild(companion)
     }
 
-    // MARK: - Navigation
-
-    private func buildRoute(from start: CGPoint, to target: CGPoint) {
-        let startIndex = nearestRouteIndex(to: start)
-        let endIndex = nearestRouteIndex(to: target)
-        if startIndex == endIndex {
-            pathQueue = [target]
-            return
-        }
-        if startIndex < endIndex {
-            pathQueue = Array(routePoints[(startIndex + 1)...endIndex])
-        } else {
-            pathQueue = Array(routePoints[endIndex..<startIndex].reversed())
-        }
-        if pathQueue.last != target { pathQueue.append(target) }
-    }
-
-    private func nearestRouteIndex(to point: CGPoint) -> Int {
-        var best = 0
-        var bestDistance = CGFloat.greatestFiniteMagnitude
-        for (i, p) in routePoints.enumerated() {
-            let d = hypot(p.x - point.x, p.y - point.y)
-            if d < bestDistance { bestDistance = d; best = i }
-        }
-        return best
-    }
-
-    private func nearestPointOnRoute(to point: CGPoint) -> CGPoint {
-        var best = routePoints[0]
-        var bestDistance = CGFloat.greatestFiniteMagnitude
-        for i in 0..<(routePoints.count - 1) {
-            let candidate = closestPoint(point, onSegmentFrom: routePoints[i], to: routePoints[i + 1])
-            let d = hypot(candidate.x - point.x, candidate.y - point.y)
-            if d < bestDistance { bestDistance = d; best = candidate }
-        }
-        return best
-    }
-
-    private func isWalkable(_ point: CGPoint) -> Bool {
-        distanceToRoute(point) <= pathHalfWidth
-    }
-
-    private func distanceToRoute(_ point: CGPoint) -> CGFloat {
-        var best = CGFloat.greatestFiniteMagnitude
-        for i in 0..<(routePoints.count - 1) {
-            let candidate = closestPoint(point, onSegmentFrom: routePoints[i], to: routePoints[i + 1])
-            best = min(best, hypot(candidate.x - point.x, candidate.y - point.y))
-        }
-        return best
-    }
-
-    private func closestPoint(_ p: CGPoint, onSegmentFrom a: CGPoint, to b: CGPoint) -> CGPoint {
-        let abx = b.x - a.x
-        let aby = b.y - a.y
-        let lengthSq = abx * abx + aby * aby
-        guard lengthSq > 0 else { return a }
-        let t = max(0, min(1, ((p.x - a.x) * abx + (p.y - a.y) * aby) / lengthSq))
-        return CGPoint(x: a.x + abx * t, y: a.y + aby * t)
+    private func safeSpawnPoint() -> CGPoint {
+        // Prefer the open central clearing instead of the foliage-heavy bottom-left corner.
+        let candidates = [
+            CGPoint(x: 2200, y: 1450),
+            CGPoint(x: 2050, y: 1350),
+            CGPoint(x: 2380, y: 1450),
+            CGPoint(x: 2200, y: 1700),
+            CGPoint(x: 1800, y: 1500)
+        ]
+        return candidates.first(where: isWalkable) ?? CGPoint(x: 2200, y: 1450)
     }
 
     // MARK: - Frame update
@@ -573,6 +542,22 @@ final class BabisRPGScene: SKScene {
         updateCamera(delta: delta)
         updateNearbyInteraction()
         collectNearbyItems()
+    }
+
+    private func isWalkable(_ point: CGPoint) -> Bool {
+        let margin: CGFloat = 70
+        guard point.x >= margin,
+              point.y >= margin,
+              point.x <= worldSize.width - margin,
+              point.y <= worldSize.height - margin else { return false }
+
+        let feetRect = CGRect(
+            x: point.x - playerCollisionRadius,
+            y: point.y - playerCollisionRadius * 0.35,
+            width: playerCollisionRadius * 2,
+            height: playerCollisionRadius * 0.70
+        )
+        return !obstacleRects.contains { $0.intersects(feetRect) }
     }
 
     private func updatePlayerMovement(delta: TimeInterval) {
@@ -602,42 +587,61 @@ final class BabisRPGScene: SKScene {
 
         let step = speed * CGFloat(delta)
         let candidate = CGPoint(x: player.position.x + direction.dx * step, y: player.position.y + direction.dy * step)
+
         if isWalkable(candidate) {
             player.position = candidate
         } else {
-            let snapped = nearestPointOnRoute(to: candidate)
-            if hypot(snapped.x - player.position.x, snapped.y - player.position.y) < step * 1.8 {
-                player.position = snapped
+            let candidateX = CGPoint(x: player.position.x + direction.dx * step, y: player.position.y)
+            let candidateY = CGPoint(x: player.position.x, y: player.position.y + direction.dy * step)
+            if isWalkable(candidateX) {
+                player.position = candidateX
+            } else if isWalkable(candidateY) {
+                player.position = candidateY
+            } else if joystickMagnitude < 0.04 {
+                pathQueue.removeAll()
             }
         }
 
+        updateFacing(direction)
         setMovementState(speed > 320 ? .running : .walking)
-        if direction.dy > 0.18 { facingAway = true }
-        if direction.dy < -0.18 { facingAway = false }
-        if abs(direction.dx) > 0.12 { player.xScale = direction.dx < 0 ? -1 : 1 }
         player.zPosition = depth(forY: player.position.y) + 10
+    }
+
+    private func updateFacing(_ direction: CGVector) {
+        if abs(direction.dy) >= abs(direction.dx) {
+            facingDirection = direction.dy > 0 ? .back : .front
+            player.xScale = 1
+        } else {
+            facingDirection = direction.dx < 0 ? .left : .right
+            player.xScale = direction.dx < 0 ? -1 : 1
+        }
     }
 
     private func updateAnimations(delta: TimeInterval) {
         animationTime += delta
         let interval = movementState == .running ? 0.10 : 0.15
         guard movementState != .idle else {
-            player.texture = facingAway ? backIdleTexture : idleTexture
+            switch facingDirection {
+            case .back: player.texture = backIdleTexture
+            case .front, .left, .right: player.texture = idleTexture
+            }
             return
         }
         guard animationTime >= interval else { return }
         animationTime = 0
         animationFrame = (animationFrame + 1) % 4
-        switch movementState {
-        case .walking: player.texture = facingAway ? backWalkTextures[animationFrame] : walkTextures[animationFrame]
-        case .running: player.texture = facingAway ? backRunTextures[animationFrame] : runTextures[animationFrame]
-        case .idle: break
+
+        switch facingDirection {
+        case .back:
+            player.texture = movementState == .running ? backRunTextures[animationFrame] : backWalkTextures[animationFrame]
+        case .front, .left, .right:
+            player.texture = movementState == .running ? runTextures[animationFrame] : walkTextures[animationFrame]
         }
     }
 
     private func updateCompanion(delta: TimeInterval) {
         let targetX = player.position.x + (player.xScale < 0 ? 95 : -95)
-        let targetY = player.position.y + (facingAway ? -70 : 105)
+        let targetY = player.position.y + (facingDirection == .back ? -70 : 105)
         let follow = min(1, CGFloat(delta) * 5.2)
         companion.position.x += (targetX - companion.position.x) * follow
         companion.position.y += (targetY - companion.position.y) * follow
@@ -649,9 +653,9 @@ final class BabisRPGScene: SKScene {
         if moving && companionAnimationTime > 0.12 {
             companionAnimationTime = 0
             companionFrame = (companionFrame + 1) % 4
-            companion.texture = facingAway ? companionBackFlyTextures[companionFrame] : companionFlyTextures[companionFrame]
+            companion.texture = facingDirection == .back ? companionBackFlyTextures[companionFrame] : companionFlyTextures[companionFrame]
         } else if !moving {
-            companion.texture = facingAway ? companionBackIdleTexture : companionIdleTexture
+            companion.texture = facingDirection == .back ? companionBackIdleTexture : companionIdleTexture
         }
     }
 
@@ -710,7 +714,7 @@ final class BabisRPGScene: SKScene {
             SpeechManager.shared.speak(text: gameState.message)
         } else {
             node.texture = SKTexture(imageNamed: talkingAsset(for: kind))
-            gameState.setMessage(greek: animalTalkingGreek(kind), english: "Thank you, Babis! Keep following the path and help the other forest friends too.")
+            gameState.setMessage(greek: animalTalkingGreek(kind), english: "Thank you, Babis! Keep exploring and help the other forest friends too.")
             SpeechManager.shared.speak(text: gameState.message)
             returnTexture(node, asset: happyAsset(for: kind))
         }
@@ -789,11 +793,11 @@ final class BabisRPGScene: SKScene {
 
     private func animalTalkingGreek(_ kind: String) -> String {
         switch kind {
-        case "rabbit": return "Ευχαριστώ, Μπάμπη! Το μονοπάτι συνεχίζει πιο βαθιά στο δάσος."
-        case "hedgehog": return "Σε ευχαριστώ! Μείνε στο μονοπάτι και θα βρεις το επόμενο σημάδι."
-        case "deer": return "Μπράβο! Ακολούθησε τις στροφές και μην κόψεις δρόμο μέσα από τους θάμνους."
-        case "squirrel": return "Ευχαριστώ! Ένα κλειδί βρίσκεται πιο πέρα, δίπλα στο μονοπάτι."
-        case "owl": return "Ο σωστός δρόμος είναι αυτός που φαίνεται καθαρά. Ακολούθησέ τον μέχρι το τέλος."
+        case "rabbit": return "Ευχαριστώ, Μπάμπη! Συνέχισε να εξερευνάς βαθύτερα στο δάσος."
+        case "hedgehog": return "Σε ευχαριστώ! Ψάξε προσεκτικά γύρω από τα φυσικά εμπόδια."
+        case "deer": return "Μπράβο! Εξερεύνησε όλη την περιοχή και κοίτα πίσω από τα δέντρα."
+        case "squirrel": return "Ευχαριστώ! Ένα κλειδί βρίσκεται πιο πέρα, κοντά στους μεγάλους βράχους."
+        case "owl": return "Ψάξε προσεκτικά κάθε γωνιά. Ο σωστός δρόμος είναι αυτός που θα ανακαλύψεις."
         default: return "Σε ευχαριστώ, Μπάμπη! Συνέχισε την αποστολή σου."
         }
     }
