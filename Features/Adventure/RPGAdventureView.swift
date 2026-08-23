@@ -28,28 +28,70 @@ struct RPGAdventureView: View {
         .navigationTitle(isGreek ? "Περιπέτειες" : "Adventures")
         .navigationBarTitleDisplayMode(.inline)
         .fullScreenCover(isPresented: $showGame) {
-            ZStack(alignment: .topTrailing) {
-                BabisRPGGameView()
-                    .environmentObject(appSettings)
-                    .environmentObject(progressManager)
+            GeometryReader { geometry in
+                ZStack(alignment: .topTrailing) {
+                    if geometry.size.width > geometry.size.height {
+                        BabisRPGGameView()
+                            .environmentObject(appSettings)
+                            .environmentObject(progressManager)
+                            .transition(.opacity)
+                    } else {
+                        rotateDeviceView
+                            .transition(.opacity)
+                            .onAppear { RPGOrientation.request(.landscape) }
+                    }
 
-                Button {
-                    showGame = false
-                } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 18, weight: .black))
-                        .foregroundStyle(.white)
-                        .frame(width: 46, height: 46)
-                        .background(.black.opacity(0.56))
-                        .overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1))
-                        .clipShape(Circle())
+                    Button {
+                        showGame = false
+                    } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 18, weight: .black))
+                            .foregroundStyle(.white)
+                            .frame(width: 46, height: 46)
+                            .background(.black.opacity(0.56))
+                            .overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1))
+                            .clipShape(Circle())
+                    }
+                    .padding(.top, 16)
+                    .padding(.trailing, 16)
+                    .accessibilityLabel(isGreek ? "Έξοδος από το παιχνίδι" : "Exit game")
+                    .zIndex(100)
                 }
-                .padding(.top, 16)
-                .padding(.trailing, 16)
-                .accessibilityLabel(isGreek ? "Έξοδος από το παιχνίδι" : "Exit game")
-                .zIndex(100)
+                .animation(.easeInOut(duration: 0.25), value: geometry.size.width > geometry.size.height)
             }
+            .background(Color.black.ignoresSafeArea())
+            .onAppear { RPGOrientation.request(.landscape) }
         }
+    }
+
+    private var rotateDeviceView: some View {
+        ZStack {
+            PlayLandBackground(imageName: "rpg_forest_ground_v2", scrimOpacity: 0.36)
+            VStack(spacing: 22) {
+                Image(systemName: "iphone.landscape")
+                    .font(.system(size: 78, weight: .bold))
+                    .foregroundStyle(.white)
+                    .symbolEffect(.pulse)
+
+                Text(isGreek ? "Γύρισε το κινητό οριζόντια" : "Rotate your device to landscape")
+                    .font(.system(size: 28, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.center)
+
+                Text(isGreek
+                     ? "Η Μεγάλη Περιπέτεια παίζεται οριζόντια για να φαίνεται σωστά ο κόσμος, το HUD και τα χειριστήρια."
+                     : "The Great Adventure uses landscape so the world, HUD and controls always fit correctly.")
+                    .font(.headline.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 520)
+            }
+            .padding(34)
+            .background(.black.opacity(0.48))
+            .clipShape(RoundedRectangle(cornerRadius: 28))
+            .padding(26)
+        }
+        .ignoresSafeArea()
     }
 
     private var portraitLauncher: some View {
