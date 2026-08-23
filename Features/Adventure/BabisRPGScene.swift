@@ -25,6 +25,7 @@ final class BabisRPGScene: SKScene {
     private var movementState: MovementState = .idle
     private var facingDirection: FacingDirection = .front
     private var pathQueue: [CGPoint] = []
+    private var tapRunActive = false
     private var interactionNodes: [SKSpriteNode] = []
     private var collectibleNodes: [SKSpriteNode] = []
     private var obstacleRects: [CGRect] = []
@@ -92,7 +93,7 @@ final class BabisRPGScene: SKScene {
     }
 
     func setMovementVector(_ vector: CGVector) {
-        guard gameState.pendingChallenge == nil, gameState.pendingEncounter == nil else { return }
+        guard !isTransitioning, gameState.pendingChallenge == nil, gameState.pendingEncounter == nil else { return }
         let magnitude = min(1, hypot(vector.dx, vector.dy))
         joystickMagnitude = magnitude
         if magnitude < 0.04 {
@@ -100,6 +101,7 @@ final class BabisRPGScene: SKScene {
         } else {
             joystickVector = CGVector(dx: vector.dx / magnitude, dy: vector.dy / magnitude)
             pathQueue.removeAll()
+            tapRunActive = false
         }
     }
 
@@ -107,6 +109,7 @@ final class BabisRPGScene: SKScene {
         joystickVector = .zero
         joystickMagnitude = 0
         pathQueue.removeAll()
+        tapRunActive = false
         setMovementState(.idle)
     }
 
@@ -121,9 +124,11 @@ final class BabisRPGScene: SKScene {
             x: min(max(tapped.x, 100), worldSize.width - 100),
             y: min(max(tapped.y, 100), worldSize.height - 100)
         )]
+        tapRunActive = true
     }
 
     func talkToCompanion() {
+        guard !isTransitioning else { return }
         let messages: [(String, String)] = [
             ("Η περιοχή είναι μεγάλη. Εξερεύνησέ την ολόκληρη και ψάξε στις άκρες του χάρτη.", "This area is large. Explore all of it and check the edges of the map."),
             ("Τα αντικείμενα βρίσκονται μόνο σε σημεία που μπορείς να φτάσεις.", "Items are placed only where you can actually reach them."),
@@ -177,18 +182,7 @@ final class BabisRPGScene: SKScene {
                 AudioManager.shared.play(.wrong)
                 return
             }
-            isTransitioning = true
-            let finishing = gameState.area == .foxDen
-            gameState.advanceArea()
-            if finishing {
-                node.texture = SKTexture(imageNamed: "rpg_chest_crystal_open")
-                isTransitioning = false
-            } else {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
-                    guard let self else { return }
-                    self.loadArea(self.gameState.area)
-                }
-            }
+            beginAreaTransition(using: node)
         default: break
         }
     }
@@ -203,15 +197,18 @@ final class BabisRPGScene: SKScene {
             node.name = "npc:\(kind):happy"
             node.userData?["action"] = actionKey(.animalTalk)
             showHeart(over: node, symbol: "💛")
+            installLivingIdle(on: node, seed: kind.hashValue)
         case .treasure: openTreasure(node)
         case .unicorn:
             gameState.helpUnicorn()
             node.texture = SKTexture(imageNamed: "unicorn_rpg_happy")
             node.name = "unicorn:happy"
             showHeart(over: node, symbol: "✨")
+            installLivingIdle(on: node, seed: 777)
         case .fox:
             gameState.meetFox()
             node.texture = texture(named: "fox_talking", fallback: "fox_friendly")
+            installLivingIdle(on: node, seed: 991)
         }
         activeEncounterNode = nil
         SpeechManager.shared.speak(text: gameState.message)
@@ -248,6 +245,73 @@ final class BabisRPGScene: SKScene {
         let halfH = min(worldSize.height / 2, size.height * cameraNode.yScale / 2)
         cameraNode.position.x = min(worldSize.width - halfW, max(halfW, cameraNode.position.x))
         cameraNode.position.y = min(worldSize.height - halfH, max(halfH, cameraNode.position.y))
+    }
+
+    private func beginAreaTransition(using exitNode: SKSpriteNode) {
+        guard !isTransitioning else { return }
+        isTransitioning = true
+        joystickVector = .zero
+        joystickMagnitude = 0
+        pathQueue.removeAll()
+        tapRunActive = false
+        nearbyInteractionNode = nil
+        gameState.nearbyAction = nil
+
+        let dx = exitNode.position.x - player.position.x
+        let dy = exitNode.position.y - player.position.y
+        let distance = max(hypot(dx, dy), 1)
+        let direction = CGVector(dx: dx / distance, dy: dy / distance)
+        updateFacing(direction)
+        setMovementState(.running)
+
+        let walkTarget = CGPoint(
+            x: exitNode.position.x + direction.dx * 100,
+            y: exitNode.position.y + direction.dy * 100
+        )
+        let companionTarget = CGPoint(x: walkTarget.x - 90, y: walkTarget.y + 80)
+
+        let fade = SKSpriteNode(color: .black, size: CGSize(width: max(size.width, 1200) * 4, height: max(size.height, 900) * 4))
+        fade.position = .zero
+        fade.alpha = 0
+        fade.zPosition = 100_000
+        cameraNode.addChild(fade)
+
+        let travelDuration: TimeInterval = 1.35
+        player.run(.move(to: walkTarget, duration: travelDuration))
+        companion.run(.move(to: companionTarget, duration: travelDuration))
+        cameraNode.run(.group([
+            .move(to: CGPoint(x: (player.position.x + exitNode.position.x) / 2, y: (player.position.y + exitNode.position.y) / 2), duration: travelDuration),
+            .scale(to: 0.86, duration: travelDuration)
+        ]))
+
+        let fadeIn = SKAction.sequence([.wait(forDuration: 0.78), .fadeAlpha(to: 1, duration: 0.48)])
+        fade.run(fadeIn) { [weak self, weak fade, weak exitNode] in
+            guard let self else { return }
+            let finishing = self.gameState.area == .foxDen
+            self.gameState.advanceArea()
+
+            if finishing {
+                exitNode?.texture = SKTexture(imageNamed: "rpg_chest_crystal_open")
+                self.setMovementState(.idle)
+                fade?.run(.sequence([.wait(forDuration: 0.25), .fadeOut(withDuration: 0.55), .removeFromParent()]))
+                self.isTransitioning = false
+                return
+            }
+
+            self.loadArea(self.gameState.area)
+            self.isTransitioning = true
+            fade?.alpha = 1
+            fade?.run(.sequence([
+                .wait(forDuration: 0.18),
+                .fadeOut(withDuration: 0.70),
+                .removeFromParent(),
+                .run { [weak self] in
+                    self?.isTransitioning = false
+                    self?.setMovementState(.idle)
+                    if let self { SpeechManager.shared.speak(text: self.gameState.message) }
+                }
+            ]))
+        }
     }
 
     private func loadArea(_ area: RPGArea) {
@@ -300,7 +364,6 @@ final class BabisRPGScene: SKScene {
 
     private func addBackgroundCollisionZones(for area: RPGArea) {
         guard area != .crystalCave else { return }
-        // Large baked-in foliage/trunks around map edges and central background trees.
         obstacleRects.append(contentsOf: [
             CGRect(x: 0, y: 0, width: 480, height: worldSize.height),
             CGRect(x: worldSize.width - 480, y: 0, width: 480, height: worldSize.height),
@@ -345,7 +408,6 @@ final class BabisRPGScene: SKScene {
         }
 
         if area == .riverCrossing {
-            // River is a true barrier; the bridge corridor is left open.
             obstacleRects.append(CGRect(x: 0, y: 1950, width: 2850, height: 520))
             obstacleRects.append(CGRect(x: 3950, y: 1950, width: 2850, height: 520))
             let bridge = SKSpriteNode(imageNamed: "rpg_bridge_wood")
@@ -465,7 +527,8 @@ final class BabisRPGScene: SKScene {
         let offsets: [CGPoint] = [
             .zero, .init(x: 160, y: 0), .init(x: -160, y: 0), .init(x: 0, y: 160), .init(x: 0, y: -160),
             .init(x: 240, y: 160), .init(x: -240, y: 160), .init(x: 240, y: -160), .init(x: -240, y: -160),
-            .init(x: 340, y: 0), .init(x: -340, y: 0), .init(x: 0, y: 340), .init(x: 0, y: -340)
+            .init(x: 340, y: 0), .init(x: -340, y: 0), .init(x: 0, y: 340), .init(x: 0, y: -340),
+            .init(x: 480, y: 240), .init(x: -480, y: 240), .init(x: 480, y: -240), .init(x: -480, y: -240)
         ]
         for off in offsets {
             let p = CGPoint(x: min(max(desired.x + off.x, 180), worldSize.width - 180), y: min(max(desired.y + off.y, 180), worldSize.height - 180))
@@ -475,7 +538,19 @@ final class BabisRPGScene: SKScene {
                 return p
             }
         }
-        return CGPoint(x: 3400, y: 3100)
+
+        // Deterministic wide-grid fallback. Never stack pickups on the same fallback point.
+        for row in 0..<7 {
+            for column in 0..<11 {
+                let p = CGPoint(x: 750 + CGFloat(column) * 520, y: 650 + CGFloat(row) * 500)
+                let rect = CGRect(x: p.x - footprint.width / 2, y: p.y - footprint.height / 2, width: footprint.width, height: footprint.height)
+                if !obstacleRects.contains(where: { $0.intersects(rect) }) && !reservedRects.contains(where: { $0.intersects(rect.insetBy(dx: -55, dy: -55)) }) {
+                    reservedRects.append(rect)
+                    return p
+                }
+            }
+        }
+        return CGPoint(x: worldSize.width / 2, y: 600)
     }
 
     private func addCollectibles(kind: String, asset: String, count: Int, start: Int, step: Int, size: CGFloat) {
@@ -543,13 +618,32 @@ final class BabisRPGScene: SKScene {
         world.addChild(node)
         interactionNodes.append(node)
 
-        // Chest/NPC/exit are physical objects too.
         let w = size * (name.hasPrefix("npc:") ? 0.68 : 0.82)
         let h = size * (name.hasPrefix("npc:") ? 0.62 : 0.70)
         obstacleRects.append(CGRect(x: p.x - w / 2, y: p.y - h * 0.40, width: w, height: h))
+
+        if name.hasPrefix("npc:") || name.hasPrefix("unicorn:") || name == "fox" {
+            installLivingIdle(on: node, seed: index)
+        }
+    }
+
+    private func installLivingIdle(on node: SKSpriteNode, seed: Int) {
+        node.removeAction(forKey: "livingIdle")
+        let phase = Double(abs(seed % 7)) * 0.05
+        let up = SKAction.group([
+            .moveBy(x: 0, y: 7, duration: 0.70 + phase),
+            .rotate(byAngle: 0.018, duration: 0.70 + phase)
+        ])
+        let down = SKAction.group([
+            .moveBy(x: 0, y: -7, duration: 0.70 + phase),
+            .rotate(byAngle: -0.036, duration: 0.70 + phase)
+        ])
+        let center = SKAction.rotate(byAngle: 0.018, duration: 0.30)
+        node.run(.repeatForever(.sequence([up, down, center])), withKey: "livingIdle")
     }
 
     private func setupPlayer(at position: CGPoint) {
+        player.removeAllActions()
         player.removeFromParent()
         player.texture = idleTexture
         player.size = CGSize(width: 145, height: 175)
@@ -557,24 +651,29 @@ final class BabisRPGScene: SKScene {
         player.anchorPoint = CGPoint(x: 0.5, y: 0.18)
         player.zPosition = depth(forY: position.y) + 10
         player.xScale = 1
+        player.zRotation = 0
         facingDirection = .front
         world.addChild(player)
     }
 
     private func setupCompanion() {
+        companion.removeAllActions()
         companion.removeFromParent()
         companion.texture = companionIdleTexture
         companion.size = CGSize(width: 92, height: 108)
         companion.position = CGPoint(x: player.position.x - 100, y: player.position.y + 110)
         companion.zPosition = depth(forY: companion.position.y) + 14
+        companion.xScale = 1
+        companion.zRotation = 0
         world.addChild(companion)
     }
 
     private func safeSpawnPoint() -> CGPoint {
         let candidates: [CGPoint] = [
-            .init(x: 3400, y: 3150), .init(x: 3150, y: 3000), .init(x: 3650, y: 3000), .init(x: 3000, y: 3350), .init(x: 3900, y: 3300)
+            .init(x: 3400, y: 3150), .init(x: 3150, y: 3000), .init(x: 3650, y: 3000), .init(x: 3000, y: 3350), .init(x: 3900, y: 3300),
+            .init(x: 2500, y: 3050), .init(x: 4300, y: 3050), .init(x: 3400, y: 1100)
         ]
-        return candidates.first(where: isWalkable) ?? CGPoint(x: 3400, y: 3150)
+        return candidates.first(where: isWalkable) ?? CGPoint(x: 3400, y: 1100)
     }
 
     private func isWalkable(_ point: CGPoint) -> Bool {
@@ -597,7 +696,7 @@ final class BabisRPGScene: SKScene {
     }
 
     private func updatePlayerMovement(delta: TimeInterval) {
-        guard !isTransitioning, gameState.pendingChallenge == nil, gameState.pendingEncounter == nil else { setMovementState(.idle); return }
+        guard !isTransitioning, gameState.pendingChallenge == nil, gameState.pendingEncounter == nil else { return }
         var direction = CGVector.zero
         var speed: CGFloat = 0
         if joystickMagnitude >= 0.04 {
@@ -606,10 +705,21 @@ final class BabisRPGScene: SKScene {
         } else if let target = pathQueue.first {
             let dx = target.x - player.position.x, dy = target.y - player.position.y
             let d = hypot(dx, dy)
-            if d < 18 { pathQueue.removeFirst(); if pathQueue.isEmpty { setMovementState(.idle) }; return }
+            if d < 18 {
+                pathQueue.removeFirst()
+                if pathQueue.isEmpty {
+                    tapRunActive = false
+                    setMovementState(.idle)
+                }
+                return
+            }
             direction = CGVector(dx: dx / max(d, 1), dy: dy / max(d, 1))
-            speed = 285
-        } else { setMovementState(.idle); return }
+            speed = tapRunActive ? 390 : 285
+        } else {
+            tapRunActive = false
+            setMovementState(.idle)
+            return
+        }
 
         let step = speed * CGFloat(delta)
         let candidate = CGPoint(x: player.position.x + direction.dx * step, y: player.position.y + direction.dy * step)
@@ -619,7 +729,10 @@ final class BabisRPGScene: SKScene {
             let cy = CGPoint(x: player.position.x, y: player.position.y + direction.dy * step)
             if isWalkable(cx) { player.position = cx }
             else if isWalkable(cy) { player.position = cy }
-            else if joystickMagnitude < 0.04 { pathQueue.removeAll() }
+            else if joystickMagnitude < 0.04 {
+                pathQueue.removeAll()
+                tapRunActive = false
+            }
         }
         updateFacing(direction)
         setMovementState(speed > 320 ? .running : .walking)
@@ -649,6 +762,7 @@ final class BabisRPGScene: SKScene {
     }
 
     private func updateCompanion(delta: TimeInterval) {
+        guard !isTransitioning else { return }
         let tx = player.position.x + (player.xScale < 0 ? 95 : -95)
         let ty = player.position.y + (facingDirection == .back ? -70 : 105)
         let follow = min(1, CGFloat(delta) * 5.2)
@@ -667,6 +781,7 @@ final class BabisRPGScene: SKScene {
     }
 
     private func updateCamera(delta: TimeInterval) {
+        guard !isTransitioning else { return }
         let follow = min(1, CGFloat(delta) * 5.5)
         cameraNode.position.x += (player.position.x - cameraNode.position.x) * follow
         cameraNode.position.y += (player.position.y - cameraNode.position.y) * follow
@@ -674,6 +789,7 @@ final class BabisRPGScene: SKScene {
     }
 
     private func updateNearbyInteraction() {
+        guard !isTransitioning else { return }
         var closest: SKSpriteNode?
         var best: CGFloat = 230
         for node in interactionNodes where node.parent != nil {
@@ -686,6 +802,7 @@ final class BabisRPGScene: SKScene {
     }
 
     private func collectNearbyItems() {
+        guard !isTransitioning else { return }
         for node in collectibleNodes where node.parent != nil && node.name != nil {
             let d = hypot(node.position.x - player.position.x, node.position.y - player.position.y)
             guard d < 95, let name = node.name, name.hasPrefix("collect:") else { continue }
@@ -716,6 +833,7 @@ final class BabisRPGScene: SKScene {
         let openAsset = style == "magic" ? "rpg_chest_magic_open" : (style == "crystal" ? "rpg_chest_crystal_open" : "rpg_chest_wood_open")
         node.texture = SKTexture(imageNamed: openAsset)
         node.name = "treasure:opened"
+        node.removeAction(forKey: "livingIdle")
         interactionNodes.removeAll { $0 === node }
         gameState.nearbyAction = nil
         gameState.openTreasure()
