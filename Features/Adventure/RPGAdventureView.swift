@@ -30,13 +30,16 @@ struct RPGAdventureView: View {
         .fullScreenCover(isPresented: $showGame) {
             GeometryReader { geometry in
                 ZStack(alignment: .topTrailing) {
-                    if geometry.size.width > geometry.size.height {
-                        BabisRPGGameView()
-                            .environmentObject(appSettings)
-                            .environmentObject(progressManager)
-                            .transition(.opacity)
-                    } else {
+                    // Keep the SpriteKit scene mounted during rotation. The portrait
+                    // guard simply covers it, so BabisRPGGameView does not receive an
+                    // artificial onDisappear while the device is rotating.
+                    BabisRPGGameView()
+                        .environmentObject(appSettings)
+                        .environmentObject(progressManager)
+
+                    if geometry.size.height > geometry.size.width {
                         rotateDeviceView
+                            .zIndex(90)
                             .transition(.opacity)
                             .onAppear { RPGOrientation.request(.landscape) }
                     }
@@ -58,6 +61,11 @@ struct RPGAdventureView: View {
                     .zIndex(100)
                 }
                 .animation(.easeInOut(duration: 0.25), value: geometry.size.width > geometry.size.height)
+                .onChange(of: geometry.size) { newSize in
+                    if newSize.height > newSize.width {
+                        RPGOrientation.request(.landscape)
+                    }
+                }
             }
             .background(Color.black.ignoresSafeArea())
             .onAppear { RPGOrientation.request(.landscape) }
