@@ -1,10 +1,10 @@
 import SwiftUI
 
-private struct MatchCard: Identifiable {
+private struct MatchTile: Identifiable {
     let id: Int
     let imageName: String
-    var isFaceUp = false
-    var isMatched = false
+    let displayName: String
+    var isCompleted = false
 }
 
 struct DinoMatchGame: View {
@@ -12,64 +12,81 @@ struct DinoMatchGame: View {
     @EnvironmentObject var appSettings: AppSettings
     @Environment(\.dismiss) var dismiss
 
-    private let imagePool = [
-        AppAssets.Characters.babis,
-        AppAssets.Characters.kotsifi,
-        AppAssets.Characters.fox,
-        "babis_happy",
-        "babis_hungry",
-        "kotsifi_happy",
-        "kotsifi_surprised",
-        "fox_friendly"
-    ]
     private let totalLevels = 6
+    private let tileCount = 15
 
     @State private var level = 1
-    @State private var cards: [MatchCard] = []
-    @State private var faceUpIndices: [Int] = []
-    @State private var moves = 0
-    @State private var totalMoves = 0
+    @State private var tiles: [MatchTile] = []
+    @State private var targetOrder: [String] = []
+    @State private var targetIndex = 0
+    @State private var mistakes = 0
+    @State private var totalMistakes = 0
     @State private var showLevelComplete = false
     @State private var isFinished = false
-
-    // Starts at 4 pairs / 8 cards and grows to all 8 pairs / 16 cards.
-    private var pairCount: Int { min(imagePool.count, 3 + level) }
-    private var columns: Int { pairCount <= 4 ? 3 : 4 }
-    private var cardHeight: CGFloat { pairCount >= 7 ? 76 : (columns == 3 ? 96 : 84) }
 
     var body: some View {
         ZStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 18) {
                     GameHeader(title: Loc.t("dino.match.title"), subtitle: Loc.t("dino.match.instruction"))
-                    Text(levelLabel)
-                        .font(PlayLandTypography.heading)
-                        .foregroundColor(PlayLandColors.sunOrange)
 
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: columns), spacing: 8) {
-                        ForEach(cards) { card in
-                            Button(action: { flip(card) }) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
-                                        .fill(card.isMatched ? PlayLandColors.leafGreen.opacity(0.2) : PlayLandColors.skyBlue.opacity(0.15))
-                                    if card.isFaceUp || card.isMatched {
-                                        AppAssets.image(card.imageName)
-                                            .resizable()
-                                            .scaledToFit()
-                                            .padding(6)
-                                    } else {
-                                        Text("❓").font(.system(size: 28))
-                                    }
+                    HStack {
+                        Text(levelLabel)
+                            .font(PlayLandTypography.heading)
+                            .foregroundColor(PlayLandColors.sunOrange)
+                        Spacer()
+                        Text(progressLabel)
+                            .font(PlayLandTypography.caption)
+                            .foregroundColor(PlayLandColors.secondaryText)
+                    }
+
+                    if let target = currentTarget {
+                        VStack(spacing: 8) {
+                            Text(isGreek ? "Βρες το ίδιο!" : "Find the same one!")
+                                .font(.headline.weight(.black))
+                                .foregroundStyle(PlayLandColors.primaryText)
+                            AppAssets.image(target)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 112)
+                                .padding(10)
+                                .background(PlayLandColors.warmCream)
+                                .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusLarge))
+                                .shadow(color: .black.opacity(0.12), radius: 6, y: 3)
+                        }
+                        .padding(.bottom, 4)
+                    }
+
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 5), spacing: 8) {
+                        ForEach(tiles) { tile in
+                            Button(action: { choose(tile) }) {
+                                VStack(spacing: 3) {
+                                    AppAssets.image(tile.imageName)
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 64)
+                                    Text(tile.displayName)
+                                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                                        .foregroundStyle(PlayLandColors.primaryText)
+                                        .lineLimit(1)
                                 }
-                                .frame(height: cardHeight)
+                                .padding(5)
+                                .frame(maxWidth: .infinity, minHeight: 88)
+                                .background(tile.isCompleted ? PlayLandColors.leafGreen.opacity(0.20) : PlayLandColors.skyBlue.opacity(0.10))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)
+                                        .stroke(tile.isCompleted ? PlayLandColors.leafGreen : Color.clear, lineWidth: 2)
+                                )
+                                .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
                             }
-                            .disabled(card.isFaceUp || card.isMatched || faceUpIndices.count >= 2)
+                            .disabled(tile.isCompleted || currentTarget == nil)
                         }
                     }
-                    .padding(.horizontal, 6)
+                    .padding(.horizontal, 4)
 
-                    Text(isGreek ? "Κινήσεις: \(moves)" : "Moves: \(moves)")
+                    Text(isGreek ? "Λάθη: \(mistakes)" : "Mistakes: \(mistakes)")
                         .font(PlayLandTypography.body)
+                        .foregroundColor(PlayLandColors.secondaryText)
                 }
                 .padding()
             }
@@ -77,10 +94,10 @@ struct DinoMatchGame: View {
 
             if showLevelComplete {
                 CompletionCelebrationView(
-                    title: levelCompleteTitle,
-                    message: levelCompleteMessage,
+                    title: isGreek ? "Ταίριαξες και τα 15!" : "All 15 matched!",
+                    message: isGreek ? "Στην επόμενη πίστα αλλάζει η σειρά των χαρακτήρων." : "The next level reshuffles all characters.",
                     stars: levelStars,
-                    buttonTitle: level < totalLevels ? nextLevelTitle : Loc.t("action.continue"),
+                    buttonTitle: level < totalLevels ? (isGreek ? "Επόμενη πίστα" : "Next level") : Loc.t("action.continue"),
                     action: advanceLevel
                 )
             }
@@ -101,49 +118,58 @@ struct DinoMatchGame: View {
     }
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
-    private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels) — \(pairCount) ζευγάρια" : "Level \(level) of \(totalLevels) — \(pairCount) pairs" }
-    private var levelCompleteTitle: String { isGreek ? "Τα βρήκες όλα!" : "All pairs found!" }
-    private var levelCompleteMessage: String { isGreek ? "Στην επόμενη πίστα υπάρχουν περισσότερες κάρτες." : "The next board has more cards." }
-    private var nextLevelTitle: String { isGreek ? "Επόμενη πίστα" : "Next level" }
-    private var finalMessage: String { isGreek ? "Ολοκλήρωσες και τα \(totalLevels) επίπεδα μνήμης." : "You completed all \(totalLevels) memory levels." }
-    private var levelStars: Int { moves <= pairCount + 3 ? 3 : (moves <= pairCount * 2 + 2 ? 2 : 1) }
-    private var finalStars: Int { totalMoves <= 70 ? 3 : (totalMoves <= 100 ? 2 : 1) }
+    private var levelLabel: String { isGreek ? "Επίπεδο \(level) από \(totalLevels) — 15 κουτάκια" : "Level \(level) of \(totalLevels) — 15 tiles" }
+    private var progressLabel: String { isGreek ? "\(targetIndex)/15 σωστά" : "\(targetIndex)/15 correct" }
+    private var levelStars: Int { mistakes == 0 ? 3 : (mistakes <= 3 ? 2 : 1) }
+    private var finalStars: Int { totalMistakes <= 6 ? 3 : (totalMistakes <= 15 ? 2 : 1) }
+    private var finalMessage: String { isGreek ? "Ολοκλήρωσες \(totalLevels) επίπεδα με 15 διαφορετικούς χαρακτήρες σε κάθε πίστα." : "You completed \(totalLevels) levels with 15 different characters on every board." }
+    private var currentTarget: String? { targetIndex < targetOrder.count ? targetOrder[targetIndex] : nil }
+
+    private func creaturePool() -> [(String, String, String)] {
+        [
+            (AppAssets.Characters.babis, "Babis", "Babis"),
+            (AppAssets.Characters.kotsifi, "Κοτσύφι", "Kotsifi"),
+            (AppAssets.Characters.fox, "Αλεπού", "Fox"),
+            ("rabbit_rpg_happy", "Κουνέλι", "Rabbit"),
+            ("hedgehog_rpg_happy", "Σκαντζόχοιρος", "Hedgehog"),
+            ("deer_rpg_happy", "Ελάφι", "Deer"),
+            ("squirrel_rpg_happy", "Σκίουρος", "Squirrel"),
+            ("owl_rpg_happy", "Κουκουβάγια", "Owl"),
+            ("unicorn_rpg_happy", "Μονόκερος", "Unicorn"),
+            ("babis_happy", "Χαρούμενος Μπάμπης", "Happy Babis"),
+            ("babis_hungry", "Πεινασμένος Μπάμπης", "Hungry Babis"),
+            ("kotsifi_happy", "Χαρούμενο Κοτσύφι", "Happy Kotsifi"),
+            ("kotsifi_surprised", "Έκπληκτο Κοτσύφι", "Surprised Kotsifi"),
+            ("fox_friendly", "Φιλική Αλεπού", "Friendly Fox"),
+            ("deer_rpg_talking", "Ελαφάκι", "Young Deer")
+        ]
+    }
 
     private func setupLevel() {
-        let chosen = Array(imagePool.shuffled().prefix(pairCount))
-        let deck = (chosen + chosen).shuffled()
-        cards = deck.enumerated().map { MatchCard(id: $0.offset, imageName: $0.element) }
-        faceUpIndices = []
-        moves = 0
+        let selected = Array(creaturePool().shuffled().prefix(tileCount))
+        tiles = selected.enumerated().map { index, value in
+            MatchTile(id: index, imageName: value.0, displayName: isGreek ? value.1 : value.2)
+        }
+        targetOrder = tiles.map(\.imageName).shuffled()
+        targetIndex = 0
+        mistakes = 0
         showLevelComplete = false
     }
 
-    private func flip(_ card: MatchCard) {
-        guard let index = cards.firstIndex(where: { $0.id == card.id }) else { return }
-        guard faceUpIndices.count < 2 else { return }
-        cards[index].isFaceUp = true
-        faceUpIndices.append(index)
-
-        if faceUpIndices.count == 2 {
-            moves += 1
-            totalMoves += 1
-            let first = faceUpIndices[0]
-            let second = faceUpIndices[1]
-            if cards[first].imageName == cards[second].imageName {
-                cards[first].isMatched = true
-                cards[second].isMatched = true
-                faceUpIndices = []
-                AudioManager.shared.play(.correct)
-                if cards.allSatisfy({ $0.isMatched }) { withAnimation { showLevelComplete = true } }
-            } else {
-                AudioManager.shared.play(.wrong)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
-                    guard cards.indices.contains(first), cards.indices.contains(second) else { return }
-                    cards[first].isFaceUp = false
-                    cards[second].isFaceUp = false
-                    faceUpIndices = []
-                }
+    private func choose(_ tile: MatchTile) {
+        guard let target = currentTarget else { return }
+        if tile.imageName == target {
+            guard let index = tiles.firstIndex(where: { $0.id == tile.id }) else { return }
+            tiles[index].isCompleted = true
+            targetIndex += 1
+            AudioManager.shared.play(.correct)
+            if targetIndex >= targetOrder.count {
+                withAnimation { showLevelComplete = true }
             }
+        } else {
+            mistakes += 1
+            totalMistakes += 1
+            AudioManager.shared.play(.wrong)
         }
     }
 
