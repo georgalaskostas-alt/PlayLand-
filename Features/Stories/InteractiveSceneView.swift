@@ -1,8 +1,7 @@
 import SwiftUI
 
-/// Plays through a branching sequence of `StoryScene`s. Portrait storybook
-/// illustrations fill most of the screen while narration and choices remain
-/// compact and readable below.
+/// Plays through a branching sequence of `StoryScene`s. Story art receives
+/// most of the screen while narration remains large, readable and scrollable.
 struct InteractiveSceneView: View {
     let title: String
     let scenes: [StoryScene]
@@ -29,41 +28,27 @@ struct InteractiveSceneView: View {
     private var presentedChoices: [PresentedChoice] {
         switch currentScene.narrationKey {
         case "story.babisKotsifi.scene4.narration":
-            return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.left", nextSceneIndex: 4, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.right", nextSceneIndex: 4, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.water")
-            ]
+            return [PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.left", nextSceneIndex: 4, isCorrect: true, feedbackKey: nil), PresentedChoice(textKey: "story.babisKotsifi.scene4.choice.right", nextSceneIndex: 4, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.water")]
         case "story.babisKotsifi.scene5.narration":
-            return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.right", nextSceneIndex: 5, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.left", nextSceneIndex: 5, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.food")
-            ]
+            return [PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.right", nextSceneIndex: 5, isCorrect: true, feedbackKey: nil), PresentedChoice(textKey: "story.babisKotsifi.scene5.choice.left", nextSceneIndex: 5, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.food")]
         case "story.babisKotsifi.scene9.narration":
-            return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 9, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 9, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.clues")
-            ]
+            return [PresentedChoice(textKey: "story.babisKotsifi.scene9.choice0", nextSceneIndex: 9, isCorrect: true, feedbackKey: nil), PresentedChoice(textKey: "story.babisKotsifi.scene9.choice1", nextSceneIndex: 9, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.clues")]
         case "story.babisKotsifi.scene12.narration":
-            return [
-                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13, isCorrect: true, feedbackKey: nil),
-                PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")
-            ]
+            return [PresentedChoice(textKey: "story.babisKotsifi.scene12.choice0", nextSceneIndex: 13, isCorrect: true, feedbackKey: nil), PresentedChoice(textKey: "story.babisKotsifi.scene12.choice1", nextSceneIndex: 13, isCorrect: false, feedbackKey: "story.babisKotsifi.feedback.repair")]
         default:
-            return currentScene.choices.map {
-                PresentedChoice(textKey: $0.textKey, nextSceneIndex: $0.nextSceneIndex, isCorrect: true, feedbackKey: nil)
-            }
+            return currentScene.choices.map { PresentedChoice(textKey: $0.textKey, nextSceneIndex: $0.nextSceneIndex, isCorrect: true, feedbackKey: nil) }
         }
     }
 
     var body: some View {
         GeometryReader { geometry in
-            let panelHeight = min(max(geometry.size.height * 0.24, 190), 235)
+            let landscape = geometry.size.width > geometry.size.height
+            let panelHeight = landscape ? min(max(geometry.size.height * 0.38, 190), 270) : min(max(geometry.size.height * 0.31, 220), 330)
             let artHeight = max(0, geometry.size.height - panelHeight)
 
             VStack(spacing: 0) {
                 sceneArt(size: CGSize(width: geometry.size.width, height: artHeight))
                     .frame(width: geometry.size.width, height: artHeight)
-
                 compactPanel(maxHeight: panelHeight)
                     .frame(width: geometry.size.width, height: panelHeight)
             }
@@ -78,19 +63,14 @@ struct InteractiveSceneView: View {
         .onChange(of: currentIndex) { _ in enterScene() }
     }
 
-    // MARK: - Scene art
-
     private var installedIllustrationName: String? {
         let productionName = String(format: "story_babis_kotsifi_%02d", currentIndex + 1)
-        if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true,
-           AppAssets.exists(productionName) {
+        if currentScene.illustration?.hasPrefix("story_babis_kotsifi_") == true, AppAssets.exists(productionName) {
             return AppAssets.storyIllustration(productionName, language: appSettings.resolvedLanguage)
         }
-
         if let fallback = currentScene.illustration, AppAssets.exists(fallback) {
             return AppAssets.storyIllustration(fallback, language: appSettings.resolvedLanguage)
         }
-
         return nil
     }
 
@@ -99,28 +79,13 @@ struct InteractiveSceneView: View {
         if let illustration = installedIllustrationName {
             ZStack {
                 Color.black
-
-                // The production artwork is now portrait-oriented. scaledToFit
-                // guarantees that the complete illustration remains visible;
-                // the compact panel leaves the maximum practical height for art.
-                AppAssets.image(illustration)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: size.width, height: size.height)
-                    .transition(.opacity.combined(with: .scale(scale: 0.995)))
-                    .accessibilityHidden(true)
-            }
-            .frame(width: size.width, height: size.height)
-            .clipped()
+                AppAssets.image(illustration).resizable().scaledToFit().frame(width: size.width, height: size.height).transition(.opacity.combined(with: .scale(scale: 0.995))).accessibilityHidden(true)
+            }.frame(width: size.width, height: size.height).clipped()
         } else {
             ZStack {
-                PlayLandBackground(imageName: currentScene.background)
-                    .transition(.opacity)
-                    .id(currentScene.background)
+                PlayLandBackground(imageName: currentScene.background).transition(.opacity).id(currentScene.background)
                 characterComposition(regionSize: size)
-            }
-            .frame(width: size.width, height: size.height)
-            .clipped()
+            }.frame(width: size.width, height: size.height).clipped()
         }
     }
 
@@ -129,116 +94,62 @@ struct InteractiveSceneView: View {
             ForEach(Array(currentScene.characters.enumerated()), id: \.offset) { index, character in
                 let count = currentScene.characters.count
                 let xFraction = CGFloat(index + 1) / CGFloat(count + 1)
-                let widthFraction = characterWidthFraction(index: index, count: count)
-                let charWidth = regionSize.width * widthFraction
+                let charWidth = regionSize.width * characterWidthFraction(index: index, count: count)
                 let charHeight = regionSize.height * 0.72
-
-                AppAssets.image(character)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: charWidth, height: charHeight, alignment: .bottom)
-                    .shadow(color: .black.opacity(0.35), radius: 6, y: 4)
-                    .position(x: regionSize.width * xFraction, y: regionSize.height - charHeight / 2 - regionSize.height * 0.08)
-                    .scaleEffect(hasEnteredScene ? 1.0 : 0.85)
-                    .opacity(hasEnteredScene ? 1.0 : 0.0)
+                AppAssets.image(character).resizable().scaledToFit().frame(width: charWidth, height: charHeight, alignment: .bottom).shadow(color: .black.opacity(0.35), radius: 6, y: 4).position(x: regionSize.width * xFraction, y: regionSize.height - charHeight / 2 - regionSize.height * 0.08).scaleEffect(hasEnteredScene ? 1 : 0.85).opacity(hasEnteredScene ? 1 : 0)
             }
-        }
-        .frame(width: regionSize.width, height: regionSize.height)
-        .clipped()
+        }.frame(width: regionSize.width, height: regionSize.height).clipped()
     }
 
     private func characterWidthFraction(index: Int, count: Int) -> CGFloat {
-        switch count {
-        case 1: return 0.34
-        case 2: return index == 0 ? 0.32 : 0.24
-        default: return index == 0 ? 0.28 : 0.20
-        }
+        switch count { case 1: return 0.34; case 2: return index == 0 ? 0.32 : 0.24; default: return index == 0 ? 0.28 : 0.20 }
     }
 
-    // MARK: - Interaction panel
-
     private func compactPanel(maxHeight: CGFloat) -> some View {
-        panelContent
-            .frame(maxWidth: .infinity, maxHeight: maxHeight)
-            .background(.ultraThinMaterial)
-            .overlay(alignment: .top) {
-                Rectangle().fill(.white.opacity(0.12)).frame(height: 1)
-            }
+        panelContent.frame(maxWidth: .infinity, maxHeight: maxHeight).background(.ultraThinMaterial).overlay(alignment: .top) { Rectangle().fill(.white.opacity(0.14)).frame(height: 1) }
     }
 
     private var panelContent: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top, spacing: 10) {
-                ScrollView(.vertical, showsIndicators: false) {
+            ZStack(alignment: .topTrailing) {
+                ScrollView(.vertical, showsIndicators: true) {
                     CharacterDialogueBubble(text: narrationText)
+                        .padding(.trailing, 48)
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
-
-                SpeakerButton(text: narrationText)
-                    .padding(.top, 2)
+                SpeakerButton(text: narrationText).padding(.top, 8).padding(.trailing, 8)
             }
-            .frame(maxHeight: 112)
+            .frame(maxHeight: 155)
 
             if let choiceFeedback {
-                Text(choiceFeedback)
-                    .font(PlayLandTypography.body)
-                    .foregroundColor(.white)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.black.opacity(0.30))
-                    .clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium))
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                Text(choiceFeedback).font(.system(size: 17, weight: .semibold, design: .rounded)).foregroundColor(.white).fixedSize(horizontal: false, vertical: true).padding(10).frame(maxWidth: .infinity, alignment: .leading).background(Color.black.opacity(0.42)).clipShape(RoundedRectangle(cornerRadius: PlayLandMetrics.cornerRadiusMedium)).transition(.opacity.combined(with: .move(edge: .top)))
             }
 
             if presentedChoices.isEmpty {
-                PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished)
-                    .frame(maxWidth: .infinity)
+                PlayLandPrimaryButton(title: Loc.t("action.theEnd"), color: PlayLandColors.sunOrange, action: onFinished).frame(maxWidth: .infinity)
             } else {
                 VStack(spacing: 7) {
                     ForEach(presentedChoices) { choice in
-                        Button(action: { choose(choice) }) {
-                            Text(StoryText.t(choice.textKey))
-                        }
-                        .buttonStyle(PlayLandChoiceButtonStyle())
+                        Button(action: { choose(choice) }) { Text(StoryText.t(choice.textKey)).font(.system(size: 17, weight: .bold, design: .rounded)).frame(maxWidth: .infinity) }.buttonStyle(PlayLandChoiceButtonStyle())
                     }
                 }
             }
-        }
-        .padding(.horizontal, 16)
-        .padding(.top, 12)
-        .padding(.bottom, 14)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        }.padding(.horizontal, 16).padding(.top, 12).padding(.bottom, 14).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private func choose(_ choice: PresentedChoice) {
         if !choice.isCorrect {
             AudioManager.shared.play(.buttonTap)
-            if let feedbackKey = choice.feedbackKey {
-                let feedback = StoryText.t(feedbackKey)
-                withAnimation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.2))) {
-                    choiceFeedback = feedback
-                }
-                SpeechManager.shared.speak(text: feedback)
-            }
+            if let feedbackKey = choice.feedbackKey { let feedback = StoryText.t(feedbackKey); withAnimation(PlayLandAnimation.respecting(reduceMotion, .easeInOut(duration: 0.2))) { choiceFeedback = feedback }; SpeechManager.shared.speak(text: feedback) }
             return
         }
-
-        choiceFeedback = nil
-        AudioManager.shared.play(.storyNext)
-        guard let next = choice.nextSceneIndex, scenes.indices.contains(next) else {
-            onFinished()
-            return
-        }
-        hasEnteredScene = false
-        currentIndex = next
+        choiceFeedback = nil; AudioManager.shared.play(.storyNext)
+        guard let next = choice.nextSceneIndex, scenes.indices.contains(next) else { onFinished(); return }
+        hasEnteredScene = false; currentIndex = next
     }
 
     private func enterScene() {
-        choiceFeedback = nil
-        SpeechManager.shared.speak(text: narrationText)
-        withAnimation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce)) {
-            hasEnteredScene = true
-        }
+        choiceFeedback = nil; SpeechManager.shared.speak(text: narrationText)
+        withAnimation(PlayLandAnimation.respecting(reduceMotion, PlayLandAnimation.bounce)) { hasEnteredScene = true }
     }
 }
