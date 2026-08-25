@@ -17,13 +17,15 @@ struct RPGAdventureView: View {
         }
         .navigationTitle(isGreek ? "Περιπέτειες" : "Adventures")
         .navigationBarTitleDisplayMode(.inline)
-        .fullScreenCover(isPresented: $showGame) {
+        .onAppear { OrientationController.allowAll() }
+        .onDisappear { if !showGame { OrientationController.allowAll() } }
+        .fullScreenCover(isPresented: $showGame, onDismiss: { OrientationController.allowAll() }) {
             ZStack(alignment: .topTrailing) {
                 BabisRPGGameView().environmentObject(appSettings).environmentObject(progressManager)
-                Button { showGame = false } label: {
+                Button { OrientationController.allowAll(); showGame = false } label: {
                     Image(systemName: "xmark").font(.system(size: 18, weight: .black)).foregroundStyle(.white).frame(width: 46, height: 46).background(.black.opacity(0.56)).overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1)).clipShape(Circle())
                 }.padding(.top, 16).padding(.trailing, 16).accessibilityLabel(isGreek ? "Έξοδος από το παιχνίδι" : "Exit game").zIndex(200)
-            }.background(Color.black.ignoresSafeArea())
+            }.background(Color.black.ignoresSafeArea()).onAppear { OrientationController.requireLandscape() }
         }
     }
 
@@ -38,7 +40,7 @@ struct RPGAdventureView: View {
                 introCard
                 startButton
                 campaignCard
-                Text(isGreek ? "Μόλις πατήσεις Έναρξη, γύρισε τη συσκευή οριζόντια για την καλύτερη εμπειρία παιχνιδιού." : "After tapping Start, rotate the device to landscape for the best gameplay experience.")
+                Text(isGreek ? "Η αρχική οθόνη λειτουργεί και κάθετα και οριζόντια. Μόλις πατήσεις Έναρξη, το παιχνίδι περνά οριζόντια." : "The launcher works in portrait and landscape. After tapping Start, gameplay switches to landscape.")
                     .font(.footnote.weight(.bold)).foregroundStyle(.white.opacity(0.9)).multilineTextAlignment(.center).padding(.horizontal, 12)
             }.padding(.horizontal, 18).padding(.top, 12).padding(.bottom, 28)
         }
@@ -74,7 +76,7 @@ struct RPGAdventureView: View {
     }
 
     private var startButton: some View {
-        Button { showGame = true } label: {
+        Button { OrientationController.requireLandscape(); showGame = true } label: {
             HStack(spacing: 10) { Image(systemName: "gamecontroller.fill"); Text(isGreek ? "Ξεκίνα τη Μεγάλη Περιπέτεια" : "Start Great Adventure").minimumScaleFactor(0.8) }.font(.title3.weight(.black)).foregroundStyle(.white).frame(maxWidth: .infinity).padding(.vertical, 16).background(PlayLandColors.sunOrange).clipShape(RoundedRectangle(cornerRadius: 20)).shadow(color: .black.opacity(0.28), radius: 7, y: 4)
         }
     }
