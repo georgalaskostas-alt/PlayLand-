@@ -63,6 +63,10 @@ enum StoryLibrary {
         [StoryChoice(textKey: "story.babisKotsifi.continue", nextSceneIndex: scene)]
     }
 
+    private static func storyNext(_ scene: Int) -> [StoryChoice] {
+        [StoryChoice(textKey: "story.common.continue", nextSceneIndex: scene)]
+    }
+
     static let stories: [StoryContent] = [
         StoryContent(
             id: "babis_kotsifi",
@@ -96,8 +100,13 @@ enum StoryLibrary {
                 StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.caveCrystals.scene0.narration", choices: [StoryChoice(textKey: "story.caveCrystals.scene0.choice0", nextSceneIndex: 1), StoryChoice(textKey: "story.caveCrystals.scene0.choice1", nextSceneIndex: 2)]),
                 StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.caveCrystals.scene1.narration", choices: [StoryChoice(textKey: "story.caveCrystals.scene1.choice0", nextSceneIndex: 3)]),
                 StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.caveCrystals.scene2.narration", choices: [StoryChoice(textKey: "story.caveCrystals.scene2.choice0", nextSceneIndex: 3)]),
-                StoryScene(background: AppAssets.Backgrounds.foxCave, characters: [AppAssets.Characters.fox, AppAssets.Characters.babis], narrationKey: "story.caveCrystals.scene3.narration", choices: [StoryChoice(textKey: "story.caveCrystals.scene3.choice0", nextSceneIndex: 4)]),
-                StoryScene(background: AppAssets.Backgrounds.village, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox, AppAssets.Characters.kotsifi], narrationKey: "story.caveCrystals.scene4.narration", choices: [])
+                StoryScene(background: AppAssets.Backgrounds.foxCave, characters: [AppAssets.Characters.fox, AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.caveCrystals.scene3.narration", choices: storyNext(4)),
+                StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox, AppAssets.Characters.kotsifi, "crystal_item"], narrationKey: "story.caveCrystals.scene4.narration", choices: storyNext(5)),
+                StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, "crystal_item"], narrationKey: "story.caveCrystals.scene5.narration", choices: storyNext(6)),
+                StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox], narrationKey: "story.caveCrystals.scene6.narration", choices: storyNext(7)),
+                StoryScene(background: AppAssets.Backgrounds.cave, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox], narrationKey: "story.caveCrystals.scene7.narration", choices: storyNext(8)),
+                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox], narrationKey: "story.caveCrystals.scene8.narration", choices: storyNext(9)),
+                StoryScene(background: AppAssets.Backgrounds.village, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox, AppAssets.Characters.kotsifi, "crystal_item"], narrationKey: "story.caveCrystals.scene9.narration", choices: [])
             ]
         ),
         StoryContent(
@@ -109,8 +118,13 @@ enum StoryLibrary {
                 StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis], narrationKey: "story.forestHero.scene0.narration", choices: [StoryChoice(textKey: "story.forestHero.scene0.choice0", nextSceneIndex: 1), StoryChoice(textKey: "story.forestHero.scene0.choice1", nextSceneIndex: 2)]),
                 StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.forestHero.scene1.narration", choices: [StoryChoice(textKey: "story.forestHero.scene1.choice0", nextSceneIndex: 2)]),
                 StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox], narrationKey: "story.forestHero.scene2.narration", choices: [StoryChoice(textKey: "story.forestHero.scene2.choice0", nextSceneIndex: 3)]),
-                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox, AppAssets.Characters.kotsifi], narrationKey: "story.forestHero.scene3.narration", choices: [StoryChoice(textKey: "story.forestHero.scene3.choice0", nextSceneIndex: 4)]),
-                StoryScene(background: AppAssets.Backgrounds.village, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox], narrationKey: "story.forestHero.scene4.narration", choices: [])
+                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox, AppAssets.Characters.kotsifi], narrationKey: "story.forestHero.scene3.narration", choices: storyNext(4)),
+                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox], narrationKey: "story.forestHero.scene4.narration", choices: storyNext(5)),
+                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.forestHero.scene5.narration", choices: storyNext(6)),
+                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.fox], narrationKey: "story.forestHero.scene6.narration", choices: storyNext(7)),
+                StoryScene(background: AppAssets.Backgrounds.forestNight, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox], narrationKey: "story.forestHero.scene7.narration", choices: storyNext(8)),
+                StoryScene(background: AppAssets.Backgrounds.forestDay, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi], narrationKey: "story.forestHero.scene8.narration", choices: storyNext(9)),
+                StoryScene(background: AppAssets.Backgrounds.village, characters: [AppAssets.Characters.babis, AppAssets.Characters.kotsifi, AppAssets.Characters.fox], narrationKey: "story.forestHero.scene9.narration", choices: [])
             ]
         )
     ]
