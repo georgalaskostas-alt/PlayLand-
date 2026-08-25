@@ -7,10 +7,10 @@ struct GamesListView: View {
     private var games: [MenuItem] {
         [
             MenuItem(id: "letter_recognition", title: Loc.t("game.letterRecognition.title"), description: Loc.t("game.letterRecognition.desc"), iconImageName: AppAssets.GameIcons.letterGame),
-            MenuItem(id: "word_matching", title: Loc.t("game.wordMatching.title"), description: Loc.t("game.wordMatching.desc"), iconImageName: AppAssets.PlannedGameIcons.wordMatch),
-            MenuItem(id: "word_search", title: Loc.t("game.wordSearch.title"), description: Loc.t("game.wordSearch.desc"), iconImageName: AppAssets.PlannedGameIcons.wordSearch),
-            MenuItem(id: "word_scramble", title: Loc.t("game.wordScramble.title"), description: Loc.t("game.wordScramble.desc"), iconImageName: AppAssets.PlannedGameIcons.wordScramble),
-            MenuItem(id: "memory_game", title: Loc.t("game.memoryGame.title"), description: Loc.t("game.memoryGame.desc"), iconImageName: AppAssets.PlannedGameIcons.memoryGame)
+            MenuItem(id: "word_matching", title: Loc.t("game.wordMatching.title"), description: Loc.t("game.wordMatching.desc"), iconImageName: "butterfly_rpg_neutral"),
+            MenuItem(id: "word_search", title: Loc.t("game.wordSearch.title"), description: Loc.t("game.wordSearch.desc"), iconImageName: "owl_rpg_neutral"),
+            MenuItem(id: "word_scramble", title: Loc.t("game.wordScramble.title"), description: Loc.t("game.wordScramble.desc"), iconImageName: "ladybug_rpg_neutral"),
+            MenuItem(id: "memory_game", title: Loc.t("game.memoryGame.title"), description: Loc.t("game.memoryGame.desc"), iconImageName: "forest_spirit_rpg_neutral")
         ]
     }
 
@@ -37,18 +37,12 @@ struct GamesListView: View {
     @ViewBuilder
     private func gameView(for game: MenuItem) -> some View {
         switch game.id {
-        case "letter_recognition":
-            LetterRecognitionGame()
-        case "word_matching":
-            WordMatchingGame()
-        case "word_search":
-            WordSearchGame()
-        case "word_scramble":
-            WordScrambleGame()
-        case "memory_game":
-            MemoryGame()
-        default:
-            EmptyView()
+        case "letter_recognition": LetterRecognitionGame()
+        case "word_matching": WordMatchingGame()
+        case "word_search": WordSearchGame()
+        case "word_scramble": WordScrambleGame()
+        case "memory_game": MemoryGame()
+        default: EmptyView()
         }
     }
 }
