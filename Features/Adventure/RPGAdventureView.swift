@@ -12,12 +12,15 @@ struct RPGAdventureView: View {
             ZStack {
                 PlayLandBackground(imageName: "rpg_forest_ground_v2", scrimOpacity: 0)
                     .overlay(Color.black.opacity(0.24).ignoresSafeArea())
+
                 if geometry.size.width > geometry.size.height {
                     landscapeLauncher(size: geometry.size)
                 } else {
                     portraitLauncher(size: geometry.size)
                 }
             }
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .clipped()
         }
         .navigationTitle(isGreek ? "Περιπέτειες" : "Adventures")
         .navigationBarTitleDisplayMode(.inline)
@@ -28,6 +31,7 @@ struct RPGAdventureView: View {
                 BabisRPGGameView()
                     .environmentObject(appSettings)
                     .environmentObject(progressManager)
+
                 Button {
                     OrientationController.allowAll()
                     showGame = false
@@ -51,26 +55,35 @@ struct RPGAdventureView: View {
     }
 
     private func portraitLauncher(size: CGSize) -> some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        let sidePadding: CGFloat = 18
+        let cardWidth = max(240, size.width - (sidePadding * 2))
+
+        return ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 16) {
                 titleBlock(compact: size.height < 750)
+                    .frame(width: cardWidth)
 
                 HStack(alignment: .bottom, spacing: 10) {
                     AppAssets.image("babis_rpg_master")
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: 165, maxHeight: size.height < 750 ? 135 : 190)
+                        .frame(width: min(cardWidth * 0.44, 165), height: size.height < 750 ? 135 : 190)
 
                     AppAssets.image("kotsifi_rpg_master")
                         .resizable()
                         .scaledToFit()
-                        .frame(maxWidth: 90, maxHeight: size.height < 750 ? 80 : 115)
+                        .frame(width: min(cardWidth * 0.24, 90), height: size.height < 750 ? 80 : 115)
                 }
-                .frame(maxWidth: .infinity)
+                .frame(width: cardWidth)
 
                 introCard
+                    .frame(width: cardWidth)
+
                 startButton
+                    .frame(width: cardWidth)
+
                 campaignCard
+                    .frame(width: cardWidth)
 
                 Text(
                     isGreek
@@ -81,16 +94,14 @@ struct RPGAdventureView: View {
                 .foregroundStyle(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal, 4)
+                .frame(width: cardWidth)
                 .padding(.top, 2)
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 18)
+            .frame(width: size.width, alignment: .center)
             .padding(.top, 12)
             .padding(.bottom, 110)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .frame(width: size.width, height: size.height)
         .clipped()
     }
 
@@ -119,6 +130,7 @@ struct RPGAdventureView: View {
                 .minimumScaleFactor(0.72)
                 .frame(maxWidth: .infinity)
                 .shadow(color: .black.opacity(0.4), radius: 5, y: 2)
+
             Text(isGreek ? "με τον Μπάμπη και το Κοτσύφι" : "with Babis & Kotsifi")
                 .font(.headline.weight(.bold))
                 .foregroundStyle(.white.opacity(0.9))
@@ -129,13 +141,13 @@ struct RPGAdventureView: View {
 
     private var introCard: some View {
         VStack(alignment: .leading, spacing: 7) {
-            Label(
-                isGreek ? "Ένας μεγάλος κόσμος RPG σε πραγματικό χρόνο" : "A large real-time RPG world",
-                systemImage: "sparkles"
-            )
+            HStack(alignment: .top, spacing: 9) {
+                Image(systemName: "sparkles")
+                Text(isGreek ? "Ένας μεγάλος κόσμος RPG σε πραγματικό χρόνο" : "A large real-time RPG world")
+                    .fixedSize(horizontal: false, vertical: true)
+            }
             .font(.headline.weight(.black))
             .foregroundStyle(.white)
-            .fixedSize(horizontal: false, vertical: true)
 
             Text(isGreek ? "10 μεγάλα κεφάλαια με ελεύθερη εξερεύνηση, δεινόσαυρους, ζώα, έντομα, μαγικά πλάσματα, σεντούκια, θησαυρούς, γρίφους, ποτάμι, Κρυστάλλινη Σπηλιά και τελική αποστολή." : "10 large chapters with free exploration, dinosaurs, animals, insects, magical creatures, chests, treasure, puzzles, a river, Crystal Cave and a final mission.")
                 .font(.subheadline.weight(.semibold))
@@ -175,10 +187,25 @@ struct RPGAdventureView: View {
 
     private var campaignCard: some View {
         VStack(alignment: .leading, spacing: 7) {
-            Text(isGreek ? "10 ΚΕΦΑΛΑΙΑ" : "10 CHAPTERS").font(.caption.weight(.black)).foregroundStyle(.white.opacity(0.72))
+            Text(isGreek ? "10 ΚΕΦΑΛΑΙΑ" : "10 CHAPTERS")
+                .font(.caption.weight(.black))
+                .foregroundStyle(.white.opacity(0.72))
+
             HStack(alignment: .top, spacing: 10) {
-                campaignColumn([("🌲", isGreek ? "Μεγάλο Δάσος" : "Great Forest"),("🐾", isGreek ? "Ξέφωτο Διάσωσης" : "Rescue Clearing"),("🏘️", isGreek ? "Χωριό" : "Village"),("🌉", isGreek ? "Ποτάμι" : "River Crossing"),("🧩", isGreek ? "Ξέφωτο Γρίφων" : "Puzzle Clearing")])
-                campaignColumn([("💎", isGreek ? "Κρυστάλλινη Σπηλιά" : "Crystal Cave"),("🌙", isGreek ? "Νυχτερινό Δάσος" : "Night Forest"),("🦄", isGreek ? "Άλσος Μονόκερου" : "Unicorn Grove"),("🏆", isGreek ? "Μεγάλος Θησαυρός" : "Treasure Hunt"),("🦊", isGreek ? "Φωλιά Αλεπούς" : "Fox Den")])
+                campaignColumn([
+                    ("🌲", isGreek ? "Μεγάλο Δάσος" : "Great Forest"),
+                    ("🐾", isGreek ? "Ξέφωτο Διάσωσης" : "Rescue Clearing"),
+                    ("🏘️", isGreek ? "Χωριό" : "Village"),
+                    ("🌉", isGreek ? "Ποτάμι" : "River Crossing"),
+                    ("🧩", isGreek ? "Ξέφωτο Γρίφων" : "Puzzle Clearing")
+                ])
+                campaignColumn([
+                    ("💎", isGreek ? "Κρυστάλλινη Σπηλιά" : "Crystal Cave"),
+                    ("🌙", isGreek ? "Νυχτερινό Δάσος" : "Night Forest"),
+                    ("🦄", isGreek ? "Άλσος Μονόκερου" : "Unicorn Grove"),
+                    ("🏆", isGreek ? "Μεγάλος Θησαυρός" : "Treasure Hunt"),
+                    ("🦊", isGreek ? "Φωλιά Αλεπούς" : "Fox Den")
+                ])
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -205,4 +232,10 @@ struct RPGAdventureView: View {
     }
 }
 
-#Preview { NavigationStack { RPGAdventureView().environmentObject(ProgressViewModel()).environmentObject(AppSettings.shared) } }
+#Preview {
+    NavigationStack {
+        RPGAdventureView()
+            .environmentObject(ProgressViewModel())
+            .environmentObject(AppSettings.shared)
+    }
+}
