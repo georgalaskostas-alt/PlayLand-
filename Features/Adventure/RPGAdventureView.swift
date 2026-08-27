@@ -30,20 +30,59 @@ struct RPGAdventureView: View {
     }
 
     private func portraitLauncher(size: CGSize) -> some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 14) {
+        let horizontalPadding: CGFloat = 18
+        let contentWidth = max(0, size.width - horizontalPadding * 2)
+
+        return ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 16) {
                 titleBlock(compact: size.height < 750)
+                    .frame(width: contentWidth)
+
                 HStack(alignment: .bottom, spacing: 10) {
-                    AppAssets.image("babis_rpg_master").resizable().scaledToFit().frame(maxWidth: min(size.width * 0.43, 180), maxHeight: size.height < 750 ? 145 : 205)
-                    AppAssets.image("kotsifi_rpg_master").resizable().scaledToFit().frame(maxWidth: min(size.width * 0.24, 100), maxHeight: size.height < 750 ? 90 : 125)
-                }.frame(maxWidth: .infinity)
+                    AppAssets.image("babis_rpg_master")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            maxWidth: min(contentWidth * 0.44, 180),
+                            maxHeight: size.height < 750 ? 145 : 205
+                        )
+
+                    AppAssets.image("kotsifi_rpg_master")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(
+                            maxWidth: min(contentWidth * 0.24, 100),
+                            maxHeight: size.height < 750 ? 90 : 125
+                        )
+                }
+                .frame(width: contentWidth)
+
                 introCard
+                    .frame(width: contentWidth)
+
                 startButton
+                    .frame(width: contentWidth)
+
                 campaignCard
-                Text(isGreek ? "Η αρχική οθόνη λειτουργεί και κάθετα και οριζόντια. Μόλις πατήσεις Έναρξη, το παιχνίδι περνά οριζόντια." : "The launcher works in portrait and landscape. After tapping Start, gameplay switches to landscape.")
-                    .font(.footnote.weight(.bold)).foregroundStyle(.white.opacity(0.9)).multilineTextAlignment(.center).padding(.horizontal, 12)
-            }.padding(.horizontal, 18).padding(.top, 12).padding(.bottom, 28)
+                    .frame(width: contentWidth)
+
+                Text(
+                    isGreek
+                        ? "Η αρχική οθόνη λειτουργεί και κάθετα και οριζόντια. Μόλις πατήσεις Έναρξη, το παιχνίδι περνά οριζόντια."
+                        : "The launcher works in portrait and landscape. After tapping Start, gameplay switches to landscape."
+                )
+                .font(.footnote.weight(.bold))
+                .foregroundStyle(.white.opacity(0.9))
+                .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(width: contentWidth)
+                .padding(.top, 2)
+            }
+            .frame(width: size.width)
+            .padding(.top, 12)
+            .padding(.bottom, 110)
         }
+        .frame(width: size.width)
     }
 
     private func landscapeLauncher(size: CGSize) -> some View {
@@ -70,14 +109,35 @@ struct RPGAdventureView: View {
 
     private var introCard: some View {
         VStack(alignment: .leading, spacing: 7) {
-            Label(isGreek ? "Ένας μεγάλος κόσμος RPG σε πραγματικό χρόνο" : "A large real-time RPG world", systemImage: "sparkles").font(.headline.weight(.black)).foregroundStyle(.white)
+            Label(
+                isGreek ? "Ένας μεγάλος κόσμος RPG σε πραγματικό χρόνο" : "A large real-time RPG world",
+                systemImage: "sparkles"
+            )
+            .font(.headline.weight(.black))
+            .foregroundStyle(.white)
+            .fixedSize(horizontal: false, vertical: true)
+
             Text(isGreek ? "10 μεγάλα κεφάλαια με ελεύθερη εξερεύνηση, δεινόσαυρους, ζώα, έντομα, μαγικά πλάσματα, σεντούκια, θησαυρούς, γρίφους, ποτάμι, Κρυστάλλινη Σπηλιά και τελική αποστολή." : "10 large chapters with free exploration, dinosaurs, animals, insects, magical creatures, chests, treasure, puzzles, a river, Crystal Cave and a final mission.").font(.subheadline.weight(.semibold)).foregroundStyle(.white.opacity(0.9)).fixedSize(horizontal: false, vertical: true)
         }.frame(maxWidth: .infinity, alignment: .leading).padding(15).background(.black.opacity(0.6)).overlay(RoundedRectangle(cornerRadius: 20).stroke(.white.opacity(0.16), lineWidth: 1)).clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     private var startButton: some View {
         Button { OrientationController.requireLandscape(); showGame = true } label: {
-            HStack(spacing: 10) { Image(systemName: "gamecontroller.fill"); Text(isGreek ? "Ξεκίνα τη Μεγάλη Περιπέτεια" : "Start Great Adventure").minimumScaleFactor(0.8) }.font(.title3.weight(.black)).foregroundStyle(.white).frame(maxWidth: .infinity).padding(.vertical, 16).background(PlayLandColors.sunOrange).clipShape(RoundedRectangle(cornerRadius: 20)).shadow(color: .black.opacity(0.28), radius: 7, y: 4)
+            HStack(spacing: 10) {
+                Image(systemName: "gamecontroller.fill")
+                Text(isGreek ? "Ξεκίνα τη Μεγάλη Περιπέτεια" : "Start Great Adventure")
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.72)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .font(.title3.weight(.black))
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(PlayLandColors.sunOrange)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.28), radius: 7, y: 4)
         }
     }
 
