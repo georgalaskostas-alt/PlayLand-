@@ -12,7 +12,11 @@ struct RPGAdventureView: View {
             ZStack {
                 PlayLandBackground(imageName: "rpg_forest_ground_v2", scrimOpacity: 0)
                     .overlay(Color.black.opacity(0.24).ignoresSafeArea())
-                if geometry.size.width > geometry.size.height { landscapeLauncher(size: geometry.size) } else { portraitLauncher(size: geometry.size) }
+                if geometry.size.width > geometry.size.height {
+                    landscapeLauncher(size: geometry.size)
+                } else {
+                    portraitLauncher(size: geometry.size)
+                }
             }
         }
         .navigationTitle(isGreek ? "Περιπέτειες" : "Adventures")
@@ -21,50 +25,52 @@ struct RPGAdventureView: View {
         .onDisappear { if !showGame { OrientationController.allowAll() } }
         .fullScreenCover(isPresented: $showGame, onDismiss: { OrientationController.allowAll() }) {
             ZStack(alignment: .topTrailing) {
-                BabisRPGGameView().environmentObject(appSettings).environmentObject(progressManager)
-                Button { OrientationController.allowAll(); showGame = false } label: {
-                    Image(systemName: "xmark").font(.system(size: 18, weight: .black)).foregroundStyle(.white).frame(width: 46, height: 46).background(.black.opacity(0.56)).overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1)).clipShape(Circle())
-                }.padding(.top, 16).padding(.trailing, 16).accessibilityLabel(isGreek ? "Έξοδος από το παιχνίδι" : "Exit game").zIndex(200)
-            }.background(Color.black.ignoresSafeArea()).onAppear { OrientationController.requireLandscape() }
+                BabisRPGGameView()
+                    .environmentObject(appSettings)
+                    .environmentObject(progressManager)
+                Button {
+                    OrientationController.allowAll()
+                    showGame = false
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 18, weight: .black))
+                        .foregroundStyle(.white)
+                        .frame(width: 46, height: 46)
+                        .background(.black.opacity(0.56))
+                        .overlay(Circle().stroke(.white.opacity(0.22), lineWidth: 1))
+                        .clipShape(Circle())
+                }
+                .padding(.top, 16)
+                .padding(.trailing, 16)
+                .accessibilityLabel(isGreek ? "Έξοδος από το παιχνίδι" : "Exit game")
+                .zIndex(200)
+            }
+            .background(Color.black.ignoresSafeArea())
+            .onAppear { OrientationController.requireLandscape() }
         }
     }
 
     private func portraitLauncher(size: CGSize) -> some View {
-        let horizontalPadding: CGFloat = 18
-        let contentWidth = max(0, size.width - horizontalPadding * 2)
-
-        return ScrollView(.vertical, showsIndicators: false) {
+        ScrollView(.vertical, showsIndicators: false) {
             VStack(spacing: 16) {
                 titleBlock(compact: size.height < 750)
-                    .frame(width: contentWidth)
 
                 HStack(alignment: .bottom, spacing: 10) {
                     AppAssets.image("babis_rpg_master")
                         .resizable()
                         .scaledToFit()
-                        .frame(
-                            maxWidth: min(contentWidth * 0.44, 180),
-                            maxHeight: size.height < 750 ? 145 : 205
-                        )
+                        .frame(maxWidth: 165, maxHeight: size.height < 750 ? 135 : 190)
 
                     AppAssets.image("kotsifi_rpg_master")
                         .resizable()
                         .scaledToFit()
-                        .frame(
-                            maxWidth: min(contentWidth * 0.24, 100),
-                            maxHeight: size.height < 750 ? 90 : 125
-                        )
+                        .frame(maxWidth: 90, maxHeight: size.height < 750 ? 80 : 115)
                 }
-                .frame(width: contentWidth)
+                .frame(maxWidth: .infinity)
 
                 introCard
-                    .frame(width: contentWidth)
-
                 startButton
-                    .frame(width: contentWidth)
-
                 campaignCard
-                    .frame(width: contentWidth)
 
                 Text(
                     isGreek
@@ -75,14 +81,17 @@ struct RPGAdventureView: View {
                 .foregroundStyle(.white.opacity(0.9))
                 .multilineTextAlignment(.center)
                 .fixedSize(horizontal: false, vertical: true)
-                .frame(width: contentWidth)
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal, 4)
                 .padding(.top, 2)
             }
-            .frame(width: size.width)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 18)
             .padding(.top, 12)
             .padding(.bottom, 110)
         }
-        .frame(width: size.width)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
     }
 
     private func landscapeLauncher(size: CGSize) -> some View {
@@ -102,8 +111,19 @@ struct RPGAdventureView: View {
 
     private func titleBlock(compact: Bool) -> some View {
         VStack(spacing: 4) {
-            Text(isGreek ? "Η Μεγάλη Περιπέτεια" : "The Great Adventure").font(.system(size: compact ? 26 : 32, weight: .black, design: .rounded)).foregroundStyle(.white).multilineTextAlignment(.center).minimumScaleFactor(0.72).shadow(color: .black.opacity(0.4), radius: 5, y: 2)
-            Text(isGreek ? "με τον Μπάμπη και το Κοτσύφι" : "with Babis & Kotsifi").font(.headline.weight(.bold)).foregroundStyle(.white.opacity(0.9)).multilineTextAlignment(.center)
+            Text(isGreek ? "Η Μεγάλη Περιπέτεια" : "The Great Adventure")
+                .font(.system(size: compact ? 26 : 32, weight: .black, design: .rounded))
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .minimumScaleFactor(0.72)
+                .frame(maxWidth: .infinity)
+                .shadow(color: .black.opacity(0.4), radius: 5, y: 2)
+            Text(isGreek ? "με τον Μπάμπη και το Κοτσύφι" : "with Babis & Kotsifi")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white.opacity(0.9))
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
         }
     }
 
@@ -117,28 +137,40 @@ struct RPGAdventureView: View {
             .foregroundStyle(.white)
             .fixedSize(horizontal: false, vertical: true)
 
-            Text(isGreek ? "10 μεγάλα κεφάλαια με ελεύθερη εξερεύνηση, δεινόσαυρους, ζώα, έντομα, μαγικά πλάσματα, σεντούκια, θησαυρούς, γρίφους, ποτάμι, Κρυστάλλινη Σπηλιά και τελική αποστολή." : "10 large chapters with free exploration, dinosaurs, animals, insects, magical creatures, chests, treasure, puzzles, a river, Crystal Cave and a final mission.").font(.subheadline.weight(.semibold)).foregroundStyle(.white.opacity(0.9)).fixedSize(horizontal: false, vertical: true)
-        }.frame(maxWidth: .infinity, alignment: .leading).padding(15).background(.black.opacity(0.6)).overlay(RoundedRectangle(cornerRadius: 20).stroke(.white.opacity(0.16), lineWidth: 1)).clipShape(RoundedRectangle(cornerRadius: 20))
+            Text(isGreek ? "10 μεγάλα κεφάλαια με ελεύθερη εξερεύνηση, δεινόσαυρους, ζώα, έντομα, μαγικά πλάσματα, σεντούκια, θησαυρούς, γρίφους, ποτάμι, Κρυστάλλινη Σπηλιά και τελική αποστολή." : "10 large chapters with free exploration, dinosaurs, animals, insects, magical creatures, chests, treasure, puzzles, a river, Crystal Cave and a final mission.")
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.9))
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(15)
+        .background(.black.opacity(0.6))
+        .overlay(RoundedRectangle(cornerRadius: 20).stroke(.white.opacity(0.16), lineWidth: 1))
+        .clipShape(RoundedRectangle(cornerRadius: 20))
     }
 
     private var startButton: some View {
-        Button { OrientationController.requireLandscape(); showGame = true } label: {
+        Button {
+            OrientationController.requireLandscape()
+            showGame = true
+        } label: {
             HStack(spacing: 10) {
                 Image(systemName: "gamecontroller.fill")
                 Text(isGreek ? "Ξεκίνα τη Μεγάλη Περιπέτεια" : "Start Great Adventure")
                     .lineLimit(2)
                     .minimumScaleFactor(0.72)
                     .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
             }
             .font(.title3.weight(.black))
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity)
+            .padding(.horizontal, 12)
             .padding(.vertical, 16)
             .background(PlayLandColors.sunOrange)
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .shadow(color: .black.opacity(0.28), radius: 7, y: 4)
         }
+        .frame(maxWidth: .infinity)
     }
 
     private var campaignCard: some View {
@@ -148,13 +180,28 @@ struct RPGAdventureView: View {
                 campaignColumn([("🌲", isGreek ? "Μεγάλο Δάσος" : "Great Forest"),("🐾", isGreek ? "Ξέφωτο Διάσωσης" : "Rescue Clearing"),("🏘️", isGreek ? "Χωριό" : "Village"),("🌉", isGreek ? "Ποτάμι" : "River Crossing"),("🧩", isGreek ? "Ξέφωτο Γρίφων" : "Puzzle Clearing")])
                 campaignColumn([("💎", isGreek ? "Κρυστάλλινη Σπηλιά" : "Crystal Cave"),("🌙", isGreek ? "Νυχτερινό Δάσος" : "Night Forest"),("🦄", isGreek ? "Άλσος Μονόκερου" : "Unicorn Grove"),("🏆", isGreek ? "Μεγάλος Θησαυρός" : "Treasure Hunt"),("🦊", isGreek ? "Φωλιά Αλεπούς" : "Fox Den")])
             }
-        }.padding(13).background(.black.opacity(0.48)).clipShape(RoundedRectangle(cornerRadius: 18))
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(13)
+        .background(.black.opacity(0.48))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 
     private func campaignColumn(_ rows: [(String, String)]) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in HStack(spacing: 6) { Text(row.0); Text(row.1).font(.caption2.weight(.semibold)).foregroundStyle(.white).lineLimit(2).minimumScaleFactor(0.8); Spacer(minLength: 0) } }
-        }.frame(maxWidth: .infinity, alignment: .topLeading)
+            ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
+                HStack(spacing: 6) {
+                    Text(row.0)
+                    Text(row.1)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                    Spacer(minLength: 0)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .topLeading)
     }
 }
 
