@@ -28,7 +28,7 @@ struct RPGAdventureView: View {
         .onDisappear { if !showGame { OrientationController.allowAll() } }
         .fullScreenCover(isPresented: $showGame, onDismiss: { OrientationController.allowAll() }) {
             ZStack(alignment: .topTrailing) {
-                BabisRPGGameView()
+                RPGEnhancedGameView()
                     .environmentObject(appSettings)
                     .environmentObject(progressManager)
 
@@ -76,26 +76,17 @@ struct RPGAdventureView: View {
                 }
                 .frame(width: cardWidth)
 
-                introCard
-                    .frame(width: cardWidth)
+                introCard.frame(width: cardWidth)
+                startButton.frame(width: cardWidth)
+                campaignCard.frame(width: cardWidth)
 
-                startButton
+                Text(isGreek ? "Η αρχική οθόνη λειτουργεί και κάθετα και οριζόντια. Μόλις πατήσεις Έναρξη, το παιχνίδι περνά οριζόντια." : "The launcher works in portrait and landscape. After tapping Start, gameplay switches to landscape.")
+                    .font(.footnote.weight(.bold))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(width: cardWidth)
-
-                campaignCard
-                    .frame(width: cardWidth)
-
-                Text(
-                    isGreek
-                        ? "Η αρχική οθόνη λειτουργεί και κάθετα και οριζόντια. Μόλις πατήσεις Έναρξη, το παιχνίδι περνά οριζόντια."
-                        : "The launcher works in portrait and landscape. After tapping Start, gameplay switches to landscape."
-                )
-                .font(.footnote.weight(.bold))
-                .foregroundStyle(.white.opacity(0.9))
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(width: cardWidth)
-                .padding(.top, 2)
+                    .padding(.top, 2)
             }
             .frame(width: size.width, alignment: .center)
             .padding(.top, 12)
@@ -115,8 +106,12 @@ struct RPGAdventureView: View {
                         AppAssets.image("kotsifi_rpg_master").resizable().scaledToFit().frame(maxWidth: 105, maxHeight: min(125, size.height * 0.28))
                     }
                 }.frame(maxWidth: .infinity)
-                VStack(spacing: 12) { introCard; startButton; campaignCard }.frame(maxWidth: min(620, size.width * 0.52))
-            }.padding(.horizontal, 28).padding(.vertical, 16).frame(minHeight: size.height)
+                VStack(spacing: 12) { introCard; startButton; campaignCard }
+                    .frame(maxWidth: min(620, size.width * 0.52))
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 16)
+            .frame(minHeight: size.height)
         }
     }
 
