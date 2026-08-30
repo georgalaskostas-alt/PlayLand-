@@ -122,11 +122,36 @@ private struct ArtV3Canvas: View {
             ScrollView(.horizontal, showsIndicators:false) { HStack(spacing:9) { ForEach(ArtV3Tool.allCases) { item in
                 Button { tool=item } label: { VStack(spacing:3) { Image(systemName:icon(item)).font(.system(size:21,weight:.bold)); Text(name(item)).font(.caption2.weight(.black)) }.foregroundStyle(tool == item ? .white : .black).frame(width:72,height:58).background(tool == item ? Color.blue : Color.white).overlay(RoundedRectangle(cornerRadius:14).stroke(.black.opacity(0.25))).clipShape(RoundedRectangle(cornerRadius:14)) }.buttonStyle(.plain)
             }}.padding(.horizontal,10) }
-            ScrollView(.horizontal, showsIndicators:false) { HStack(spacing:10) { ForEach(colors,id:\.id) { item in
-                Button { colorID=item.id; if tool == .eraser { tool = .pencil }; updateTool() } label: {
-                    ZStack { Circle().fill(item.swift).frame(width:38,height:38); Circle().stroke(item.id == "white" ? Color.gray : Color.black.opacity(0.25),lineWidth:2); if colorID == item.id { Circle().stroke(Color.blue,lineWidth:4).frame(width:44,height:44) } }
-                }.buttonStyle(.plain).accessibilityLabel(item.id)
-            }}.padding(.horizontal,12) }
+            ScrollView(.horizontal, showsIndicators:false) {
+                HStack(spacing:12) {
+                    ForEach(colors,id:\.id) { item in
+                        Button {
+                            colorID=item.id
+                            if tool == .eraser { tool = .pencil }
+                            updateTool()
+                        } label: {
+                            ZStack {
+                                Circle()
+                                    .fill(item.swift)
+                                    .frame(width:34,height:34)
+                                Circle()
+                                    .stroke(item.id == "white" ? Color.gray : Color.black.opacity(0.25),lineWidth:1.5)
+                                    .frame(width:34,height:34)
+                                if colorID == item.id {
+                                    Circle()
+                                        .stroke(Color.blue,lineWidth:3)
+                                        .frame(width:40,height:40)
+                                }
+                            }
+                            .frame(width:44,height:44)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(item.id)
+                    }
+                }
+                .padding(.horizontal,12)
+            }
+            .frame(height:50)
             HStack { Image(systemName:"circle.fill").font(.system(size:7)); Slider(value:$width,in:2...30,step:1); Image(systemName:"circle.fill").font(.system(size:19)); if mode == .trace || mode == .color { Button { showPages=true } label:{ Label(isGreek ? "Σχέδιο" : "Picture",systemImage:"photo.on.rectangle") }.buttonStyle(.bordered) } }.padding(.horizontal,14)
             if mode == .trace { HStack { Image(systemName:"sun.min"); Slider(value:$guideOpacity,in:0.08...0.5); Image(systemName:"sun.max.fill") }.padding(.horizontal,14) }
         }.padding(.vertical,10).foregroundStyle(.black).background(Color(red:0.88,green:0.88,blue:0.88))
