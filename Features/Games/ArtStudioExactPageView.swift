@@ -2,9 +2,8 @@ import SwiftUI
 import UIKit
 
 /// Displays one of the 30 exact line-art panels supplied for PlayLand.
-/// The source image is a 6 x 5 sprite sheet. Some iOS/Xcode combinations decode
-/// the 1-bit source as an image mask. We explicitly invert that mask so the white
-/// paper stays white and only the drawing strokes are painted black.
+/// The source is a 6 x 5 monochrome sprite sheet. We explicitly treat 1-bit
+/// images as masks so iOS cannot render the whole panel as a black rectangle.
 struct ArtStudioExactPageView: View {
     let index: Int
 
@@ -16,6 +15,7 @@ struct ArtStudioExactPageView: View {
             .scaledToFit()
             .aspectRatio(18.0 / 11.0, contentMode: .fit)
             .background(Color.white)
+            .preferredColorScheme(.light)
     }
 }
 
@@ -41,7 +41,6 @@ private enum ArtStudioExactSheet {
                 width: panelWidth,
                 height: panelHeight
             )
-
             guard let cropped = cgImage.cropping(to: cropRect) else { return fallback }
             return renderPanel(cropped)
         }
@@ -59,30 +58,29 @@ private enum ArtStudioExactSheet {
             ctx.setFillColor(UIColor.white.cgColor)
             ctx.fill(rect)
 
-            if cropped.isMask,
+            // PNG decoders do not always set isMask=true for 1-bit artwork.
+            // Treat any 1-bit source as a mask explicitly. In this sheet 0 = ink
+            // and 1 = paper, so the normal decode maps only the black line pixels.
+            if (cropped.isMask || cropped.bitsPerPixel == 1),
                let provider = cropped.dataProvider,
-               let invertedMask = CGImage(
+               let lineMask = CGImage(
                     maskWidth: cropped.width,
                     height: cropped.height,
-                    bitsPerComponent: cropped.bitsPerComponent,
-                    bitsPerPixel: cropped.bitsPerPixel,
+                    bitsPerComponent: 1,
+                    bitsPerPixel: 1,
                     bytesPerRow: cropped.bytesPerRow,
                     provider: provider,
-                    decode: [1, 0],
+                    decode: [0, 1],
                     shouldInterpolate: false
                ) {
-                // The original sheet has white background values and black line values.
-                // A normal CG mask would paint the white background. Inverting the mask
-                // makes only the actual black line art opaque.
                 ctx.saveGState()
                 ctx.translateBy(x: 0, y: size.height)
                 ctx.scaleBy(x: 1, y: -1)
-                ctx.clip(to: rect, mask: invertedMask)
+                ctx.clip(to: rect, mask: lineMask)
                 ctx.setFillColor(UIColor.black.cgColor)
                 ctx.fill(rect)
                 ctx.restoreGState()
             } else {
-                // Normal RGB/gray source: draw it directly into the opaque white bitmap.
                 ctx.saveGState()
                 ctx.translateBy(x: 0, y: size.height)
                 ctx.scaleBy(x: 1, y: -1)
