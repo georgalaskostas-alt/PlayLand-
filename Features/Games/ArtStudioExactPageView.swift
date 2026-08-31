@@ -1,11 +1,11 @@
 import SwiftUI
 import UIKit
-import CoreImage
 
 /// Displays one of the 30 exact line-art panels supplied for PlayLand.
-/// The source stays as the compact 1-bit sprite sheet. Each requested panel is
-/// cropped and rendered through Core Image into a normal RGB bitmap, then cached.
-/// This avoids the previous broken raw-byte interpretation of the PNG provider.
+/// The source asset is a 1-bit monochrome sprite sheet. Asset-catalog decoding
+/// can expose it with mask-like semantics, which previously produced solid-black
+/// rectangles. We rebuild the bitmap explicitly as a grayscale image (not a mask),
+/// then crop and cache the requested panel.
 struct ArtStudioExactPageView: View {
     let index: Int
 
@@ -25,21 +25,45 @@ private enum ArtStudioExactSheet {
     private static let columns = 6
     private static let rows = 5
     private static let cache = NSCache<NSNumber, UIImage>()
-    private static let ciContext = CIContext(options: [
-        .cacheIntermediates: true,
-        .useSoftwareRenderer: false
-    ])
+
+    private static let normalizedSheet: CGImage? = {
+        guard let source = UIImage(named: "artstudio_30_sheet")?.withRenderingMode(.alwaysOriginal),
+              let cg = source.cgImage else { return nil }
+
+        // For the 1-bit sheet, construct a true grayscale CGImage from the same
+        // decoded sample buffer. Using CGImage(maskWidth:...) is intentionally
+        // avoided because mask semantics invert/alpha-map the samples.
+        if cg.bitsPerComponent == 1,
+           cg.bitsPerPixel == 1,
+           let provider = cg.dataProvider,
+           let gray = CGImage(
+                width: cg.width,
+                height: cg.height,
+                bitsPerComponent: 1,
+                bitsPerPixel: 1,
+                bytesPerRow: cg.bytesPerRow,
+                space: CGColorSpaceCreateDeviceGray(),
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.none.rawValue),
+                provider: provider,
+                decode: [0, 1],
+                shouldInterpolate: false,
+                intent: .defaultIntent
+           ) {
+            return gray
+        }
+
+        return cg
+    }()
 
     static func panel(at rawIndex: Int) -> UIImage {
         let index = min(max(rawIndex, 0), columns * rows - 1)
         let key = NSNumber(value: index)
         if let cached = cache.object(forKey: key) { return cached }
 
-        guard let source = UIImage(named: "artstudio_30_sheet")?.withRenderingMode(.alwaysOriginal),
-              let cgImage = source.cgImage else { return fallback }
+        guard let sheet = normalizedSheet else { return fallback }
 
-        let panelWidth = cgImage.width / columns
-        let panelHeight = cgImage.height / rows
+        let panelWidth = sheet.width / columns
+        let panelHeight = sheet.height / rows
         let column = index % columns
         let row = index / columns
         let cropRect = CGRect(
@@ -49,30 +73,26 @@ private enum ArtStudioExactSheet {
             height: panelHeight
         )
 
-        guard let cropped = cgImage.cropping(to: cropRect) else { return fallback }
+        guard let cropped = sheet.cropping(to: cropRect) else { return fallback }
 
-        // IMPORTANT: dataProvider.data for a PNG is not a safe way to interpret
-        // the final bitmap pixel-by-pixel. Let Core Image decode/render the
-        // monochrome crop into a standard RGB buffer instead.
-        let ciImage = CIImage(cgImage: cropped)
-        let extent = CGRect(x: 0, y: 0, width: cropped.width, height: cropped.height)
-        let translated = ciImage.transformed(by: CGAffineTransform(
-            translationX: -ciImage.extent.origin.x,
-            y: -ciImage.extent.origin.y
-        ))
+        // Render into a standard opaque RGB bitmap. From this point on SwiftUI
+        // receives an ordinary image: white paper and black line art.
+        let size = CGSize(width: cropped.width, height: cropped.height)
+        let format = UIGraphicsImageRendererFormat()
+        format.opaque = true
+        format.scale = 1
 
-        let image: UIImage
-        if let rendered = ciContext.createCGImage(
-            translated,
-            from: extent,
-            format: .RGBA8,
-            colorSpace: CGColorSpaceCreateDeviceRGB()
-        ) {
-            image = UIImage(cgImage: rendered, scale: 1, orientation: .up)
-                .withRenderingMode(.alwaysOriginal)
-        } else {
-            image = fallback
-        }
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { renderer in
+            let ctx = renderer.cgContext
+            ctx.setFillColor(UIColor.white.cgColor)
+            ctx.fill(CGRect(origin: .zero, size: size))
+            ctx.interpolationQuality = .none
+            ctx.saveGState()
+            ctx.translateBy(x: 0, y: size.height)
+            ctx.scaleBy(x: 1, y: -1)
+            ctx.draw(cropped, in: CGRect(origin: .zero, size: size))
+            ctx.restoreGState()
+        }.withRenderingMode(.alwaysOriginal)
 
         cache.setObject(image, forKey: key)
         return image
