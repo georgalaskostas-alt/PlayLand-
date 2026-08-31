@@ -34,7 +34,7 @@ struct GamesListView: View {
     @ViewBuilder
     private func gameView(for game: MenuItem) -> some View {
         switch game.id {
-        case "art_studio": ArtStudioV3View()
+        case "art_studio": ArtStudioV4View()
         case "letter_recognition": LetterRecognitionGame()
         case "word_matching": WordMatchingGame()
         case "word_search": WordSearchGame()
