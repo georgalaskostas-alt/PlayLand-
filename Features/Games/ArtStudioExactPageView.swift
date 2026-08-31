@@ -2,8 +2,9 @@ import SwiftUI
 import UIKit
 
 /// Displays one of the 30 exact line-art panels supplied for PlayLand.
-/// The source is a 6 x 5 monochrome sprite sheet. We explicitly treat 1-bit
-/// images as masks so iOS cannot render the whole panel as a black rectangle.
+/// The supplied PNG is a 1-bit grayscale sheet. We decode its pixels directly
+/// into an 8-bit RGBA bitmap so neither SwiftUI nor Core Graphics can treat it
+/// as a template/mask and turn the whole panel black.
 struct ArtStudioExactPageView: View {
     let index: Int
 
@@ -32,6 +33,32 @@ private enum ArtStudioExactSheet {
         let panelWidth = cgImage.width / columns
         let panelHeight = cgImage.height / rows
 
+        // The shipped sheet is 1-bit grayscale. Read the decompressed bitmap
+        // samples directly, preserving 0=black ink and 1=white paper.
+        if cgImage.bitsPerPixel == 1,
+           cgImage.bitsPerComponent == 1,
+           let provider = cgImage.dataProvider,
+           let cfData = provider.data {
+            let data = cfData as Data
+            let bytesPerRow = cgImage.bytesPerRow
+
+            return (0..<(columns * rows)).map { index in
+                let column = index % columns
+                let row = index / columns
+                let originX = column * panelWidth
+                let originY = row * panelHeight
+                return makeRGBPanel(
+                    sourceData: data,
+                    sourceBytesPerRow: bytesPerRow,
+                    originX: originX,
+                    originY: originY,
+                    width: panelWidth,
+                    height: panelHeight
+                )
+            }
+        }
+
+        // Safety path for a future RGB version of the asset.
         return (0..<(columns * rows)).map { index in
             let column = index % columns
             let row = index / columns
@@ -42,53 +69,63 @@ private enum ArtStudioExactSheet {
                 height: panelHeight
             )
             guard let cropped = cgImage.cropping(to: cropRect) else { return fallback }
-            return renderPanel(cropped)
+            return UIImage(cgImage: cropped, scale: 1, orientation: .up).withRenderingMode(.alwaysOriginal)
         }
     }()
 
-    private static func renderPanel(_ cropped: CGImage) -> UIImage {
-        let size = CGSize(width: cropped.width, height: cropped.height)
-        let rect = CGRect(origin: .zero, size: size)
-        let format = UIGraphicsImageRendererFormat()
-        format.opaque = true
-        format.scale = 1
+    private static func makeRGBPanel(
+        sourceData: Data,
+        sourceBytesPerRow: Int,
+        originX: Int,
+        originY: Int,
+        width: Int,
+        height: Int
+    ) -> UIImage {
+        let bytesPerPixel = 4
+        let outputBytesPerRow = width * bytesPerPixel
+        var rgba = Data(count: outputBytesPerRow * height)
 
-        return UIGraphicsImageRenderer(size: size, format: format).image { renderer in
-            let ctx = renderer.cgContext
-            ctx.setFillColor(UIColor.white.cgColor)
-            ctx.fill(rect)
+        sourceData.withUnsafeBytes { sourceRaw in
+            rgba.withUnsafeMutableBytes { outputRaw in
+                guard let source = sourceRaw.bindMemory(to: UInt8.self).baseAddress,
+                      let output = outputRaw.bindMemory(to: UInt8.self).baseAddress else { return }
 
-            // PNG decoders do not always set isMask=true for 1-bit artwork.
-            // Treat any 1-bit source as a mask explicitly. In this sheet 0 = ink
-            // and 1 = paper, so the normal decode maps only the black line pixels.
-            if (cropped.isMask || cropped.bitsPerPixel == 1),
-               let provider = cropped.dataProvider,
-               let lineMask = CGImage(
-                    maskWidth: cropped.width,
-                    height: cropped.height,
-                    bitsPerComponent: 1,
-                    bitsPerPixel: 1,
-                    bytesPerRow: cropped.bytesPerRow,
-                    provider: provider,
-                    decode: [0, 1],
-                    shouldInterpolate: false
-               ) {
-                ctx.saveGState()
-                ctx.translateBy(x: 0, y: size.height)
-                ctx.scaleBy(x: 1, y: -1)
-                ctx.clip(to: rect, mask: lineMask)
-                ctx.setFillColor(UIColor.black.cgColor)
-                ctx.fill(rect)
-                ctx.restoreGState()
-            } else {
-                ctx.saveGState()
-                ctx.translateBy(x: 0, y: size.height)
-                ctx.scaleBy(x: 1, y: -1)
-                ctx.interpolationQuality = .high
-                ctx.draw(cropped, in: rect)
-                ctx.restoreGState()
+                for y in 0..<height {
+                    let sourceY = originY + y
+                    for x in 0..<width {
+                        let sourceX = originX + x
+                        let sourceByteIndex = sourceY * sourceBytesPerRow + (sourceX >> 3)
+                        let bitIndex = 7 - (sourceX & 7)
+                        let sample = (source[sourceByteIndex] >> bitIndex) & 1
+                        let value: UInt8 = sample == 0 ? 0 : 255
+
+                        let out = y * outputBytesPerRow + x * bytesPerPixel
+                        output[out] = value
+                        output[out + 1] = value
+                        output[out + 2] = value
+                        output[out + 3] = 255
+                    }
+                }
             }
-        }.withRenderingMode(.alwaysOriginal)
+        }
+
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        guard let provider = CGDataProvider(data: rgba as CFData),
+              let image = CGImage(
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bitsPerPixel: 32,
+                bytesPerRow: outputBytesPerRow,
+                space: colorSpace,
+                bitmapInfo: CGBitmapInfo(rawValue: CGImageAlphaInfo.last.rawValue),
+                provider: provider,
+                decode: nil,
+                shouldInterpolate: true,
+                intent: .defaultIntent
+              ) else { return fallback }
+
+        return UIImage(cgImage: image, scale: 1, orientation: .up).withRenderingMode(.alwaysOriginal)
     }
 
     static func panel(at index: Int) -> UIImage {
