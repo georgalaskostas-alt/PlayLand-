@@ -6,7 +6,7 @@ struct GamesListView: View {
 
     private var games: [MenuItem] {
         [
-            MenuItem(id: "art_studio", title: appSettings.resolvedLanguage == .greek ? "Εργαστήριο Ζωγραφικής" : "Art Studio", description: appSettings.resolvedLanguage == .greek ? "Ζωγράφισε, χρωμάτισε και δημιούργησε με πινέλα, μολύβια, γόμα, τα 30 νέα σκίτσα και την προηγούμενη συλλογή." : "Draw, color and create with brushes, pencils, an eraser, 30 new drawings and the previous collection.", iconImageName: "butterfly_rpg_neutral"),
+            MenuItem(id: "art_studio", title: appSettings.resolvedLanguage == .greek ? "Εργαστήριο Ζωγραφικής" : "Art Studio", description: appSettings.resolvedLanguage == .greek ? "Ζωγράφισε και χρωμάτισε με 30 έτοιμα σκίτσα, 100 αναλυτικά σχέδια από κώδικα και 100 απλά σχέδια." : "Draw and color with 30 ready sketches, 100 detailed code-generated drawings and 100 simple drawings.", iconImageName: "butterfly_rpg_neutral"),
             MenuItem(id: "letter_recognition", title: Loc.t("game.letterRecognition.title"), description: Loc.t("game.letterRecognition.desc"), iconImageName: AppAssets.GameIcons.letterGame),
             MenuItem(id: "word_matching", title: Loc.t("game.wordMatching.title"), description: Loc.t("game.wordMatching.desc"), iconImageName: "butterfly_rpg_neutral"),
             MenuItem(id: "word_search", title: Loc.t("game.wordSearch.title"), description: Loc.t("game.wordSearch.desc"), iconImageName: "owl_rpg_neutral"),
@@ -34,7 +34,7 @@ struct GamesListView: View {
     @ViewBuilder
     private func gameView(for game: MenuItem) -> some View {
         switch game.id {
-        case "art_studio": ArtStudioV4View()
+        case "art_studio": ArtStudioExpandedHubView()
         case "letter_recognition": LetterRecognitionGame()
         case "word_matching": WordMatchingGame()
         case "word_search": WordSearchGame()
