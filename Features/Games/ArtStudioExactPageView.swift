@@ -4,7 +4,7 @@ struct ArtStudioExactPageView: View {
     let index: Int
 
     var body: some View {
-        Image(uiImage: ArtStudioDirectPages.image(at: index % 3))
+        Image(uiImage: ArtStudioDirectPages.image(at: index))
             .resizable()
             .renderingMode(.original)
             .interpolation(.high)
