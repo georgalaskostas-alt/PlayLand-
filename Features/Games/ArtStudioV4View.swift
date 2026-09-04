@@ -76,6 +76,7 @@ private struct ArtV4Canvas: View {
     @State private var showPages = false
     @State private var guideOpacity = 0.24
     @State private var challenge = 0
+    @State private var paletteVisible = false
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
 
@@ -89,29 +90,23 @@ private struct ArtV4Canvas: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                if mode == .challenge { challengeHeader }
-                ZStack {
-                    Color.white
-                    if mode == .trace || mode == .color {
-                        ArtStudioExactPageView(index: selectedPage)
-                            .opacity(mode == .trace ? guideOpacity : 1)
-                            .padding(14)
-                            .allowsHitTesting(false)
-                    }
-                    ArtV4PKCanvas(canvas: $canvas)
+            GeometryReader { proxy in
+                let isLandscape = proxy.size.width > proxy.size.height
+
+                if isLandscape {
+                    landscapeLayout
+                } else {
+                    portraitLayout
                 }
-                .clipShape(RoundedRectangle(cornerRadius: 18))
-                .overlay(RoundedRectangle(cornerRadius: 18).stroke(.black.opacity(0.18)))
-                .padding(10)
-                controls
             }
             .background(Color(red: 0.95, green: 0.93, blue: 0.89).ignoresSafeArea())
             .preferredColorScheme(.light)
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) { Button { dismiss() } label: { Image(systemName: "xmark.circle.fill").font(.title2) } }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button { dismiss() } label: { Image(systemName: "xmark.circle.fill").font(.title2) }
+                }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button { canvas.undoManager?.undo() } label: { Image(systemName: "arrow.uturn.backward") }
                     Button { canvas.undoManager?.redo() } label: { Image(systemName: "arrow.uturn.forward") }
@@ -119,11 +114,82 @@ private struct ArtV4Canvas: View {
                 }
             }
             .sheet(isPresented: $showPages) { pagePicker }
-            .onAppear { configureCanvas() }
+            .onAppear {
+                OrientationController.allowAll()
+                configureCanvas()
+            }
+            .onDisappear { OrientationController.allowAll() }
             .onChange(of: tool) { _, _ in updateTool() }
             .onChange(of: colorID) { _, _ in updateTool() }
             .onChange(of: width) { _, _ in updateTool() }
         }
+    }
+
+    private var portraitLayout: some View {
+        VStack(spacing: 0) {
+            if mode == .challenge { challengeHeader }
+            drawingSurface
+                .padding(10)
+            controls
+        }
+    }
+
+    private var landscapeLayout: some View {
+        ZStack(alignment: .trailing) {
+            VStack(spacing: 0) {
+                if mode == .challenge { challengeHeader }
+                drawingSurface
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+            }
+
+            if paletteVisible {
+                landscapePalette
+                    .frame(width: 300)
+                    .padding(.trailing, 12)
+                    .padding(.vertical, 10)
+                    .transition(.move(edge: .trailing).combined(with: .opacity))
+            }
+
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { paletteVisible.toggle() }
+                    } label: {
+                        Label(
+                            paletteVisible ? (isGreek ? "Κρύψε" : "Hide") : (isGreek ? "Παλέτα" : "Palette"),
+                            systemImage: paletteVisible ? "chevron.right.circle.fill" : "paintpalette.fill"
+                        )
+                        .font(.headline.weight(.bold))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 11)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .shadow(radius: 4, y: 2)
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.trailing, paletteVisible ? 320 : 18)
+                    .padding(.bottom, 16)
+                }
+            }
+        }
+    }
+
+    private var drawingSurface: some View {
+        ZStack {
+            Color.white
+            if mode == .trace || mode == .color {
+                ArtStudioExactPageView(index: selectedPage)
+                    .opacity(mode == .trace ? guideOpacity : 1)
+                    .padding(14)
+                    .allowsHitTesting(false)
+            }
+            ArtV4PKCanvas(canvas: $canvas)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .overlay(RoundedRectangle(cornerRadius: 18).stroke(.black.opacity(0.18)))
     }
 
     private var title: String {
@@ -149,66 +215,139 @@ private struct ArtV4Canvas: View {
 
     private var controls: some View {
         VStack(spacing: 10) {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 9) {
-                    ForEach(ArtV4Tool.allCases) { item in
-                        Button { tool = item } label: {
-                            VStack(spacing: 3) {
-                                Image(systemName: icon(item)).font(.system(size: 21, weight: .bold))
-                                Text(name(item)).font(.caption2.weight(.black))
-                            }
-                            .foregroundStyle(tool == item ? .white : .black)
-                            .frame(width: 72, height: 58)
-                            .background(tool == item ? Color.blue : Color.white)
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(.black.opacity(0.25)))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 10)
-            }
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    ForEach(colors) { item in
-                        Button {
-                            colorID = item.id
-                            if tool == .eraser { tool = .pencil }
-                            updateTool()
-                        } label: {
-                            ZStack {
-                                Circle().fill(item.swift).frame(width: 34, height: 34)
-                                Circle().stroke(item.id == "white" ? Color.gray : Color.black.opacity(0.25), lineWidth: 1.5).frame(width: 34, height: 34)
-                                if colorID == item.id { Circle().stroke(Color.blue, lineWidth: 3).frame(width: 40, height: 40) }
-                            }
-                            .frame(width: 44, height: 44)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .padding(.horizontal, 12)
-            }
-            .frame(height: 50)
-
-            HStack {
-                Image(systemName: "circle.fill").font(.system(size: 7))
-                Slider(value: $width, in: 2...30, step: 1)
-                Image(systemName: "circle.fill").font(.system(size: 19))
-                if mode == .trace || mode == .color {
-                    Button { showPages = true } label: { Label(isGreek ? "Σχέδιο" : "Picture", systemImage: "photo.on.rectangle") }.buttonStyle(.bordered)
-                }
-            }
-            .padding(.horizontal, 14)
-
-            if mode == .trace {
-                HStack { Image(systemName: "sun.min"); Slider(value: $guideOpacity, in: 0.08...0.5); Image(systemName: "sun.max.fill") }
-                    .padding(.horizontal, 14)
-            }
+            toolStrip
+            colorStrip
+            widthControl
+            if mode == .trace { opacityControl }
         }
         .padding(.vertical, 10)
         .foregroundStyle(.black)
         .background(Color(red: 0.88, green: 0.88, blue: 0.88))
+    }
+
+    private var landscapePalette: some View {
+        ScrollView {
+            VStack(spacing: 14) {
+                HStack {
+                    Text(isGreek ? "Εργαλεία" : "Tools")
+                        .font(.headline.weight(.black))
+                    Spacer()
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) { paletteVisible = false }
+                    } label: {
+                        Image(systemName: "xmark.circle.fill").font(.title2)
+                    }
+                }
+
+                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
+                    ForEach(ArtV4Tool.allCases) { item in
+                        Button { tool = item } label: {
+                            VStack(spacing: 4) {
+                                Image(systemName: icon(item)).font(.system(size: 20, weight: .bold))
+                                Text(name(item)).font(.caption2.weight(.black))
+                            }
+                            .foregroundStyle(tool == item ? .white : .black)
+                            .frame(maxWidth: .infinity, minHeight: 54)
+                            .background(tool == item ? Color.blue : Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 5), spacing: 8) {
+                    ForEach(colors) { item in
+                        colorButton(item, size: 32)
+                    }
+                }
+
+                VStack(spacing: 8) {
+                    widthControl
+                    if mode == .trace { opacityControl }
+                    if mode == .trace || mode == .color {
+                        Button { showPages = true } label: {
+                            Label(isGreek ? "Άλλαξε σχέδιο" : "Change picture", systemImage: "photo.on.rectangle")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
+                }
+            }
+            .padding(14)
+        }
+        .foregroundStyle(.black)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+        .shadow(radius: 8, y: 3)
+    }
+
+    private var toolStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 9) {
+                ForEach(ArtV4Tool.allCases) { item in
+                    Button { tool = item } label: {
+                        VStack(spacing: 3) {
+                            Image(systemName: icon(item)).font(.system(size: 21, weight: .bold))
+                            Text(name(item)).font(.caption2.weight(.black))
+                        }
+                        .foregroundStyle(tool == item ? .white : .black)
+                        .frame(width: 72, height: 58)
+                        .background(tool == item ? Color.blue : Color.white)
+                        .overlay(RoundedRectangle(cornerRadius: 14).stroke(.black.opacity(0.25)))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 10)
+        }
+    }
+
+    private var colorStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(colors) { item in colorButton(item, size: 34) }
+            }
+            .padding(.horizontal, 12)
+        }
+        .frame(height: 50)
+    }
+
+    private func colorButton(_ item: ArtV4Color, size: CGFloat) -> some View {
+        Button {
+            colorID = item.id
+            if tool == .eraser { tool = .pencil }
+            updateTool()
+        } label: {
+            ZStack {
+                Circle().fill(item.swift).frame(width: size, height: size)
+                Circle().stroke(item.id == "white" ? Color.gray : Color.black.opacity(0.25), lineWidth: 1.5).frame(width: size, height: size)
+                if colorID == item.id { Circle().stroke(Color.blue, lineWidth: 3).frame(width: size + 6, height: size + 6) }
+            }
+            .frame(width: size + 10, height: size + 10)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var widthControl: some View {
+        HStack {
+            Image(systemName: "circle.fill").font(.system(size: 7))
+            Slider(value: $width, in: 2...30, step: 1)
+            Image(systemName: "circle.fill").font(.system(size: 19))
+            if mode == .trace || mode == .color {
+                Button { showPages = true } label: { Label(isGreek ? "Σχέδιο" : "Picture", systemImage: "photo.on.rectangle") }.buttonStyle(.bordered)
+            }
+        }
+        .padding(.horizontal, 14)
+    }
+
+    private var opacityControl: some View {
+        HStack {
+            Image(systemName: "sun.min")
+            Slider(value: $guideOpacity, in: 0.08...0.5)
+            Image(systemName: "sun.max.fill")
+        }
+        .padding(.horizontal, 14)
     }
 
     private func configureCanvas() {
