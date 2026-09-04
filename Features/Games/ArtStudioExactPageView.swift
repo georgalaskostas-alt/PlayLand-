@@ -14,7 +14,7 @@ struct ArtStudioExactPageView: View {
 
             Group {
                 if index < 30 {
-                    Image(uiImage: ArtStudioDirectPages.image(at: index))
+                    Image(uiImage: ArtStudioImageNormalizer.centeredImage(at: index))
                         .resizable()
                         .renderingMode(.original)
                         .interpolation(.high)
@@ -28,5 +28,8 @@ struct ArtStudioExactPageView: View {
         }
         .background(Color.white)
         .preferredColorScheme(.light)
+        .onAppear {
+            OrientationController.allowAll()
+        }
     }
 }
