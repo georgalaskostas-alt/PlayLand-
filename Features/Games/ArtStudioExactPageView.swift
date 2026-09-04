@@ -5,8 +5,8 @@ struct ArtStudioExactPageView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let availableWidth = max(proxy.size.width - 24, 0)
-            let availableHeight = max(proxy.size.height - 24, 0)
+            let availableWidth = max(proxy.size.width - 16, 0)
+            let availableHeight = max(proxy.size.height - 16, 0)
             let sourceAspect: CGFloat = 15.0 / 11.0
 
             let fittedWidth = min(availableWidth, availableHeight * sourceAspect)
@@ -14,7 +14,7 @@ struct ArtStudioExactPageView: View {
 
             Group {
                 if index < 30 {
-                    Image(uiImage: ArtStudioImageNormalizer.centeredImage(at: index))
+                    Image(String(format: "artstudio_page_%02d", index))
                         .resizable()
                         .renderingMode(.original)
                         .interpolation(.high)
