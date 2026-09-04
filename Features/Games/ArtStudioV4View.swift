@@ -1,5 +1,6 @@
 import SwiftUI
 import PencilKit
+import UIKit
 
 struct ArtStudioV4View: View {
     @EnvironmentObject private var appSettings: AppSettings
@@ -77,6 +78,7 @@ private struct ArtV4Canvas: View {
     @State private var guideOpacity = 0.24
     @State private var challenge = 0
     @State private var paletteVisible = false
+    @State private var deviceIsLandscape = false
 
     private var isGreek: Bool { appSettings.resolvedLanguage == .greek }
 
@@ -91,13 +93,18 @@ private struct ArtV4Canvas: View {
     var body: some View {
         NavigationStack {
             GeometryReader { proxy in
-                let isLandscape = proxy.size.width > proxy.size.height
+                let geometryLandscape = proxy.size.width > proxy.size.height
+                let isLandscape = geometryLandscape || deviceIsLandscape
 
-                if isLandscape {
-                    landscapeLayout
-                } else {
-                    portraitLayout
+                Group {
+                    if isLandscape {
+                        landscapeLayout
+                    } else {
+                        portraitLayout
+                    }
                 }
+                .onAppear { syncOrientation(using: proxy.size) }
+                .onChange(of: proxy.size) { _, newSize in syncOrientation(using: newSize) }
             }
             .background(Color(red: 0.95, green: 0.93, blue: 0.89).ignoresSafeArea())
             .preferredColorScheme(.light)
@@ -116,7 +123,20 @@ private struct ArtV4Canvas: View {
             .sheet(isPresented: $showPages) { pagePicker }
             .onAppear {
                 OrientationController.allowAll()
+                syncOrientation(using: UIScreen.main.bounds.size)
                 configureCanvas()
+            }
+            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                let orientation = UIDevice.current.orientation
+                if orientation.isLandscape {
+                    deviceIsLandscape = true
+                    paletteVisible = false
+                } else if orientation.isPortrait {
+                    deviceIsLandscape = false
+                    paletteVisible = false
+                } else {
+                    deviceIsLandscape = interfaceOrientationIsLandscape()
+                }
             }
             .onDisappear { OrientationController.allowAll() }
             .onChange(of: tool) { _, _ in updateTool() }
@@ -136,12 +156,10 @@ private struct ArtV4Canvas: View {
 
     private var landscapeLayout: some View {
         ZStack(alignment: .trailing) {
-            VStack(spacing: 0) {
-                if mode == .challenge { challengeHeader }
-                drawingSurface
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-            }
+            drawingSurface
+                .padding(.horizontal, 10)
+                .padding(.vertical, 6)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             if paletteVisible {
                 landscapePalette
@@ -171,10 +189,11 @@ private struct ArtV4Canvas: View {
                     }
                     .buttonStyle(.plain)
                     .padding(.trailing, paletteVisible ? 320 : 18)
-                    .padding(.bottom, 16)
+                    .padding(.bottom, 14)
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var drawingSurface: some View {
@@ -183,11 +202,12 @@ private struct ArtV4Canvas: View {
             if mode == .trace || mode == .color {
                 ArtStudioExactPageView(index: selectedPage)
                     .opacity(mode == .trace ? guideOpacity : 1)
-                    .padding(14)
+                    .padding(10)
                     .allowsHitTesting(false)
             }
             ArtV4PKCanvas(canvas: $canvas)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 18))
         .overlay(RoundedRectangle(cornerRadius: 18).stroke(.black.opacity(0.18)))
     }
@@ -261,16 +281,15 @@ private struct ArtV4Canvas: View {
                     }
                 }
 
-                VStack(spacing: 8) {
-                    widthControl
-                    if mode == .trace { opacityControl }
-                    if mode == .trace || mode == .color {
-                        Button { showPages = true } label: {
-                            Label(isGreek ? "Άλλαξε σχέδιο" : "Change picture", systemImage: "photo.on.rectangle")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
+                widthControl
+                if mode == .trace { opacityControl }
+
+                if mode == .trace || mode == .color {
+                    Button { showPages = true } label: {
+                        Label(isGreek ? "Άλλαξε σχέδιο" : "Change picture", systemImage: "photo.on.rectangle")
+                            .frame(maxWidth: .infinity)
                     }
+                    .buttonStyle(.borderedProminent)
                 }
             }
             .padding(14)
@@ -278,7 +297,7 @@ private struct ArtV4Canvas: View {
         .foregroundStyle(.black)
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 20))
-        .shadow(radius: 8, y: 3)
+        .shadow(color: .black.opacity(0.18), radius: 10, x: -3, y: 3)
     }
 
     private var toolStrip: some View {
@@ -306,7 +325,9 @@ private struct ArtV4Canvas: View {
     private var colorStrip: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                ForEach(colors) { item in colorButton(item, size: 34) }
+                ForEach(colors) { item in
+                    colorButton(item, size: 34)
+                }
             }
             .padding(.horizontal, 12)
         }
@@ -383,6 +404,23 @@ private struct ArtV4Canvas: View {
     private func name(_ tool: ArtV4Tool) -> String {
         if isGreek { switch tool { case .pencil: return "Μολύβι"; case .pen: return "Πένα"; case .marker: return "Μαρκαδ."; case .brush: return "Πινέλο"; case .eraser: return "Γόμα" } }
         return tool.rawValue.capitalized
+    }
+
+    private func syncOrientation(using size: CGSize) {
+        if size.width > size.height {
+            deviceIsLandscape = true
+        } else if size.height > size.width {
+            deviceIsLandscape = false
+        } else {
+            deviceIsLandscape = interfaceOrientationIsLandscape()
+        }
+    }
+
+    private func interfaceOrientationIsLandscape() -> Bool {
+        UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .first(where: { $0.activationState == .foregroundActive })?
+            .interfaceOrientation.isLandscape ?? false
     }
 
     private var pagePicker: some View {
